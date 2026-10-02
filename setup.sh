@@ -168,8 +168,6 @@ install_python_libs() {
         "colorama"
         "dnspython"
         "python-whois"
-        "pyOpenSSL"
-        "cryptography"
         "tldextract"
         "chardet"
         "idna"
@@ -650,7 +648,6 @@ verify_installation() {
         "colorama:colorama"
         "dns:dnspython"
         "whois:python-whois"
-        "cryptography:cryptography"
     )
 
     for lib_check in "${LIBS_CHECK[@]}"; do
