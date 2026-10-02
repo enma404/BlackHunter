@@ -1,0 +1,115 @@
+# c2_server/requirements.txt
+# BlackHunter Pro - C2 Server Dependencies
+# Install with: pip install -r requirements.txt
+
+# =============================================
+# CORE DEPENDENCIES
+# =============================================
+
+# Cryptography (AES, RSA, HMAC)
+cryptography>=41.0.0
+pyOpenSSL>=23.3.0
+
+# HTTP Requests
+requests>=2.31.0
+urllib3>=2.1.0
+
+# =============================================
+# WEB INTERFACE
+# =============================================
+
+# Web framework
+flask>=3.0.0
+flask-cors>=4.0.0
+
+# WebSocket support
+flask-socketio>=5.3.0
+python-socketio>=5.10.0
+python-engineio>=4.8.0
+eventlet>=0.34.0
+
+# =============================================
+# DATA STORAGE
+# =============================================
+
+# SQLite is built into Python
+# Optional: Better SQLite
+# sqlite-utils>=3.35.0
+
+# =============================================
+# UTILITIES
+# =============================================
+
+# Colored terminal output
+colorama>=0.4.6
+
+# Terminal formatting
+tabulate>=0.9.0
+
+# Progress bars
+tqdm>=4.66.0
+
+# Date/time parsing
+python-dateutil>=2.8.2
+
+# =============================================
+# NETWORKING
+# =============================================
+
+# DNS resolution
+dnspython>=2.4.2
+
+# IP address utilities
+netaddr>=0.9.0
+
+# =============================================
+# OPTIONAL - ENHANCED FEATURES
+# =============================================
+
+# YAML configuration
+pyyaml>=6.0.1
+
+# JSON schema validation
+jsonschema>=4.20.0
+
+# Email notifications
+# secure-smtplib>=0.1.1
+
+# SMS notifications (Twilio)
+# twilio>=8.10.0
+
+# Slack notifications
+# slack-sdk>=3.23.0
+
+# Telegram notifications
+# python-telegram-bot>=20.0
+
+# =============================================
+# DEVELOPMENT DEPENDENCIES
+# =============================================
+
+# Testing
+# pytest>=7.4.0
+# pytest-cov>=4.1.0
+
+# Code quality
+# black>=23.0.0
+# flake8>=6.0.0
+# mypy>=1.5.0
+
+# =============================================
+# NOTES
+# =============================================
+
+# Minimum Python version: 3.8
+# Recommended Python version: 3.10+
+#
+# Installation:
+#   pip install -r requirements.txt
+#
+# Or for a specific module:
+#   pip install cryptography flask flask-socketio
+#
+# Termux installation:
+#   pkg install python libffi openssl
+#   pip install -r requirements.txt

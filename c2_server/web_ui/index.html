@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<!--
+    c2_server/web_ui/index.html
+    BlackHunter Pro - C2 Web Interface
+    Academic Penetration Testing Tool - Isolated Lab Only
+-->
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlackHunter C2 - Command & Control</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+</head>
+<body>
+
+<!-- ============================================= -->
+<!-- HEADER -->
+<!-- ============================================= -->
+
+<header class="main-header">
+    <div class="header-left">
+        <div class="logo">
+            <span class="logo-icon">🎯</span>
+            <div class="logo-text">
+                <h1>BlackHunter</h1>
+                <span class="version">C2 Server v1.0</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-center">
+        <div class="server-status">
+            <span class="status-dot online" id="server-status-dot"></span>
+            <span id="server-status-text">Connected</span>
+        </div>
+    </div>
+
+    <div class="header-right">
+        <div class="header-stat">
+            <span class="stat-icon">👥</span>
+            <span class="stat-value" id="header-clients">0</span>
+            <span class="stat-label">Clients</span>
+        </div>
+        <div class="header-stat">
+            <span class="stat-icon">⚡</span>
+            <span class="stat-value" id="header-commands">0</span>
+            <span class="stat-label">Commands</span>
+        </div>
+        <button class="btn-icon" id="btn-refresh" title="Refresh">🔄</button>
+        <button class="btn-icon" id="btn-settings" title="Settings">⚙️</button>
+        <button class="btn-icon btn-danger" id="btn-shutdown" title="Shutdown">⏻</button>
+    </div>
+</header>
+
+<!-- ============================================= -->
+<!-- MAIN LAYOUT -->
+<!-- ============================================= -->
+
+<div class="main-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <!-- Navigation -->
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-item active" data-view="dashboard">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Dashboard</span>
+            </a>
+            <a href="#clients" class="nav-item" data-view="clients">
+                <span class="nav-icon">👥</span>
+                <span class="nav-label">Clients</span>
+                <span class="nav-badge" id="nav-clients-badge">0</span>
+            </a>
+            <a href="#commands" class="nav-item" data-view="commands">
+                <span class="nav-icon">💻</span>
+                <span class="nav-label">Commands</span>
+            </a>
+            <a href="#files" class="nav-item" data-view="files">
+                <span class="nav-icon">📁</span>
+                <span class="nav-label">Files</span>
+            </a>
+            <a href="#credentials" class="nav-item" data-view="credentials">
+                <span class="nav-icon">🔑</span>
+                <span class="nav-label">Credentials</span>
+                <span class="nav-badge" id="nav-creds-badge">0</span>
+            </a>
+            <a href="#loot" class="nav-item" data-view="loot">
+                <span class="nav-icon">💎</span>
+                <span class="nav-label">Loot</span>
+            </a>
+            <a href="#screenshots" class="nav-item" data-view="screenshots">
+                <span class="nav-icon">📸</span>
+                <span class="nav-label">Screenshots</span>
+            </a>
+            <a href="#keylogs" class="nav-item" data-view="keylogs">
+                <span class="nav-icon">⌨️</span>
+                <span class="nav-label">Keylogs</span>
+            </a>
+            <a href="#terminal" class="nav-item" data-view="terminal">
+                <span class="nav-icon">🖥️</span>
+                <span class="nav-label">Terminal</span>
+            </a>
+            <a href="#settings" class="nav-item" data-view="settings">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label">Settings</span>
+            </a>
+        </nav>
+
+        <!-- Client List -->
+        <div class="sidebar-section">
+            <div class="section-header">
+                <h3>Active Clients</h3>
+                <span class="section-count" id="sidebar-clients-count">0</span>
+            </div>
+            <div class="client-list" id="sidebar-client-list">
+                <div class="empty-state-small">
+                    <span>No clients connected</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="sidebar-section">
+            <div class="section-header">
+                <h3>Statistics</h3>
+            </div>
+            <div class="mini-stats">
+                <div class="mini-stat">
+                    <span class="mini-stat-label">Sessions</span>
+                    <span class="mini-stat-value" id="stat-sessions">0</span>
+                </div>
+                <div class="mini-stat">
+                    <span class="mini-stat-label">Files</span>
+                    <span class="mini-stat-value" id="stat-files">0</span>
+                </div>
+                <div class="mini-stat">
+                    <span class="mini-stat-label">Data</span>
+                    <span class="mini-stat-value" id="stat-data">0 B</span>
+                </div>
+                <div class="mini-stat">
+                    <span class="mini-stat-label">Uptime</span>
+                    <span class="mini-stat-value" id="stat-uptime">0s</span>
+                </div>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- CONTENT AREA -->
+    <main class="content">
+
+        <!-- ============================================= -->
+        <!-- DASHBOARD VIEW -->
+        <!-- ============================================= -->
+        <section class="view active" id="view-dashboard">
+
+            <div class="view-header">
+                <h2>Dashboard</h2>
+                <p class="view-subtitle">Overview of C2 operations and connected agents</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card stat-primary">
+                    <div class="stat-card-icon">👥</div>
+                    <div class="stat-card-content">
+                        <div class="stat-card-value" id="card-active-clients">0</div>
+                        <div class="stat-card-label">Active Clients</div>
+                    </div>
+                </div>
+
+                <div class="stat-card stat-success">
+                    <div class="stat-card-icon">💻</div>
+                    <div class="stat-card-content">
+                        <div class="stat-card-value" id="card-commands">0</div>
+                        <div class="stat-card-label">Total Commands</div>
+                    </div>
+                </div>
+
+                <div class="stat-card stat-warning">
+                    <div class="stat-card-icon">🔑</div>
+                    <div class="stat-card-content">
+                        <div class="stat-card-value" id="card-credentials">0</div>
+                        <div class="stat-card-label">Credentials</div>
+                    </div>
+                </div>
+
+                <div class="stat-card stat-danger">
+                    <div class="stat-card-icon">📁</div>
+                    <div class="stat-card-content">
+                        <div class="stat-card-value" id="card-files">0</div>
+                        <div class="stat-card-label">Files</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Feed -->
+            <div class="dashboard-row">
+                <div class="panel panel-large">
+                    <div class="panel-header">
+                        <h3>Recent Activity</h3>
+                        <button class="btn-text" id="btn-clear-activity">Clear</button>
+                    </div>
+                    <div class="panel-body">
+                        <div class="activity-feed" id="activity-feed">
+                            <div class="empty-state">
+                                <span class="empty-icon">📭</span>
+                                <span>No activity yet</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>Quick Stats</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="quick-stats">
+                            <div class="quick-stat">
+                                <span class="quick-stat-icon">🌐</span>
+                                <div class="quick-stat-info">
+                                    <span class="quick-stat-label">Server</span>
+                                    <span class="quick-stat-value" id="quick-server">0.0.0.0:4443</span>
+                                </div>
+                            </div>
+                            <div class="quick-stat">
+                                <span class="quick-stat-icon">🔒</span>
+                                <div class="quick-stat-info">
+                                    <span class="quick-stat-label">TLS</span>
+                                    <span class="quick-stat-value" id="quick-tls">Disabled</span>
+                                </div>
+                            </div>
+                            <div class="quick-stat">
+                                <span class="quick-stat-icon">⏱️</span>
+                                <div class="quick-stat-info">
+                                    <span class="quick-stat-label">Uptime</span>
+                                    <span class="quick-stat-value" id="quick-uptime">0s</span>
+                                </div>
+                            </div>
+                            <div class="quick-stat">
+                                <span class="quick-stat-icon">📊</span>
+                                <div class="quick-stat-info">
+                                    <span class="quick-stat-label">Sessions</span>
+                                    <span class="quick-stat-value" id="quick-sessions">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Client Cards -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>Connected Clients</h3>
+                    <button class="btn-text" id="btn-broadcast">📢 Broadcast</button>
+                </div>
+                <div class="panel-body">
+                    <div class="client-cards" id="dashboard-client-cards">
+                        <div class="empty-state">
+                            <span class="empty-icon">👥</span>
+                            <span>No clients connected</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================================= -->
+        <!-- CLIENTS VIEW -->
+        <!-- ============================================= -->
+        <section class="view" id="view-clients">
+
+            <div class="view-header">
+                <h2>Clients</h2>
+                <p class="view-subtitle">Manage connected agents and their sessions</p>
+            </div>
+
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <input type="text" class="input-search" id="search-clients" placeholder="🔍 Search clients...">
+                    <select class="input-select" id="filter-status">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="dead">Dead</option>
+                    </select>
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn btn-secondary" id="btn-refresh-clients">🔄 Refresh</button>
+                    <button class="btn btn-danger" id="btn-kill-all">⛔ Disconnect All</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-body no-padding">
+                    <table class="data-table" id="clients-table">
+                        <thead>
+                            <tr>
+                                <th width="40"><input type="checkbox" id="select-all-clients"></th>
+                                <th>ID</th>
+                                <th>IP Address</th>
+                                <th>Hostname</th>
+                                <th>OS</th>
+                                <th>User</th>
+                                <th>Status</th>
+                                <th>Last Seen</th>
+                                <th width="150">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clients-tbody">
+                            <tr>
+                                <td colspan="9" class="empty-table">
+                                    <div class="empty-state">
+                                        <span class="empty-icon">👥</span>
+                                        <span>No clients connected</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================================= -->
+        <!-- COMMANDS VIEW -->
+        <!-- ============================================= -->
+        <section class="view" id="view-commands">
+
+            <div class="view-header">
+                <h2>Commands</h2>
+                <p class="view-subtitle">Command history and execution</p>
+            </div>
+
+            <!-- Command Input -->
+            <div class="command-panel">
+                <div class="command-selector">
+                    <label>Target:</label>
+                    <select class="input-select" id="command-target">
+                        <option value="">-- Select Client --</option>
+                    </select>
+                </div>
+                <div class="command-input-group">
+                    <input type="text" class="input-command" id="command-input" placeholder="Enter command...">
+                    <button class="btn btn-primary" id="btn-send-command">▶ Send</button>
+                </div>
+                <div class="quick-commands">
+                    <span class="quick-label">Quick:</span>
+                    <button class="btn-chip" data-cmd="sysinfo">sysinfo</button>
+                    <button class="btn-chip" data-cmd="whoami">whoami</button>
+                    <button class="btn-chip" data-cmd="pwd">pwd</button>
+                    <button class="btn-chip" data-cmd="ls">ls</button>
+                    <button class="btn-chip" data-cmd="ps">ps</button>
+                    <button class="btn-chip" data-cmd="screenshot">screenshot</button>
+                    <button class="btn-chip" data-cmd="ipconfig">ipconfig</button>
+                    <button class="btn-chip" data-cmd="netstat">netstat</button>
+                    <button class="btn-chip" data-cmd="env">env</button>
+                </div>
+            </div>
+
+            <!-- Command History -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>Command History</h3>
+                    <button class="btn-text" id="btn-clear-commands">Clear</button>
+                </div>
+                <div class="panel-body">
+                    <div class="command-history" id="command-history">
+                        <div class="empty-state">
+                            <span class="empty-icon">💻</span>
+                            <span>No commands executed yet</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================================= -->
+        <!-- FILES VIEW -->
+        <!-- ============================================= -->
+        <section class="view" id="view-files">
+
+            <div class="view-header">
+                <h2>Files</h2>
+                <p class="view-subtitle">File transfer history and management</p>
+            </div>
+
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <input type="text" class="input-search" id="search-files" placeholder="🔍 Search files...">
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn btn-primary" id="btn-upload-file">📤 Upload File</button>
+                    <button class="btn btn-secondary" id="btn-refresh-files">🔄 Refresh</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-body no-padding">
+                    <table class="data-table" id="files-table">
+                        <thead>
+                            <tr>
+                                <th>Filename</th>
+                                <th>Client</th>
+                                <th>Size</th>
+                                <th>Direction</th>
+                                <th>Hash</th>
+                                <th>Transferred</th>
+                                <th width="120">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="files-tbody">
+                            <tr>
+                                <td colspan="7" class="empty-table">
+                                    <div class="empty-state">
+                                        <span class="empty-icon">📁</span>
+                                        <span>No files transferred</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================================= -->
+        <!-- CREDENTIALS VIEW -->
+        <!-- ============================================= -->
+        <section class="view" id="view-credentials">
+
+            <div class="view-header">
+                <h2>Credentials</h2>
+                <p class="view-subtitle">Harvested credentials and secrets</p>
+            </div>
+
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <input type="text" class="input-search" id="search-credentials" placeholder="🔍 Search credentials...">
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn btn-secondary" id="btn-export-creds">📥 Export</button>
+                    <button class="btn btn-secondary" id="btn-refresh-creds">🔄 Refresh</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-body no-padding">
+                    <table class="data-table" id="credentials-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Password / Hash</th>
+                                <th>Source</th>
+                                <th>Client</th>
+                                <th>Captured</th>
+                                <th width="80">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="credentials-tbody">
+                            <tr>
+                                <td colspan="6" class="empty-table">
+                                    <div class="empty-state">
+                                        <span class="empty-icon">🔑</span>
+                                        <span>No credentials harvested</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================================= -->
+        <!-- LOOT VIEW -->
+        <!-- ============================================= -->
+        <section class="view" id="view-loot">
+
+            <div class="view-header">
+                <h2>Loot</h2>
+                <p class="view-subtitle">Collected data from compromised systems</p>
+            </div>
+
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <select class="input-select" id="filter-loot-type">
+                        <option value="">All Types</option>
+                        <option value="credential">Credentials</option>
+                        <option value="screenshot">Screenshots</option>
+                        <option value="keylog">Keylogs</option>
+                        <option value="file">Files</option>
+                        <option value="browser">Browser Data</option>
+                        <option value="wallet">Crypto Wallets</option>
+                    </select>
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn btn-secondary" id="btn-export-loot">📥 Export All</button>
+                    <button class="btn btn-secondary" id="btn-refresh-loot">🔄 Refresh</button>
+                </div>
+            </div>
+
+            <div class="loot-grid" id="loot-grid">
+                <div class="empty-state">
+                    <span class="empty-icon">💎</span>
+                    <span>No loot collected</span>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================================= -->
+        <!-- SCREENSHOTS VIEW -->
+        <!-- ============================================= -->
+        <section class="view" id="view-screenshots">
+
+            <div class="view-header">
+                <h2>Screenshots</h2>
+                <p class="view-subtitle">Captured screen images</p>
+            </div>
+
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <select class="input-select" id="filter-screenshot-client">
+                        <option value="">All Clients</option>
+                    </select>
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn btn-secondary" id="btn-refresh-screenshots">🔄 Refresh</button>
+                </div>
+            </div>
+
+            <div class="gallery-grid" id="screenshots-gallery">
+                <div class="empty-state">
+                    <span class="empty-icon">📸</span>
+                    <span>No screenshots captured</span>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================================= -->
+        <!-- KEYLOGS VIEW -->
+        <!-- ============================================= -->
+        <section class="view" id="view-keylogs">
+
+            <div class="view-header">
+                <h2>Keylogs</h2>
+                <p class="view-subtitle">Captured keystrokes from victim machines</p>
+            </div>
+
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <select class="input-select" id="filter-keylog-client">
+                        <option value="">All Clients</option>
+                    </select>
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn btn-secondary" id="btn-refresh-keylogs">🔄 Refresh</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-body no-padding">
+                    <table class="data-table" id="keylogs-table">
+                        <thead>
+                            <tr>
+                                <th>Window Title</th>
+                                <th>Keystrokes</th>
+                                <th>Client</th>
+                                <th>Captured</th>
+                            </tr>
+                        </thead>
+                        <tbody id="keylogs-tbody">
+                            <tr>
+                                <td colspan="4" class="empty-table">
+                                    <div class="empty-state">
+                                        <span class="empty-icon">⌨️</span>
+                                        <span>No keystrokes captured</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================================= -->
+        <!-- TERMINAL VIEW -->
+        <!-- ============================================= -->
+        <section class="view" id="view-terminal">
+
+            <div class="view-header">
+                <h2>Terminal</h2>
+                <p class="view-subtitle">Direct command interface</p>
+            </div>
+
+            <div class="terminal-container">
+                <div class="terminal-header">
+                    <div class="terminal-dots">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <div class="terminal-title">root@blackhunter-c2: ~</div>
+                    <div class="terminal-actions">
+                        <button class="btn-icon-small" id="btn-terminal-clear">🗑️</button>
+                    </div>
+                </div>
+                <div class="terminal-body" id="terminal-output">
+                    <div class="terminal-line welcome">
+                        <span class="terminal-prompt">┌──(root㉿blackhunter)-[~]</span>
+                    </div>
+                    <div class="terminal-line welcome">
+                        <span class="terminal-prompt">└─# </span>
+                        <span>BlackHunter C2 Terminal v1.0</span>
+                    </div>
+                    <div class="terminal-line welcome">
+                        <span>Type 'help' for available commands</span>
+                    </div>
+                    <div class="terminal-line">&nbsp;</div>
+                </div>
+                <div class="terminal-input-line">
+                    <span class="terminal-prompt-inline">┌──(root㉿blackhunter)-[~]</span>
+                    <div class="terminal-input-wrapper">
+                        <span class="terminal-prompt-inline">└─# </span>
+                        <input type="text" class="terminal-input" id="terminal-input" autocomplete="off" spellcheck="false">
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================================= -->
+        <!-- SETTINGS VIEW -->
+        <!-- ============================================= -->
+        <section class="view" id="view-settings">
+
+            <div class="view-header">
+                <h2>Settings</h2>
+                <p class="view-subtitle">Server configuration and preferences</p>
+            </div>
+
+            <div class="settings-grid">
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>🔧 Server Configuration</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="setting-item">
+                            <label>Bind Host</label>
+                            <input type="text" class="input-text" id="setting-host" value="0.0.0.0" readonly>
+                        </div>
+                        <div class="setting-item">
+                            <label>Bind Port</label>
+                            <input type="number" class="input-text" id="setting-port" value="4443" readonly>
+                        </div>
+                        <div class="setting-item">
+                            <label>TLS Encryption</label>
+                            <label class="switch">
+                                <input type="checkbox" id="setting-tls" disabled>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>Max Clients</label>
+                            <input type="number" class="input-text" id="setting-max-clients" value="100" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>📁 Storage</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="setting-item">
+                            <label>Download Directory</label>
+                            <input type="text" class="input-text" id="setting-downloads" value="./downloads" readonly>
+                        </div>
+                        <div class="setting-item">
+                            <label>Upload Directory</label>
+                            <input type="text" class="input-text" id="setting-uploads" value="./uploads" readonly>
+                        </div>
+                        <div class="setting-item">
+                            <label>Database Size</label>
+                            <input type="text" class="input-text" id="setting-db-size" value="0 B" readonly>
+                        </div>
+                        <div class="setting-item">
+                            <label>Disk Usage</label>
+                            <input type="text" class="input-text" id="setting-disk-usage" value="0 B" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>🎨 Interface</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="setting-item">
+                            <label>Theme</label>
+                            <select class="input-select" id="setting-theme">
+                                <option value="dark">Dark (Default)</option>
+                                <option value="darker">Darker</option>
+                                <option value="midnight">Midnight Blue</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label>Auto Refresh</label>
+                            <label class="switch">
+                                <input type="checkbox" id="setting-auto-refresh" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>Notifications</label>
+                            <label class="switch">
+                                <input type="checkbox" id="setting-notifications" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>Sound Alerts</label>
+                            <label class="switch">
+                                <input type="checkbox" id="setting-sound">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>⚠️ Danger Zone</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="danger-actions">
+                            <button class="btn btn-warning" id="btn-clear-logs">🗑️ Clear Logs</button>
+                            <button class="btn btn-warning" id="btn-vacuum-db">💾 Vacuum DB</button>
+                            <button class="btn btn-secondary" id="btn-backup-db">📦 Backup DB</button>
+                            <button class="btn btn-danger" id="btn-shutdown-server">⛔ Shutdown Server</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- ============================================= -->
+<!-- FOOTER -->
+<!-- ============================================= -->
+
+<footer class="main-footer">
+    <div class="footer-left">
+        <span>🎯 BlackHunter Pro v1.0.0</span>
+        <span class="separator">•</span>
+        <span>Academic Penetration Testing Tool</span>
+        <span class="separator">•</span>
+        <span class="footer-warning">⚠️ Isolated Lab Only</span>
+    </div>
+    <div class="footer-right">
+        <span id="footer-time">--:--:--</span>
+        <span class="separator">•</span>
+        <span>Uptime: <span id="footer-uptime">0s</span></span>
+    </div>
+</footer>
+
+<!-- ============================================= -->
+<!-- MODALS -->
+<!-- ============================================= -->
+
+<!-- Client Info Modal -->
+<div class="modal" id="modal-client-info">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h3 id="modal-client-title">Client Information</h3>
+            <button class="modal-close" data-modal="modal-client-info">✕</button>
+        </div>
+        <div class="modal-body" id="modal-client-body">
+            <!-- Filled dynamically -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-modal="modal-client-info">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal" id="modal-confirm">
+    <div class="modal-content modal-small">
+        <div class="modal-header">
+            <h3 id="modal-confirm-title">Confirm</h3>
+        </div>
+        <div class="modal-body">
+            <p id="modal-confirm-message">Are you sure?</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" id="btn-confirm-no">Cancel</button>
+            <button class="btn btn-danger" id="btn-confirm-yes">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<!-- Command Result Modal -->
+<div class="modal" id="modal-command-result">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h3 id="modal-result-title">Command Result</h3>
+            <button class="modal-close" data-modal="modal-command-result">✕</button>
+        </div>
+        <div class="modal-body">
+            <pre class="result-output" id="modal-result-output"></pre>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" id="btn-copy-result">📋 Copy</button>
+            <button class="btn btn-primary" data-modal="modal-command-result">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Broadcast Modal -->
+<div class="modal" id="modal-broadcast">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📢 Broadcast Command</h3>
+            <button class="modal-close" data-modal="modal-broadcast">✕</button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-description">Send a command to all connected clients:</p>
+            <input type="text" class="input-command" id="broadcast-command" placeholder="Enter command...">
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-modal="modal-broadcast">Cancel</button>
+            <button class="btn btn-primary" id="btn-send-broadcast">📢 Broadcast</button>
+        </div>
+    </div>
+</div>
+
+<!-- Image Viewer Modal -->
+<div class="modal" id="modal-image-viewer">
+    <div class="modal-content modal-fullscreen">
+        <div class="modal-header">
+            <h3 id="modal-image-title">Screenshot</h3>
+            <button class="modal-close" data-modal="modal-image-viewer">✕</button>
+        </div>
+        <div class="modal-body modal-body-image">
+            <img id="modal-image-src" src="" alt="Screenshot">
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loading-overlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading...</div>
+</div>
+
+<!-- ============================================= -->
+<!-- SCRIPTS -->
+<!-- ============================================= -->
+
+<script src="dashboard.js"></script>
+
+</body>
+</html>

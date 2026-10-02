@@ -1,0 +1,286 @@
+# .gitignore
+# BlackHunter Pro - Git Ignore Rules
+# Academic Penetration Testing Tool
+
+# =============================================
+# PYTHON
+# =============================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# =============================================
+# VIRTUAL ENVIRONMENTS
+# =============================================
+
+venv/
+ENV/
+env/
+.venv/
+.ENV/
+env.bak/
+venv.bak/
+
+# =============================================
+# IDE / EDITORS
+# =============================================
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.vim/
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# Nano
+*.save
+
+# =============================================
+# OS FILES
+# =============================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# =============================================
+# BLACKHUNTER SPECIFIC
+# =============================================
+
+# Reports (contain sensitive scan data)
+reports/json/*.json
+reports/html/*.html
+reports/pdf/*.pdf
+reports/loot/
+!reports/.gitkeep
+!reports/json/.gitkeep
+!reports/html/.gitkeep
+!reports/pdf/.gitkeep
+!reports/loot/.gitkeep
+
+# Logs
+logs/*.log
+!logs/.gitkeep
+
+# Downloads
+downloads/*
+!downloads/.gitkeep
+
+# Scan outputs
+scan_*.json
+scan_*.html
+scan_*.txt
+scan_*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Native build artifacts
+native/*.o
+native/*.obj
+native/port_scanner
+native/banner_grabber
+native/payload_engine
+native/hash_cracker
+native/packet_crafter
+native/crypto_utils
+native/*.exe
+
+# Configuration with secrets
+config/config.local.json
+config/secrets.json
+.env
+.env.local
+.env.*.local
+
+# Callback tokens
+.callback_tokens
+tokens.txt
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# =============================================
+# SECURITY
+# =============================================
+
+# Never commit credentials
+credentials.json
+secrets.json
+api_keys.txt
+passwords.txt
+
+# Never commit captured data
+captured_data/
+extracted_data/
+exfiltrated/
+
+# Never commit shell uploads
+shells/
+webshells/
+
+# =============================================
+# TERMUX SPECIFIC
+# =============================================
+
+# Termux cache
+.termux/
+$PREFIX/var/cache/
+
+# =============================================
+# MISC
+# =============================================
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.rar
+*.7z
+
+# Database dumps
+*.sql
+
+# Document files
+*.pdf
+*.doc
+*.docx
+
+# Compiled binaries
+*.exe
+*.dll
+*.bin
+
+# Node.js (if used for tooling)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =============================================
+# KEEP THESE FILES
+# =============================================
+
+# Keep directory structure
+!.gitkeep
+!README.md
+!requirements.txt
+!setup.sh
+!blackhunter.sh
+!.gitignore
+!LICENSE
+
+# Keep config template
+!config/config.json
+
+# Keep payloads
+!payloads/**/*.txt
+
+# Keep wordlists
+!wordlists/**/*.txt
+
+# Keep core modules
+!core/**/*.py
+!scanners/**/*.py
+!vulns/**/*.py
+!exploits/**/*.py
+!c2_server/**/*.py
+
+# Keep native sources
+!native/**/*.c
+!native/**/*.h
+!native/Makefile
+
+# Keep docs
+!docs/**/*.md

