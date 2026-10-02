@@ -80,9 +80,9 @@ show_banner() {
    ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
 EOF
     echo -e "${NC}"
-    echo -e "${YELLOW}              P R O   v1.0${NC}"
-    echo -e "${CYAN}    Academic Penetration Testing Tool${NC}"
-    echo -e "${GREEN}    Isolated Lab Environment Only${NC}"
+    echo -e "${YELLOW}       BY R2D RABBIT${NC}"
+    echo -e "${CYAN}       FULL Tool WEBSITE${NC}"
+    echo -e "${GREEN}    MOLOTOV${NC}"
     echo ""
     echo -e "${MAGENTA}═══════════════════════════════════════════════════════════${NC}"
     echo ""
@@ -333,7 +333,7 @@ show_settings() {
             9)
                 python3 "$SCRIPT_DIR/core/utils.py" --check-deps 2>/dev/null || {
                     echo -e "${CYAN}  Checking dependencies...${NC}"
-                    for dep in requests colorama dns whois cryptography; do
+                    for dep in requests colorama dns whois; do
                         if python3 -c "import $dep" 2>/dev/null; then
                             echo -e "${GREEN}  [✓] $dep${NC}"
                         else
