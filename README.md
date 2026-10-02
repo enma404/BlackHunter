@@ -89,7 +89,7 @@ Built for **academic cybersecurity research** and **graduation projects** in iso
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-repo/BlackHunter.git
+git clone https://github.com/enma404/BlackHunter.git
 cd BlackHunter
 
 # Make scripts executable
