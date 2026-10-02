@@ -6,6 +6,7 @@ import os
 import sys
 import time
 import json
+import traceback
 from datetime import datetime
 from html import escape
 from urllib.parse import urlparse
@@ -18,10 +19,10 @@ if _REPO_ROOT not in sys.path:
 try:
     from .utils import (
         Colors as C,
-        log_info, log_ok, log_warn, log_error, log_step,
+        log_info, log_ok, log_warn, log_error, log_step, log_debug,
         print_separator, print_header,
         validate_target, timestamp, ensure_dir,
-        save_json, format_time, Timer,
+        save_json, load_json, format_time, Timer, confirm_action,
     )
     from .config import get_config
     from .logger import get_logger
@@ -34,10 +35,10 @@ except ImportError:
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     from utils import (
         Colors as C,
-        log_info, log_ok, log_warn, log_error, log_step,
+        log_info, log_ok, log_warn, log_error, log_step, log_debug,
         print_separator, print_header,
         validate_target, timestamp, ensure_dir,
-        save_json, format_time, Timer,
+        save_json, load_json, format_time, Timer, confirm_action,
     )
     from config import get_config
     from logger import get_logger
@@ -57,11 +58,16 @@ class Runner:
     - Handles errors gracefully
     """
 
-    def __init__(self, target, config=None):
+    def __init__(self, target, config=None, verbose=False, no_exploit=False):
         self.target = target.rstrip('/')
         self.config = config or get_config()
         self.logger = get_logger()
         self.timer = Timer()
+        self.verbose = bool(verbose)
+        self.no_exploit = bool(no_exploit)
+        self.fatal_error = False
+        self._restored = False
+        self._skip_report = False
 
         self.results = {
             'target': self.target,
@@ -99,6 +105,9 @@ class Runner:
         # Log scan start
         self.logger.scan_start(self.target, module)
 
+        if self.verbose:
+            log_debug(f"module={module} target={self.target}")
+
         try:
             if module == 'recon':
                 self._run_recon()
@@ -133,26 +142,35 @@ class Runner:
             elif module == 'full':
                 self._run_full()
             elif module == 'report':
-                pass
+                self._load_previous_results()
             else:
                 log_error(f"Unknown module: {module}")
                 self.results['errors'].append(f"Unknown module: {module}")
+                self.fatal_error = True
 
         except KeyboardInterrupt:
             log_warn("Scan interrupted by user")
             self.results['errors'].append("Interrupted by user")
+            self.fatal_error = True
         except Exception as e:
             log_error(f"Fatal error: {e}")
+            if self.verbose:
+                traceback.print_exc()
             self.results['errors'].append(str(e))
+            self.fatal_error = True
 
         # Finalize
-        self.results['finished_at'] = datetime.now().isoformat()
-        self.results['duration'] = self.timer.elapsed()
+        if not self._restored:
+            self.results['finished_at'] = datetime.now().isoformat()
+            self.results['duration'] = self.timer.elapsed()
+
+        # Mark corrupted vulnerability entries
+        self._validate_vulns()
 
         # Log scan end
         self.logger.scan_end(
             self.target,
-            len(self.results['vulnerabilities']),
+            len(self._safe_vulns()),
             self.results['duration']
         )
 
@@ -637,14 +655,109 @@ class Runner:
         self._run_idor()
         self._run_redirect()
 
+        self._run_exploitation()
+
         log_ok(f"Full scan completed: {len(self.results['vulnerabilities'])} vulnerabilities found")
+
+    # =============================================
+    # EXPLOITATION PHASE
+    # =============================================
+
+    def _run_exploitation(self):
+        """Run exploit modules for findings - gated by config and --no-exploit"""
+        if self.no_exploit:
+            log_info("Exploitation skipped: --no-exploit")
+            return
+        if not self.config.get('exploitation.enabled', False):
+            log_info("Exploitation skipped: exploitation.enabled=false")
+            return
+        if self.config.get('exploitation.require_confirmation', True):
+            if not confirm_action("Run exploitation modules against target?"):
+                log_warn("Exploitation skipped: not confirmed")
+                return
+
+        show_section_header("Exploitation")
+        from exploits import EXPLOIT_REGISTRY, run_exploit
+
+        keywords = {
+            'sqli': ('sql injection',),
+            'lfi': ('lfi', 'local file inclusion'),
+            'cmdi': ('command injection',),
+            'ssrf': ('ssrf',),
+            'upload': ('upload',),
+        }
+
+        types = set()
+        for v in self._safe_vulns():
+            vtype = str(v.get('type') or '').lower()
+            for name, words in keywords.items():
+                if name in EXPLOIT_REGISTRY and any(w in vtype for w in words):
+                    types.add(name)
+
+        if not types:
+            log_warn("Exploitation skipped: no exploit module matches the findings")
+            return
+
+        for name in sorted(types):
+            try:
+                self.logger.exploit_start(name, self.target)
+                result = run_exploit(
+                    name,
+                    self.target,
+                    timeout=self.config.timeout,
+                    user_agent=self.config.user_agent,
+                )
+                self.results['exploits'].append({'module': name, 'result': result})
+                log_ok(f"Exploit module finished: {name}")
+            except Exception as e:
+                log_error(f"Exploit module failed: {name}: {e}")
+                self.results['errors'].append(f"Exploit {name}: {e}")
 
     # =============================================
     # GENERATE REPORT
     # =============================================
 
+    def _load_previous_results(self):
+        """Load the most recent saved scan results for this target"""
+        json_dir = os.path.join(self.config.get_report_path(), "json")
+        best = None
+
+        if os.path.isdir(json_dir):
+            for name in os.listdir(json_dir):
+                if not (name.startswith("report_") and name.endswith(".json")):
+                    continue
+                path = os.path.join(json_dir, name)
+                data = load_json(path)
+                if not isinstance(data, dict) or data.get('target') != self.target:
+                    continue
+                mtime = os.path.getmtime(path)
+                if best is None or mtime > best[0]:
+                    best = (mtime, path, data)
+
+        if best is None:
+            log_error(f"No previous scan results found for {self.target}")
+            self.results['errors'].append("Report: no previous scan results found")
+            self._skip_report = True
+            self.fatal_error = True
+            return
+
+        _, path, data = best
+        for key in self.results:
+            if key in data:
+                self.results[key] = data[key]
+        self.target = str(self.results.get('target') or self.target).rstrip('/')
+        self._restored = True
+
+        log_ok(f"Loaded previous scan results: {path}")
+        if self.verbose:
+            log_debug(f"Restored {len(self.results.get('vulnerabilities') or [])} vulnerabilities from {path}")
+
     def _generate_report(self):
         """Generate JSON + HTML reports"""
+        if self._skip_report:
+            log_warn("Report generation skipped: no previous scan results")
+            return
+
         show_section_header("Generating Reports")
 
         try:
@@ -658,58 +771,70 @@ class Runner:
             ensure_dir(json_dir)
             json_path = os.path.join(json_dir, f"report_{ts}.json")
 
-            if save_json(json_path, self.results):
-                log_ok(f"JSON: {json_path}")
-                self.results['report_json'] = json_path
-            else:
-                log_error(f"JSON report write failed: {json_path}")
-                self.results['errors'].append("Report: failed to write JSON report")
-
             # HTML report
             html_dir = os.path.join(report_dir, "html")
             ensure_dir(html_dir)
             html_path = os.path.join(html_dir, f"report_{ts}.html")
 
-            html_content = self._build_html_report()
+            # HTML first so its failure state lands in the JSON snapshot
+            try:
+                html_content = self._build_html_report()
+                with open(html_path, 'w', encoding='utf-8') as f:
+                    f.write(html_content)
+                log_ok(f"HTML: {html_path}")
+                self.results['report_html'] = html_path
+            except Exception as e:
+                log_error(f"HTML report write failed: {html_path}: {e}")
+                self.results['report_html'] = None
+                self.results['errors'].append(f"Report: failed to write HTML report: {e}")
+                self.fatal_error = True
 
-            with open(html_path, 'w', encoding='utf-8') as f:
-                f.write(html_content)
-            log_ok(f"HTML: {html_path}")
-            self.results['report_html'] = html_path
+            # JSON last: embeds final report paths and the synced error state
+            self.results['report_json'] = json_path
+            if save_json(json_path, self.results):
+                log_ok(f"JSON: {json_path}")
+            else:
+                log_error(f"JSON report write failed: {json_path}")
+                self.results['report_json'] = None
+                self.results['errors'].append("Report: failed to write JSON report")
+                self.fatal_error = True
 
         except Exception as e:
             log_error(f"Report generation failed: {e}")
             self.results['errors'].append(f"Report: {e}")
+            self.fatal_error = True
 
     # =============================================
     # HTML REPORT
     # =============================================
 
     def _safe_vulns(self):
-        """Return vulnerability entries as dictionaries"""
+        """Return valid dictionary vulnerability entries"""
         entries = self.results.get('vulnerabilities') or []
-        safe = []
-        for v in entries:
-            if isinstance(v, dict):
-                safe.append(v)
-            else:
-                safe.append({
-                    'type': 'Unknown',
-                    'severity': 'LOW',
-                    'url': 'N/A',
-                    'param': 'N/A',
-                    'payload': str(v),
-                    'evidence': '',
-                })
-        return safe
+        return [v for v in entries if isinstance(v, dict)]
+
+    def _validate_vulns(self):
+        """Mark corrupted (non-dict) vulnerability entries"""
+        for v in self.results.get('vulnerabilities') or []:
+            if not isinstance(v, dict):
+                msg = f"Corrupted vulnerability entry skipped: {str(v)[:80]}"
+                log_error(msg)
+                if msg not in self.results['errors']:
+                    self.results['errors'].append(msg)
+
+    @staticmethod
+    def _norm_sev(severity):
+        """Normalize a severity value to a stats bucket"""
+        sev = str(severity or 'LOW').upper()
+        if sev not in ('CRITICAL', 'HIGH', 'MEDIUM', 'LOW'):
+            sev = 'LOW'
+        return sev
 
     def _severity_counts(self, vulns):
         """Count vulnerabilities per severity"""
         counts = {'CRITICAL': 0, 'HIGH': 0, 'MEDIUM': 0, 'LOW': 0}
         for v in vulns:
-            sev = str(v.get('severity') or 'LOW').upper()
-            if sev in counts:
-                counts[sev] += 1
+            counts[self._norm_sev(v.get('severity'))] += 1
         return counts
 
     def _build_html_report(self):
@@ -731,9 +856,7 @@ class Runner:
         vulns_html = ""
         if vulns:
             for i, v in enumerate(vulns, 1):
-                sev = str(v.get('severity') or 'LOW').upper()
-                if sev not in ('CRITICAL', 'HIGH', 'MEDIUM', 'LOW'):
-                    sev = 'LOW'
+                sev = self._norm_sev(v.get('severity'))
                 sev_class = sev.lower()
                 v_type = escape(str(v.get('type') or 'Unknown'))
                 v_url = escape(str(v.get('url') or 'N/A'))
@@ -1017,6 +1140,10 @@ class Runner:
         if self.results['errors']:
             print(f"{C.YELLOW}[!] Errors:       {len(self.results['errors'])}")
 
+        if self.verbose:
+            log_debug("Results dump:")
+            print(json.dumps(self.results, indent=2, default=str))
+
         print(f"{C.GREEN}{'═'*60}{C.RESET}\n")
 
 
@@ -1024,20 +1151,21 @@ class Runner:
 # HELPER FUNCTIONS
 # =============================================
 
-def run_scan(target, module='full', config=None):
+def run_scan(target, module='full', config=None, verbose=False, no_exploit=False):
     """Convenience function to run a scan"""
     target = validate_target(target)
     if not target:
         log_error("Invalid target")
         return None
 
-    runner = Runner(target, config=config)
+    runner = Runner(target, config=config, verbose=verbose, no_exploit=no_exploit)
     return runner.run(module=module)
 
 
-def run_module(target, module, config=None):
+def run_module(target, module, config=None, verbose=False, no_exploit=False):
     """Run a specific module"""
-    return run_scan(target, module=module, config=config)
+    return run_scan(target, module=module, config=config,
+                    verbose=verbose, no_exploit=no_exploit)
 
 
 # =============================================
@@ -1083,10 +1211,13 @@ Examples:
         sys.exit(1)
 
     # Run
-    runner = Runner(target, config=config)
-    results = runner.run(module=args.module)
+    config.set('output.verbose', bool(args.verbose))
+    runner = Runner(target, config=config,
+                    verbose=args.verbose, no_exploit=args.no_exploit)
+    runner.run(module=args.module)
 
-    if results and results.get('errors'):
+    # Fatal errors exit 1; recoverable module errors exit 0
+    if runner.fatal_error:
         sys.exit(1)
 
 

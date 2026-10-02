@@ -15,6 +15,12 @@ import subprocess
 from datetime import datetime
 from urllib.parse import urlparse, urljoin
 
+# Force UTF-8 console output on non-UTF-8 terminals (e.g. cp1252)
+if (sys.stdout is not None and hasattr(sys.stdout, 'reconfigure')
+        and getattr(sys.stdout, 'encoding', None)
+        and sys.stdout.encoding.lower() not in ('utf-8', 'utf8')):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+
 
 # =============================================
 # COLORS
@@ -647,7 +653,7 @@ def run_command(command, timeout=30):
 def check_dependencies(deps=None):
     """Check Python dependencies"""
     if deps is None:
-        deps = ['requests', 'bs4', 'colorama', 'dns', 'OpenSSL', 'cryptography']
+        deps = ['requests', 'colorama', 'dns', 'whois', 'cryptography']
 
     missing = []
     for dep in deps:
@@ -699,6 +705,7 @@ def main():
         else:
             print(f"{C.RED}[✗] Missing: {', '.join(missing)}{C.RESET}")
             print(f"{C.YELLOW}[!] Run: pip install -r requirements.txt{C.RESET}")
+            sys.exit(1)
 
     elif args.check_native:
         print(f"{C.CYAN}[*] Checking native modules...{C.RESET}")

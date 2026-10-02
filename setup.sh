@@ -21,6 +21,9 @@ WHITE='\033[1;37m'
 DIM='\033[2m'
 NC='\033[0m'
 
+# Setup error counter (0 = success, >0 = failures detected)
+SETUP_ERRORS=0
+
 # =============================================
 # BANNER
 # =============================================
@@ -44,9 +47,9 @@ show_banner() {
    ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
 EOF
     echo -e "${NC}"
-    echo -e "${YELLOW}              P R O   v1.0${NC}"
-    echo -e "${CYAN}    Academic Penetration Testing Tool${NC}"
-    echo -e "${GREEN}    Isolated Lab Environment Only${NC}"
+    echo -e "${YELLOW}      BY R2D RABBIT${NC}"
+    echo -e "${CYAN}       FULL TOLS WEBSITE${NC}"
+    echo -e "${GREEN}     MOLOTOV!${NC}"
     echo ""
     echo -e "${MAGENTA}═══════════════════════════════════════════════════════════${NC}"
     echo -e "${MAGENTA}                    SETUP INSTALLER${NC}"
@@ -173,12 +176,27 @@ install_python_libs() {
         "certifi"
     )
 
+    local -a FAILED_LIBS=()
+    local out rc
+
     for lib in "${LIBS[@]}"; do
         log_info "Installing $lib..."
-        python3 -m pip install "$lib" 2>&1 | tail -1
+        out=$(python3 -m pip install "$lib" 2>&1)
+        rc=$?
+        echo "$out" | tail -1
+        if [ $rc -ne 0 ]; then
+            log_error "Failed to install $lib"
+            FAILED_LIBS+=("$lib")
+        fi
     done
 
-    log_ok "Python libraries installed"
+    if [ ${#FAILED_LIBS[@]} -gt 0 ]; then
+        SETUP_ERRORS=$((SETUP_ERRORS + ${#FAILED_LIBS[@]}))
+        log_error "pip install failed for: ${FAILED_LIBS[*]}"
+        log_warn "Run: python3 -m pip install -r requirements.txt"
+    else
+        log_ok "Python libraries installed"
+    fi
 }
 
 # =============================================
@@ -598,6 +616,7 @@ verify_installation() {
         log_ok "$(python3 --version 2>&1)"
     else
         log_error "Python3 not found"
+        SETUP_ERRORS=$((SETUP_ERRORS + 1))
     fi
 
     # Pip
@@ -605,6 +624,7 @@ verify_installation() {
         log_ok "pip installed"
     else
         log_error "pip not found"
+        SETUP_ERRORS=$((SETUP_ERRORS + 1))
     fi
 
     # Git
@@ -627,10 +647,9 @@ verify_installation() {
 
     LIBS_CHECK=(
         "requests:requests"
-        "bs4:beautifulsoup4"
         "colorama:colorama"
         "dns:dnspython"
-        "OpenSSL:pyOpenSSL"
+        "whois:python-whois"
         "cryptography:cryptography"
     )
 
@@ -642,6 +661,7 @@ verify_installation() {
             log_ok "$lib_full"
         else
             log_error "$lib_full missing"
+            SETUP_ERRORS=$((SETUP_ERRORS + 1))
         fi
     done
 
@@ -720,6 +740,12 @@ main() {
     create_config
     download_wordlists
     verify_installation
+
+    if [ "$SETUP_ERRORS" -gt 0 ]; then
+        echo ""
+        log_error "Setup finished with $SETUP_ERRORS error(s) - fix the failures above"
+        exit 1
+    fi
 
     show_completion
 

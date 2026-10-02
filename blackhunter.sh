@@ -39,9 +39,8 @@ check_environment() {
         exit 1
     fi
     
-    # Check dependencies
-    python3 -c "import requests, bs4, colorama" 2>/dev/null
-    if [ $? -ne 0 ]; then
+    # Check dependencies (aligned with actual imports via core/utils.py)
+    if ! python3 "$SCRIPT_DIR/core/utils.py" --check-deps >/dev/null 2>&1; then
         echo -e "${RED}[✗] Missing Python dependencies${NC}"
         echo -e "${YELLOW}[!] Run: ./setup.sh${NC}"
         exit 1
@@ -334,7 +333,7 @@ show_settings() {
             9)
                 python3 "$SCRIPT_DIR/core/utils.py" --check-deps 2>/dev/null || {
                     echo -e "${CYAN}  Checking dependencies...${NC}"
-                    for dep in requests bs4 colorama dns OpenSSL; do
+                    for dep in requests colorama dns whois cryptography; do
                         if python3 -c "import $dep" 2>/dev/null; then
                             echo -e "${GREEN}  [✓] $dep${NC}"
                         else
