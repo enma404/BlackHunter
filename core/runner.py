@@ -7,7 +7,12 @@ import sys
 import time
 import json
 from datetime import datetime
+from html import escape
 from urllib.parse import urlparse
+
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
 
 # Import utils
 try:
@@ -128,11 +133,10 @@ class Runner:
             elif module == 'full':
                 self._run_full()
             elif module == 'report':
-                self._generate_report()
-                return self.results
+                pass
             else:
                 log_error(f"Unknown module: {module}")
-                return self.results
+                self.results['errors'].append(f"Unknown module: {module}")
 
         except KeyboardInterrupt:
             log_warn("Scan interrupted by user")
@@ -153,8 +157,7 @@ class Runner:
         )
 
         # Save report
-        if module != 'report':
-            self._generate_report()
+        self._generate_report()
 
         self._print_summary()
 
@@ -616,6 +619,7 @@ class Runner:
         self._run_port()
         self._run_web()
         self._run_cms()
+        self._run_subdomain()
 
         # Vulnerability phase
         print(f"\n{C.CYAN}{'─'*60}")
@@ -628,6 +632,10 @@ class Runner:
         self._run_cmdi()
         self._run_ssrf()
         self._run_upload()
+        self._run_xxe()
+        self._run_csrf()
+        self._run_idor()
+        self._run_redirect()
 
         log_ok(f"Full scan completed: {len(self.results['vulnerabilities'])} vulnerabilities found")
 
@@ -653,6 +661,9 @@ class Runner:
             if save_json(json_path, self.results):
                 log_ok(f"JSON: {json_path}")
                 self.results['report_json'] = json_path
+            else:
+                log_error(f"JSON report write failed: {json_path}")
+                self.results['errors'].append("Report: failed to write JSON report")
 
             # HTML report
             html_dir = os.path.join(report_dir, "html")
@@ -674,35 +685,74 @@ class Runner:
     # HTML REPORT
     # =============================================
 
+    def _safe_vulns(self):
+        """Return vulnerability entries as dictionaries"""
+        entries = self.results.get('vulnerabilities') or []
+        safe = []
+        for v in entries:
+            if isinstance(v, dict):
+                safe.append(v)
+            else:
+                safe.append({
+                    'type': 'Unknown',
+                    'severity': 'LOW',
+                    'url': 'N/A',
+                    'param': 'N/A',
+                    'payload': str(v),
+                    'evidence': '',
+                })
+        return safe
+
+    def _severity_counts(self, vulns):
+        """Count vulnerabilities per severity"""
+        counts = {'CRITICAL': 0, 'HIGH': 0, 'MEDIUM': 0, 'LOW': 0}
+        for v in vulns:
+            sev = str(v.get('severity') or 'LOW').upper()
+            if sev in counts:
+                counts[sev] += 1
+        return counts
+
     def _build_html_report(self):
         """Build HTML report"""
-        vulns = self.results['vulnerabilities']
-        critical = len([v for v in vulns if v.get('severity') == 'CRITICAL'])
-        high = len([v for v in vulns if v.get('severity') == 'HIGH'])
-        medium = len([v for v in vulns if v.get('severity') == 'MEDIUM'])
-        low = len([v for v in vulns if v.get('severity') == 'LOW'])
+        vulns = self._safe_vulns()
+        counts = self._severity_counts(vulns)
+        critical = counts['CRITICAL']
+        high = counts['HIGH']
+        medium = counts['MEDIUM']
+        low = counts['LOW']
 
-        duration = format_time(self.results['duration'])
+        duration = format_time(self.results.get('duration', 0))
+
+        recon = self.results.get('recon')
+        if not isinstance(recon, dict):
+            recon = {}
 
         # Build vulnerabilities HTML
         vulns_html = ""
         if vulns:
             for i, v in enumerate(vulns, 1):
-                sev = v.get('severity', 'LOW')
+                sev = str(v.get('severity') or 'LOW').upper()
+                if sev not in ('CRITICAL', 'HIGH', 'MEDIUM', 'LOW'):
+                    sev = 'LOW'
                 sev_class = sev.lower()
+                v_type = escape(str(v.get('type') or 'Unknown'))
+                v_url = escape(str(v.get('url') or 'N/A'))
+                v_param = escape(str(v.get('param') or 'N/A'))
+                v_payload = escape(str(v.get('payload') or 'N/A'))
+                v_evidence = escape(str(v.get('evidence') or '')[:500])
                 vulns_html += f"""
                 <div class="vuln {sev_class}">
                     <div class="vuln-header">
                         <span class="vuln-num">#{i}</span>
-                        <span class="vuln-type">{v.get('type', 'Unknown')}</span>
+                        <span class="vuln-type">{v_type}</span>
                         <span class="severity {sev_class}">{sev}</span>
                     </div>
                     <div class="vuln-body">
-                        <p><strong>URL:</strong> <code>{v.get('url', 'N/A')}</code></p>
-                        <p><strong>Parameter:</strong> <code>{v.get('param', 'N/A')}</code></p>
+                        <p><strong>URL:</strong> <code>{v_url}</code></p>
+                        <p><strong>Parameter:</strong> <code>{v_param}</code></p>
                         <p><strong>Payload:</strong></p>
-                        <pre>{v.get('payload', 'N/A')}</pre>
-                        {f'<p><strong>Evidence:</strong></p><pre>{str(v.get("evidence", "N/A"))[:500]}</pre>' if v.get('evidence') else ''}
+                        <pre>{v_payload}</pre>
+                        {f'<p><strong>Evidence:</strong></p><pre>{v_evidence}</pre>' if v.get('evidence') else ''}
                     </div>
                 </div>
                 """
@@ -714,7 +764,7 @@ class Runner:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlackHunter Report - {self.target}</title>
+    <title>BlackHunter Report - {escape(str(self.target))}</title>
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
         body {{
@@ -879,7 +929,7 @@ class Runner:
         <div class="info-grid">
             <div class="info-card">
                 <label>Target</label>
-                <value>{self.target}</value>
+                <value>{escape(str(self.target))}</value>
             </div>
             <div class="info-card">
                 <label>Duration</label>
@@ -887,11 +937,11 @@ class Runner:
             </div>
             <div class="info-card">
                 <label>IP Address</label>
-                <value>{self.results.get('recon', {}).get('ip', 'N/A')}</value>
+                <value>{escape(str(recon.get('ip') or 'N/A'))}</value>
             </div>
             <div class="info-card">
                 <label>Server</label>
-                <value>{self.results.get('recon', {}).get('server', 'N/A')}</value>
+                <value>{escape(str(recon.get('server') or 'N/A'))}</value>
             </div>
         </div>
 
@@ -934,12 +984,12 @@ class Runner:
 
     def _print_summary(self):
         """Print final summary"""
-        vulns = self.results['vulnerabilities']
-
-        critical = len([v for v in vulns if v.get('severity') == 'CRITICAL'])
-        high = len([v for v in vulns if v.get('severity') == 'HIGH'])
-        medium = len([v for v in vulns if v.get('severity') == 'MEDIUM'])
-        low = len([v for v in vulns if v.get('severity') == 'LOW'])
+        vulns = self._safe_vulns()
+        counts = self._severity_counts(vulns)
+        critical = counts['CRITICAL']
+        high = counts['HIGH']
+        medium = counts['MEDIUM']
+        low = counts['LOW']
 
         duration = format_time(self.results['duration'])
 
@@ -1034,7 +1084,10 @@ Examples:
 
     # Run
     runner = Runner(target, config=config)
-    runner.run(module=args.module)
+    results = runner.run(module=args.module)
+
+    if results and results.get('errors'):
+        sys.exit(1)
 
 
 if __name__ == '__main__':

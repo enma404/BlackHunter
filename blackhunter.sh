@@ -177,6 +177,7 @@ get_target() {
 run_module() {
     local module="$1"
     local module_name="$2"
+    local rc=0
     
     if ! get_target; then
         return
@@ -188,10 +189,15 @@ run_module() {
     echo ""
     
     python3 "$SCRIPT_DIR/core/runner.py" --target "$TARGET" --module "$module"
+    rc=$?
     
     echo ""
     echo -e "${CYAN}  ─────────────────────────────────────────────────────${NC}"
-    echo -e "${GREEN}  [✓] $module_name completed${NC}"
+    if [ $rc -eq 0 ]; then
+        echo -e "${GREEN}  [✓] $module_name completed${NC}"
+    else
+        echo -e "${RED}  [✗] $module_name failed (exit code $rc)${NC}"
+    fi
     echo -e "${YELLOW}  [*] Press Enter to return to menu...${NC}"
     read -r
 }
