@@ -671,6 +671,7 @@ def check_native_modules(native_dir=None):
         native_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'native')
 
     modules = ['port_scanner', 'banner_grabber', 'payload_engine', 'hash_cracker', 'packet_crafter', 'crypto_utils']
+    available = []
 
     for module in modules:
         path = os.path.join(native_dir, module)
