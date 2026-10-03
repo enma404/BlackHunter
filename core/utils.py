@@ -653,7 +653,7 @@ def run_command(command, timeout=30):
 def check_dependencies(deps=None):
     """Check Python dependencies"""
     if deps is None:
-        deps = ['requests', 'colorama', 'dns', 'whois', 'cryptography']
+            deps = ['requests', 'colorama', 'dns', 'whois']
 
     missing = []
     for dep in deps:
@@ -670,8 +670,7 @@ def check_native_modules(native_dir=None):
     if native_dir is None:
         native_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'native')
 
-    modules = ['port_scanner', 'banner_grabber', 'payload_engine', 'hash_cracker']
-    available = []
+    modules = ['port_scanner', 'banner_grabber', 'payload_engine', 'hash_cracker', 'packet_crafter', 'crypto_utils']
 
     for module in modules:
         path = os.path.join(native_dir, module)
