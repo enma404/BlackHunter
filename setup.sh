@@ -147,9 +147,17 @@ install_core_packages() {
 upgrade_pip() {
     log_step "STEP 3/9: Upgrading pip"
 
-    python3 -m pip install --upgrade pip setuptools wheel 2>&1 | tail -2
+    pip_output=$(python3 -m pip install --upgrade pip setuptools wheel 2>&1)
+pip_rc=$?
 
+echo "$pip_output" | tail -20
+
+if [ "$pip_rc" -eq 0 ]; then
     log_ok "pip upgraded"
+else
+    log_error "Failed to upgrade pip"
+    SETUP_ERRORS=$((SETUP_ERRORS + 1))
+fi
 }
 
 # =============================================
