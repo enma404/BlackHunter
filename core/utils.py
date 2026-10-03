@@ -663,7 +663,6 @@ def check_dependencies(deps=None):
             missing.append(dep)
 
     return missing
-        
 def check_native_modules(native_dir=None):
     """Check native modules availability"""
     if native_dir is None:
