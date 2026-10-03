@@ -264,7 +264,13 @@ build_native_modules() {
 
     # Build
     log_info "Compiling C modules..."
-    if make 2>&1 | tail -5; then
+
+    build_output=$(make 2>&1)
+    build_rc=$?
+
+    echo "$build_output" | tail -20
+
+    if [ "$build_rc" -eq 0 ]; then
         log_ok "Native modules built successfully"
 
         # List built binaries
@@ -275,7 +281,8 @@ build_native_modules() {
             fi
         done
     else
-        log_warn "Native build failed (optional)"
+        log_error "Native build failed"
+        SETUP_ERRORS=$((SETUP_ERRORS + 1))
     fi
 
     cd "$SCRIPT_DIR"
