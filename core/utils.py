@@ -653,7 +653,10 @@ def run_command(command, timeout=30):
 def check_dependencies(deps=None):
     """Check Python dependencies"""
     if deps is None:
-            deps = ['requests', 'colorama', 'dns', 'whois']
+            def check_dependencies(deps=None):
+    """Check Python dependencies"""
+    if deps is None:
+        deps = ['requests', 'colorama', 'dns', 'whois']
 
     missing = []
     for dep in deps:
