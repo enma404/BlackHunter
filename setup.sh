@@ -667,11 +667,19 @@ verify_installation() {
     echo -e "${CYAN}  ─────────────────────────────────────${NC}"
 
     LIBS_CHECK=(
-        "requests:requests"
-        "colorama:colorama"
-        "dns:dnspython"
-        "whois:python-whois"
-    )
+    "requests:requests"
+    "urllib3:urllib3"
+    "bs4:beautifulsoup4"
+    "lxml:lxml"
+    "html5lib:html5lib"
+    "colorama:colorama"
+    "dns:dnspython"
+    "whois:python-whois"
+    "tldextract:tldextract"
+    "chardet:chardet"
+    "idna:idna"
+    "certifi:certifi"
+)
 
     for lib_check in "${LIBS_CHECK[@]}"; do
         lib_name="${lib_check%%:*}"
