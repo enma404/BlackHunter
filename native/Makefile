@@ -1,6 +1,7 @@
 CC ?= clang
-CFLAGS ?= -Wall -Wextra -O2
+CFLAGS ?= -Wall -Wextra -O2 -std=gnu11
 LDFLAGS ?=
+PTHREAD_FLAGS ?= -pthread
 
 TARGETS = port_scanner banner_grabber payload_engine hash_cracker packet_crafter crypto_utils
 
@@ -8,33 +9,26 @@ TARGETS = port_scanner banner_grabber payload_engine hash_cracker packet_crafter
 
 all: $(TARGETS)
 
-port_scanner:
-	@echo "Building port_scanner..."
-	@echo "No source file configured for port_scanner"
+port_scanner: port_scanner.c
+	$(CC) $(CFLAGS) $(PTHREAD_FLAGS) -o $@ $< $(LDFLAGS)
 
-banner_grabber:
-	@echo "Building banner_grabber..."
-	@echo "No source file configured for banner_grabber"
+banner_grabber: banner_grabber.c
+	$(CC) $(CFLAGS) $(PTHREAD_FLAGS) -o $@ $< $(LDFLAGS)
 
-payload_engine:
-	@echo "Building payload_engine..."
-	@echo "No source file configured for payload_engine"
+payload_engine: payload_engine.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
-hash_cracker:
-	@echo "Building hash_cracker..."
-	@echo "No source file configured for hash_cracker"
+hash_cracker: hash_cracker.c
+	$(CC) $(CFLAGS) $(PTHREAD_FLAGS) -o $@ $< $(LDFLAGS)
 
-packet_crafter:
-	@echo "Building packet_crafter..."
-	@echo "No source file configured for packet_crafter"
+packet_crafter: packet_crafter.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
-crypto_utils:
-	@echo "Building crypto_utils..."
-	@echo "No source file configured for crypto_utils"
+crypto_utils: crypto_utils.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 clean:
-	@echo "Cleaning native build files..."
 	rm -f $(TARGETS)
 
-test:
-	@echo "Native module test completed."
+test: all
+	@echo "Native module build test completed successfully."
