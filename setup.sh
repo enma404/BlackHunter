@@ -712,12 +712,13 @@ verify_installation() {
     )
 
     for dir in "${DIRS_CHECK[@]}"; do
-        if [ -d "$SCRIPT_DIR/$dir" ]; then
-            log_ok "$dir/"
-        else
-            log_error "$dir/ missing"
-        fi
-    done
+    if [ -d "$SCRIPT_DIR/$dir" ]; then
+        log_ok "$dir/"
+    else
+        log_error "$dir/ missing"
+        SETUP_ERRORS=$((SETUP_ERRORS + 1))
+    fi
+done
 }
 
 # =============================================
