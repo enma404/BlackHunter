@@ -653,9 +653,6 @@ def run_command(command, timeout=30):
 def check_dependencies(deps=None):
     """Check Python dependencies"""
     if deps is None:
-            def check_dependencies(deps=None):
-    """Check Python dependencies"""
-    if deps is None:
         deps = ['requests', 'colorama', 'dns', 'whois']
 
     missing = []
@@ -666,8 +663,7 @@ def check_dependencies(deps=None):
             missing.append(dep)
 
     return missing
-
-
+        
 def check_native_modules(native_dir=None):
     """Check native modules availability"""
     if native_dir is None:
