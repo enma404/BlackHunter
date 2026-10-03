@@ -279,21 +279,29 @@ build_native_modules() {
     echo "$build_output" | tail -20
 
     if [ "$build_rc" -eq 0 ]; then
-        log_ok "Native modules built successfully"
+    local missing=0
 
-        # List built binaries
-        for bin in port_scanner banner_grabber payload_engine hash_cracker packet_crafter crypto_utils; do
-            if [ -f "$bin" ]; then
-                chmod +x "$bin"
-                log_ok "  Built: $bin"
-            fi
-        done
+    for bin in port_scanner banner_grabber payload_engine hash_cracker packet_crafter crypto_utils; do
+        if [ -f "$bin" ] && [ -x "$bin" ]; then
+            log_ok "  Built: $bin"
+        else
+            log_error "  Missing native module: $bin"
+            missing=$((missing + 1))
+        fi
+    done
+
+    if [ "$missing" -eq 0 ]; then
+        log_ok "Native modules built successfully"
     else
-        log_error "Native build failed"
+        log_error "Native build incomplete: $missing module(s) missing"
         SETUP_ERRORS=$((SETUP_ERRORS + 1))
     fi
+else
+    log_error "Native build failed"
+    SETUP_ERRORS=$((SETUP_ERRORS + 1))
+fi
 
-    cd "$SCRIPT_DIR"
+cd "$SCRIPT_DIR"
 }
 
 # =============================================
