@@ -47,14 +47,45 @@ check_environment() {
     fi
     
     # Check native modules
-    if [ ! -f "$SCRIPT_DIR/native/port_scanner" ]; then
-        echo -e "${YELLOW}[!] Native modules not built${NC}"
-        echo -e "${CYAN}[*] Building native modules...${NC}"
-        if [ -f "$SCRIPT_DIR/native/Makefile" ]; then
-            cd "$SCRIPT_DIR/native" && make 2>/dev/null
-            cd "$SCRIPT_DIR"
-        fi
+    NATIVE_MODULES=(
+    "port_scanner"
+    "banner_grabber"
+    "payload_engine"
+    "hash_cracker"
+    "packet_crafter"
+    "crypto_utils"
+)
+
+native_missing=0
+
+for module in "${NATIVE_MODULES[@]}"; do
+    if [ ! -x "$SCRIPT_DIR/native/$module" ]; then
+        native_missing=1
+        break
     fi
+done
+
+if [ "$native_missing" -eq 1 ]; then
+    echo -e "${YELLOW}[!] Native modules are incomplete${NC}"
+    echo -e "${CYAN}[*] Building native modules...${NC}"
+
+    if [ -f "$SCRIPT_DIR/native/Makefile" ]; then
+        if ! (cd "$SCRIPT_DIR/native" && make); then
+            echo -e "${RED}[✗] Native module build failed${NC}"
+            exit 1
+        fi
+    else
+        echo -e "${RED}[✗] Native Makefile not found${NC}"
+        exit 1
+    fi
+
+    for module in "${NATIVE_MODULES[@]}"; do
+        if [ ! -x "$SCRIPT_DIR/native/$module" ]; then
+            echo -e "${RED}[✗] Missing native module: $module${NC}"
+            exit 1
+        fi
+    done
+fi
 }
 
 # =============================================
