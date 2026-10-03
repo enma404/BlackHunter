@@ -96,12 +96,13 @@ DEFAULT_CONFIG = {
     },
 
     "native_modules": {
-        "port_scanner": "native/port_scanner",
-        "banner_grabber": "native/banner_grabber",
-        "payload_engine": "native/payload_engine",
-        "hash_cracker": "native/hash_cracker",
-        "packet_crafter": "native/packet_crafter"
-    },
+    "port_scanner": "native/port_scanner",
+    "banner_grabber": "native/banner_grabber",
+    "payload_engine": "native/payload_engine",
+    "hash_cracker": "native/hash_cracker",
+    "packet_crafter": "native/packet_crafter",
+    "crypto_utils": "native/crypto_utils"
+},
 
     "output": {
         "report_dir": "reports",
